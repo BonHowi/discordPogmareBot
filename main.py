@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 import os
 import logging
-import discord as dc
+import discord
 from discord.ext import commands
-from dislash import slash_command, ActionRow, Button, ButtonStyle
-from discord_slash import SlashCommand, SlashContext
+from discord_slash import SlashCommand
 
 # Create logger
 logger = logging.getLogger('discord')
@@ -14,7 +13,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # Set bot privileges
-intents = dc.Intents.all()
+intents = discord.Intents.all()
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +24,7 @@ TOKEN = os.getenv("DC_TOKEN")
 # GUILD = int(os.getenv("DC_MAIN_GUILD"))
 # CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
 # MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
+# CH_LOGS = int(os.getenv("DC_CH_LOGS"))
 
 
 class MyBot(commands.Bot):
@@ -35,11 +35,12 @@ class MyBot(commands.Bot):
         print("[INFO]: Init Bot")
         self.GUILD = int(os.getenv("DC_MAIN_GUILD"))
         self.CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
+        self.CH_LOGS = int(os.getenv("DC_CH_LOGS"))
         self.MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
 
     # On Client Start
     async def on_ready(self):
-        await MyBot.change_presence(self, activity=dc.Game("Fortnite"))
+        await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing, name="The Witcher: Monster Slayer"))
         print("[INFO]: Bot now online")
 
     # On member join
@@ -47,14 +48,19 @@ class MyBot(commands.Bot):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
         new_name = f"Total members: {true_member_count}"
         channel = self.get_channel(self.CH_MEMBER_COUNT)
-        await dc.VoiceChannel.edit(channel, name=new_name)
+        await discord.VoiceChannel.edit(channel, name=new_name)
         print("JOINED")
 
 
 def main():
-    pogmare = MyBot()
-    slash = SlashCommand(pogmare, sync_commands=True)
 
+    pogmare = MyBot()
+    print(pogmare.is_ws_ratelimited())
+
+    # Allow slash commands
+    slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=True)
+
+    # Load cogs
     for cog in os.listdir("./cogs"):
         if cog.endswith(".py"):
             try:
