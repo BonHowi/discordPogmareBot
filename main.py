@@ -16,10 +16,10 @@ logger.addHandler(handler)
 # Set bot privileges
 intents = dc.Intents.all()
 
-
 # Load environment variables
 load_dotenv()
 TOKEN = os.getenv("DC_TOKEN")
+
 
 # Must be converted to int as python recognizes as str otherwise
 # GUILD = int(os.getenv("DC_MAIN_GUILD"))
@@ -49,7 +49,6 @@ class MyBot(commands.Bot):
         channel = self.get_channel(self.CH_MEMBER_COUNT)
         await dc.VoiceChannel.edit(channel, name=new_name)
         print("JOINED")
-
 
 
 def main():
