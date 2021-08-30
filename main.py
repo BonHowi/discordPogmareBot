@@ -27,6 +27,7 @@ TOKEN = os.getenv("DC_TOKEN")
 # CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
 # MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
 # CH_LOGS = int(os.getenv("DC_CH_LOGS"))
+# added a test command @EnderGed
 
 
 class MyBot(commands.Bot):
