@@ -10,9 +10,10 @@ from discord_slash.utils.manage_commands import create_permission
 from dotenv import load_dotenv
 import os
 from discord.ext import commands
-from discord_slash import cog_ext, SlashContext, ComponentContext
+from discord_slash import cog_ext, SlashContext
 from discord_slash.model import SlashCommandPermissionType
 import json
+from cogs.base import BaseCog
 
 # Load environment variables
 load_dotenv()
@@ -31,19 +32,16 @@ PERMISSIONS_MODS = {
 }
 
 
-class RoleCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        print("[INFO]: Init RoleCog")
+class RoleCog(BaseCog):
+    def __init__(self, base):
+        super().__init__(base)
 
     # Clear messages
     @cog_ext.cog_slash(name="role", guild_ids=[GUILD],
                        description="Function for adding monster role to user",
                        default_permission=True)
     async def _role(self, ctx: SlashContext, number):
-        num_messages = int(number)
-        await ctx.channel.purge(limit=num_messages)
-        await ctx.send(f"Cleared {num_messages} messages!", delete_after=2.0)
+        pass
 
 
 def setup(bot: commands.Bot):

@@ -1,3 +1,5 @@
+import json
+
 from dotenv import load_dotenv
 import os
 import logging
@@ -38,6 +40,10 @@ class MyBot(commands.Bot):
         self.CH_LOGS = int(os.getenv("DC_CH_LOGS"))
         self.MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
 
+        with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
+           # fp.encoding = 'utf-8-sig'
+            self.config = json.load(fp)
+
     # On Client Start
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing, name="The Witcher: Monster Slayer"))
@@ -55,14 +61,14 @@ class MyBot(commands.Bot):
 def main():
 
     pogmare = MyBot()
-    print(pogmare.is_ws_ratelimited())
+    print(f"[INFO]: Rate limited: {pogmare.is_ws_ratelimited()}")
 
     # Allow slash commands
     slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=True)
 
     # Load cogs
     for cog in os.listdir("./cogs"):
-        if cog.endswith(".py"):
+        if cog.endswith("cog.py"):
             try:
                 cog = f"cogs.{cog.replace('.py', '')}"
                 pogmare.load_extension(cog)

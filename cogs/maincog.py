@@ -8,15 +8,18 @@ Current commands:
 /warn -     warn @user with reason
 /warns -    send @user warns to author's DM
 /nword -    Changes N-Word killed channel name  -   UNSTABLE
+
 """
+import asyncio
 import discord
 from discord_slash.utils.manage_commands import create_permission
 from dotenv import load_dotenv
 import os
 from discord.ext import commands
-from discord_slash import cog_ext, SlashContext, ComponentContext
+from discord_slash import cog_ext, SlashContext
 from discord_slash.model import SlashCommandPermissionType
 import json
+from cogs.base import BaseCog
 
 # Load environment variables
 load_dotenv()
@@ -35,10 +38,12 @@ PERMISSIONS_MODS = {
 }
 
 
-class MainCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        print("[INFO]: Init MainCog")
+class MainCog(BaseCog):
+    def __init__(self, base):
+        super().__init__(base)
+
+        # self.bot = bot
+        # print("[INFO]: Init MainCog")
 
     # GENERAL FUNCTIONS
     # Check latency
@@ -54,10 +59,10 @@ class MainCog(commands.Cog):
                        description="Function for clearing messages on channel",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
-    async def _clear(self, ctx: SlashContext, number):
+    async def _purge(self, ctx: SlashContext, number):
         num_messages = int(number)
         await ctx.channel.purge(limit=num_messages)
-        await ctx.send(f"Cleared {num_messages} messages!", delete_after=2.0)
+        await ctx.send(f"Cleared {num_messages} messages!", delete_after=4.0)
 
     # Disconnect Bot
     @cog_ext.cog_slash(name="exit", guild_ids=[GUILD],
@@ -65,7 +70,7 @@ class MainCog(commands.Cog):
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def _exit(self, ctx: SlashContext):
-        await ctx.send(f"Closing Bot")
+        await ctx.send(f"Closing Bot", delete_after=10.0)
         print("[INFO]: Exiting Bot")
         await self.bot.close()
 
@@ -100,6 +105,7 @@ class MainCog(commands.Cog):
         await ctx.send(f"Warned {user.mention} for:\n\"{reason}\"\n"
                        f"Number of warns: {len(current_user['reasons'])}")
 
+    # Get list of user's warns
     @cog_ext.cog_slash(name="warns", guild_ids=[GUILD],
                        description="Function for getting user's warns",
                        default_permission=False,
@@ -126,6 +132,7 @@ class MainCog(commands.Cog):
     # OTHER
 
     # Did BonJowi killed N-Word? (unstable)
+    # Apparently you can not use this command more often than every x minutes
     @cog_ext.cog_slash(name="nword", guild_ids=[GUILD],
                        description="Change N-Word channel name",
                        permissions=PERMISSIONS_MODS)
