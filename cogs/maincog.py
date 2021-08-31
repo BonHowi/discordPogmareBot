@@ -102,7 +102,7 @@ class MainCog(BaseCog):
         with open('./json_files/warns.json', 'w+') as f:
             json.dump(report, f)
 
-        await ctx.send(f"Warned {user.mention} for:\n\"{reason}\"\n"
+        await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n"
                        f"Number of warns: {len(current_user['reasons'])}")
 
     # Get list of user's warns
@@ -145,6 +145,7 @@ class MainCog(BaseCog):
         else:
             await discord.VoiceChannel.edit(channel, name=f"N-Word killed: {new_status}")
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
+
     # async def rename_nword_channel(self, ctx):
     #     channel = self.bot.get_channel(CH_NWORD_KILLED)
     #     if "YES" in channel.name:
@@ -160,6 +161,7 @@ class MainCog(BaseCog):
     #     await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Disconnect Bot using "!" prefix (For safety reasons in case Slash commands are not working
+
     @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
     async def exit_bot(self, ctx):
         print("[INFO]: Exiting Bot")

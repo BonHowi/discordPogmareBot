@@ -42,25 +42,56 @@ class MyBot(commands.Bot):
         self.MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
 
         with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
-           # fp.encoding = 'utf-8-sig'
+            # fp.encoding = 'utf-8-sig'
             self.config = json.load(fp)
 
     # On Client Start
     async def on_ready(self):
-        await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing, name="The Witcher: Monster Slayer"))
+        await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
+                                                                    name="The Witcher: Monster Slayer"))
         print("[INFO]: Bot now online")
 
-    # On member join
-    async def on_member_join(self, ctx):
+    async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
         new_name = f"Total members: {true_member_count}"
         channel = self.get_channel(self.CH_MEMBER_COUNT)
         await discord.VoiceChannel.edit(channel, name=new_name)
-        print("JOINED")
+
+    # On member join
+    async def on_member_join(self, ctx):
+        await self.update_member_count(ctx)
+        print(f"Someone joined")
+
+    async def get_monster(self, ctx, name: str):
+        monster = []
+        name = name.lower()
+
+        for monsters in self.config["commands"]:
+            if monsters["name"].lower() == name:
+                monster = monsters
+
+                for monster_triggers in monsters["triggers"]:
+                    if monster_triggers == name:
+                        monster = monsters
+
+        if not monster:
+            print("Monster not found")
+            await ctx.send(f"Monster not found", hidden=True)
+            return
+
+        monster["role"] = discord.utils.get(ctx.guild.roles, name=monster["name"])
+        if not monster["role"]:
+            print(f"Failed to fetch roleID for monster {monster['name']}")
+            await ctx.send(f"Role not found", hidden=True)
+            return
+        else:
+            monster["role"] = monster["role"].id
+        # print(monster["name"])
+        # print(monster["role"])
+        return monster
 
 
 def main():
-
     pogmare = MyBot()
     print(f"[INFO]: Rate limited: {pogmare.is_ws_ratelimited()}")
 

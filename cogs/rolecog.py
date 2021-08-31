@@ -6,6 +6,7 @@ Current commands:
 
 """
 import discord
+from discord.utils import get
 from discord_slash.utils.manage_commands import create_permission
 from dotenv import load_dotenv
 import os
@@ -21,8 +22,7 @@ TOKEN = os.getenv("DC_TOKEN")
 
 # Must be converted to int as python recognizes as str otherwise
 GUILD = int(os.getenv("DC_MAIN_GUILD"))
-CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
-CH_NWORD_KILLED = int(os.getenv("DC_CH_NIGHTMARE_KILL"))
+CH_ROLE_REQUEST = int(os.getenv("DC_CH_REQUEST"))
 MODERATION_IDS = list(os.getenv("DC_MODERATION_ROLES").split(","))
 PERMISSIONS_MODS = {
     GUILD: [
@@ -40,8 +40,25 @@ class RoleCog(BaseCog):
     @cog_ext.cog_slash(name="role", guild_ids=[GUILD],
                        description="Function for adding monster role to user",
                        default_permission=True)
-    async def _role(self, ctx: SlashContext, number):
-        pass
+    async def _role(self, ctx: SlashContext, monster_name: str):
+        if ctx.channel.id != CH_ROLE_REQUEST:
+            await ctx.send(f"Use <#{CH_ROLE_REQUEST}> to request a role!", hidden=True)
+            return
+        else:
+            monster = await self.bot.get_monster(ctx, monster_name)
+            member = ctx.author
+            if monster:
+                role = get(member.guild.roles, name=monster["name"])
+                if role in member.roles:
+                    await member.remove_roles(role)
+                    await self.bot.say(f"Role removed")
+                else:
+                    await member.add_roles(role)
+                    await self.bot.say(f"Role added")
+            else:
+                await self.bot.say(f"No role found")
+
+    # discord.errors.Forbidden: 403 Forbidden (error code: 50013): Missing Permissions
 
 
 def setup(bot: commands.Bot):
