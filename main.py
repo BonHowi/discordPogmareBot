@@ -1,8 +1,6 @@
 import json
-
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
-from dotenv import load_dotenv
 import os
 import logging
 import discord
@@ -21,6 +19,7 @@ logger.addHandler(handler)
 intents = discord.Intents.all()
 
 # Load environment variables
+# from dotenv import load_dotenv
 # load_dotenv()
 # TOKEN = os.getenv("DC_TOKEN")
 
@@ -53,6 +52,8 @@ class MyBot(commands.Bot):
         self.CH_NIGHTMARE_KILLED = get_settings("CH_NIGHTMARE_KILLED")
         self.CH_COMMON = get_settings("CH_COMMON")
         self.CH_LOGS = get_settings("CH_LOGS")
+        self.CH_DISCUSSION_EN = get_settings("CH_DISCUSSION_EN")
+        self.CAT_SPOTTING = get_settings("CAT_SPOTTING")
 
         with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
             # fp.encoding = 'utf-8-sig'
@@ -79,7 +80,13 @@ class MyBot(commands.Bot):
     async def on_message(self, ctx):
         if ctx.author.id == self.user.id:
             return
-        return
+
+        # If not on role-request channel
+        if ctx.content.startswith("!") and ctx.channel.id != self.CH_ROLE_REQUEST:
+            await ctx.channel.send(
+                f"{ctx.author.mention} Please use \"/\" instead of \"!\" to use commands on the server!",
+                delete_after=5.0)
+            await ctx.delete()
 
 
 def main():

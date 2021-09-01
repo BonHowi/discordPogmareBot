@@ -4,18 +4,18 @@ from functools import lru_cache
 template_json = {
     "token": "None",
     "git_token": "None",
-    "guild": 881161915689209936,
-    "MOD_ROLES": "None",
+    "guild": [881161915689209936],
+    "MOD_ROLES": [],
     "CH_ROLE_REQUEST": "None",
     "CH_TOTAL_MEMBERS": "None",
-    "CH_NIGHTMARE_KILL": "None",
+    "CH_NIGHTMARE_KILLED": "None",
     "CH_LEADERBOARDS": "None",
     "CH_TEMP": "None",
     "CH_COMMON": "None",
     "CH_LOGS": "None",
     "CH_VOICE_CHAT": "None",
-    "CAT_SPOTTING": "None",
-    "CH_COMMON_SPOTTING": "None"
+    "CH_DISCUSSION_EN": "None",
+    "CAT_SPOTTING": "None"
 }
 
 
@@ -28,7 +28,6 @@ def get_settings(key: str):
         return _json[key]
     except FileNotFoundError:
         with open("json_files/bot_settings.json", "w", encoding="UTF-8") as f:
-
             json.dump(template_json, f, indent=2)
         print("No bot_settings.json found. One has been created, please populate it and restart")
         exit(1)
