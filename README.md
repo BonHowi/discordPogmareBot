@@ -1,2 +1,5 @@
-# discordPogmareBot
+# discordBot
  
+INSTALLATION:
+> pip install .
+
