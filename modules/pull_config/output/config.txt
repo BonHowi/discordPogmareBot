@@ -1,0 +1,1146 @@
+{
+    "milestones": [
+        {
+            "total": 150,
+            "name": "Rare Spotter"
+        },
+        {
+            "total": 1000,
+            "name": "Legendary Spotter"
+        },
+        {
+            "total": 5000,
+            "name": "Mythic Spotter"
+        }
+    ],
+    "types": [
+        {
+            "id": 3,
+            "label": "Event_Likan"
+        },
+        {
+            "id": 2,
+            "label": "Event_Ulf"
+        },
+        {
+            "id": 1,
+            "label": "Legendary"
+        },
+        {
+            "id": 0,
+            "label": "Rare"
+        }
+    ],
+    "commands": [
+        {
+            "triggers": [
+                "archegryf",
+                "gryf",
+                "arhgriffin",
+                "archgrifin",
+                "arch griffin",
+                "arhegryf",
+                "archgriffin",
+                "arcy gryf",
+                "erzgreif",
+                "arquigrifo",
+                "архигрифон",
+                "ar",
+                "arcygryf"
+            ],
+            "name": "Archgriffin",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "bagiennica",
+                "swamp",
+                "bagienica",
+                "swamp hag",
+                "sumpfschrulle",
+                "bruxa do pantano",
+                "болотнаябаба",
+                "swha",
+                "swamphag",
+                "bruxadopantano"
+            ],
+            "name": "SwampHag",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "bazyliszek srebrny",
+                "silver",
+                "silver basilsk",
+                "silver basilisk",
+                "silber basilisk",
+                "basilisco prateado",
+                "серебряныйвасилиск",
+                "siba",
+                "bazyliszeksrebrny",
+                "silverbasilsk",
+                "silverbasilisk",
+                "silberbasilisk",
+                "basiliscoprateado"
+            ],
+            "name": "SilverBasilisk",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "czart smolisty",
+                "tary chort",
+                "tarry",
+                "tarry chort",
+                "teertschort",
+                "chorabash escuro",
+                "смолянойчёрт",
+                "tach",
+                "czartsmolisty",
+                "tarychort",
+                "tarrychort",
+                "chorabashescuro"
+            ],
+            "name": "TarryChort",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "diabel wodny",
+                "water debil",
+                "water devil",
+                "wasserteufel",
+                "demonio aquatico",
+                "водныйдьявол",
+                "wade",
+                "diabelwodny",
+                "waterdebil",
+                "waterdevil",
+                "demonioaquatico"
+            ],
+            "name": "WaterDevil",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "d'jinni",
+                "djin",
+                "djini",
+                "d'jini",
+                "dzin",
+                "djinni",
+                "джинн",
+                "dj"
+            ],
+            "name": "D'jinni",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "erynia",
+                "erinia",
+                "эриния",
+                "er",
+                "garkain moucheté",
+                "garkainmoucheté"
+            ],
+            "name": "Erynia",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "garkain pstry",
+                "motled garkain",
+                "mottled",
+                "garkain",
+                "molted garkain",
+                "mottled garkain",
+                "gagarin pstry",
+                "gefleckter garkin",
+                "garkain mosqueado",
+                "пятнистыйгаркаин",
+                "moga",
+                "garkainpstry",
+                "motledgarkain",
+                "moltedgarkain",
+                "mottledgarkain",
+                "gagarinpstry",
+                "geflecktergarkin",
+                "garkainmosqueado"
+            ],
+            "name": "MottledGarkain",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "him",
+                "hmm",
+                "hym",
+                "хим",
+                "hy"
+            ],
+            "name": "Hym",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "katakan",
+                "karakan",
+                "катакан",
+                "ka"
+            ],
+            "name": "Katakan",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "kosciucha",
+                "grim",
+                "grim hag",
+                "grim hog",
+                "trauerschnepfe",
+                "bruxa sinistra",
+                "костянаябаба",
+                "griha",
+                "guenaude sinistre",
+                "grimhag",
+                "grimhog",
+                "bruxasinistra",
+                "guenaudesinistre"
+            ],
+            "name": "GrimHag",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "lodowygigant",
+                "ice giant",
+                "lodowy gigant",
+                "eisriese",
+                "gigante de gelo",
+                "ледянойвеликан",
+                "icgi",
+                "icegiant",
+                "gigantedegelo"
+            ],
+            "name": "IceGiant",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "morowa dziewica",
+                "maidenka",
+                "plague maiden",
+                "pestmaid",
+                "dama da peste",
+                "мороваядева",
+                "plma",
+                "morowadziewica",
+                "plaguemaiden",
+                "damadapeste"
+            ],
+            "name": "PlagueMaiden",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "oszluzg grafitowy",
+                "graphite slyzard",
+                "oszlug grafitowy",
+                "grafit-flugschlange",
+                "lagaz de grafite",
+                "графитовыйящер",
+                "grsl",
+                "oszluzggrafitowy",
+                "graphiteslyzard",
+                "oszluggrafitowy",
+                "lagazdegrafite"
+            ],
+            "name": "GraphiteSlyzard",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "pazurnica",
+                "sand crab",
+                "sandcrab",
+                "sabdcrab",
+                "sandwurm",
+                "verme de areia",
+                "песчаныйчервь",
+                "sa",
+                "vermedeareia"
+            ],
+            "name": "Sandcrab",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "pokutnik",
+                "petitent",
+                "penitent",
+                "büßer",
+                "penitente",
+                "покоянник",
+                "покаянник",
+                "pe"
+            ],
+            "name": "Penitent",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "przeraza",
+                "frigthtener",
+                "frightener",
+                "furchtbringer",
+                "химера",
+                "fr"
+            ],
+            "name": "Frightener",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "starozytny leszy",
+                "ancient leshen",
+                "liche ancestral",
+                "древнийлеший",
+                "anle",
+                "starozytnyleszy",
+                "ancientleshen",
+                "licheancestral"
+            ],
+            "name": "AncientLeshen",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "strzyga biala",
+                "bialastrzyga",
+                "white striga",
+                "weiße striege",
+                "estrige branca",
+                "стрыга-альбинос",
+                "whst",
+                "strzygabiala",
+                "whitestriga",
+                "weißestriege",
+                "estrigebranca"
+            ],
+            "name": "WhiteStriga",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "szarlej gnojarz",
+                "dung shaelamar",
+                "dung sh",
+                "dungsh",
+                "dung shaelmaar",
+                "dung",
+                "shaelmaar rola-bosta",
+                "шарлей-навозник",
+                "dush",
+                "szarlejgnojarz",
+                "dungshaelamar",
+                "dungshaelmaar",
+                "shaelmaarrola-bosta"
+            ],
+            "name": "DungShaelmaar",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "troll lodowy",
+                "ice trol",
+                "ice troll",
+                "eistroll",
+                "troll de gelo",
+                "ледянойтролль",
+                "ictr",
+                "trolllodowy",
+                "icetrol",
+                "icetroll",
+                "trolldegelo"
+            ],
+            "name": "IceTroll",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "ukryty",
+                "seen elder",
+                "unseen",
+                "seen",
+                "umseen elder",
+                "umseen",
+                "unseen elder",
+                "unsee",
+                "der unsichtbare",
+                "anciao sonegado",
+                "скрытый",
+                "unel",
+                "doyen des invisibles",
+                "seenelder",
+                "umseenelder",
+                "unseenelder",
+                "derunsichtbare",
+                "anciaosonegado",
+                "doyendesinvisibles"
+            ],
+            "name": "UnseenElder",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "ulfhedinn",
+                "ulfhedin",
+                "ulfheddin",
+                "ульфхединн",
+                "ul"
+            ],
+            "name": "Ulfhedinn",
+            "type": 2
+        },
+        {
+            "triggers": [
+                "umeczony",
+                "tormented",
+                "gepeinigter",
+                "atormentado",
+                "мученик",
+                "to"
+            ],
+            "name": "Tormented",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "wywerna miedziana",
+                "coper wyvern",
+                "copper wywern",
+                "coper wywern",
+                "koper",
+                "copper wyvern",
+                "kupfer wyvern",
+                "wyvern de cobre",
+                "меднаявиверна",
+                "cowy",
+                "wywernamiedziana",
+                "coperwyvern",
+                "copperwywern",
+                "coperwywern",
+                "copperwyvern",
+                "kupferwyvern",
+                "wyverndecobre"
+            ],
+            "name": "CopperWyvern",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "zywiolak lodu",
+                "ice elemental",
+                "eisgenuis",
+                "constructos de gelo",
+                "элементальльда",
+                "icel",
+                "zywiolaklodu",
+                "iceelemental",
+                "constructosdegelo"
+            ],
+            "name": "IceElemental",
+            "type": 1
+        },
+        {
+            "triggers": [
+                "alghul plamisty",
+                "spotted al",
+                "al",
+                "spotted alghoul",
+                "gefleckter alghul",
+                "carnical atroz torpe",
+                "пятнистыйальгуль",
+                "spal",
+                "alghulplamisty",
+                "spottedal",
+                "spottedalghoul",
+                "gefleckteralghul",
+                "carnicalatroztorpe"
+            ],
+            "name": "SpottedAlghoul",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "baba glebinowa",
+                "depht lurker",
+                "depth lurker",
+                "delth lurker",
+                "espreitadora abissal",
+                "глубиннаябаба",
+                "delu",
+                "babaglebinowa",
+                "dephtlurker",
+                "depthlurker",
+                "delthlurker",
+                "espreitadoraabissal"
+            ],
+            "name": "DepthLurker",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "beann'she",
+                "bean",
+                "beann",
+                "beannshe",
+                "beanshe",
+                "beann she",
+                "bean she",
+                "beann'dhie",
+                "beann’shie",
+                "beann'shie",
+                "беннши",
+                "besh"
+            ],
+            "name": "Beann'She",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "bruxa",
+                "bruksa",
+                "brux",
+                "broux",
+                "lamia",
+                "брукса",
+                "br"
+            ],
+            "name": "Bruxa",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "endriaga szarzownik",
+                "charger",
+                "szarzownik",
+                "endega charger",
+                "endrega charger",
+                "endriagia szarzownik",
+                "carregador endriuga",
+                "эндриага-боец",
+                "ench",
+                "endriagaszarzownik",
+                "endegacharger",
+                "endregacharger",
+                "endriagiaszarzownik",
+                "carregadorendriuga"
+            ],
+            "name": "EndregaCharger",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "endriaga wojownik",
+                "endega warrior",
+                "endrega warrior",
+                "endriagenkrieger",
+                "guerreiro endriuga",
+                "эндриага-воин",
+                "enwa",
+                "endriagawojownik",
+                "endegawarrior",
+                "endregawarrior",
+                "guerreiroendriuga"
+            ],
+            "name": "EndregaWarrior",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "farbaut",
+                "фарбаут",
+                "fa"
+            ],
+            "name": "Farbaut",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "garkainalfa",
+                "alpha garkin",
+                "grakainalfa",
+                "alpha-garkin",
+                "garkain alpha",
+                "гаркаин-альфа",
+                "alga",
+                "alphagarkin",
+                "garkainalpha"
+            ],
+            "name": "GarkainAlpha",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "gernichora",
+                "6 tits",
+                "gernihora",
+                "genichora",
+                "гернихора",
+                "ge",
+                "6tits"
+            ],
+            "name": "Gernichora",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "grimnir",
+                "grimir",
+                "grimmnir",
+                "grinmir",
+                "гримнир",
+                "gri"
+            ],
+            "name": "Grimnir",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "grotnik",
+                "grotore",
+                "grottore",
+                "gruteiro",
+                "гротник",
+                "gro"
+            ],
+            "name": "Grottore",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "harpia zielona",
+                "harpy",
+                "green harpy",
+                "grakain alfa",
+                "grüne harpie",
+                "harpia verde",
+                "зелёнаягарпия",
+                "greha",
+                "harpiazielona",
+                "greenharpy",
+                "grakainalfa",
+                "grüneharpie",
+                "harpiaverde"
+            ],
+            "name": "GreenHarpy",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "ignis fatuus",
+                "ignis fatus",
+                "ignis fatuss",
+                "ignis faatus",
+                "ignis gatuus",
+                "ignisfatuus",
+                "igfa",
+                "ignisfatus",
+                "ignisfatuss",
+                "ignisfaatus",
+                "ignisgatuus"
+            ],
+            "name": "IgnisFatuus",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "kamienny golem",
+                "stone golem",
+                "steingolem",
+                "golem de pedra",
+                "каменныйголем",
+                "stgo",
+                "kamiennygolem",
+                "stonegolem",
+                "golemdepedra"
+            ],
+            "name": "StoneGolem",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "kikimora wojownik",
+                "kikimore warror",
+                "kikimlre warior",
+                "kikimora guerreira",
+                "кикимора-солдат",
+                "kiwa",
+                "kikimorawojownik",
+                "kikimorewarror",
+                "kikimlrewarior",
+                "kikimoraguerreira"
+            ],
+            "name": "KikimoreWarrior",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "kuroliszek",
+                "cock",
+                "koktail",
+                "cocktail",
+                "cockatrise",
+                "cockatrikse",
+                "cockatrice",
+                "cockatrix",
+                "cocatriz",
+                "куролиск",
+                "co"
+            ],
+            "name": "Cockatrice",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "leszy",
+                "leshen",
+                "waldschrat",
+                "liche",
+                "леший",
+                "le"
+            ],
+            "name": "Leshen",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "licho",
+                "liho",
+                "lecho",
+                "lichr",
+                "лихо",
+                "li"
+            ],
+            "name": "Liho",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "likantrop",
+                "wilkolak",
+                "lycan",
+                "likan",
+                "lykan",
+                "lican",
+                "lycanthrope",
+                "lucanthrope",
+                "lykantrop",
+                "licantropo",
+                "ликантроп",
+                "ly"
+            ],
+            "name": "Lycanthrope",
+            "type": 3
+        },
+        {
+            "triggers": [
+                "mglak krolewski",
+                "royal niglet",
+                "royal foglet",
+                "königsnebling",
+                "nevoloso real",
+                "королевскийтуманник",
+                "rofo",
+                "mglakkrolewski",
+                "royalniglet",
+                "royalfoglet",
+                "nevolosoreal"
+            ],
+            "name": "RoyalFoglet",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "nekker krolewski",
+                "royal neker",
+                "royal nekker",
+                "königsnekker",
+                "nekker real",
+                "королевскийнакер",
+                "rone",
+                "nekkerkrolewski",
+                "royalneker",
+                "royalnekker",
+                "nekkerreal"
+            ],
+            "name": "RoyalNekker",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "nekker szaman",
+                "neker shaman",
+                "neker szaman",
+                "nekker shaman",
+                "nekker-schamane",
+                "nekker xama",
+                "накер-шаман",
+                "nesh",
+                "nekkerszaman",
+                "nekershaman",
+                "nekerszaman",
+                "nekkershaman",
+                "nekkerxama"
+            ],
+            "name": "NekkerShaman",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "ogar leszego",
+                "ogar leszy",
+                "leshen hound",
+                "hund des waldschrats",
+                "cao de liche",
+                "гончаялешего",
+                "leho",
+                "ogarleszego",
+                "ogarleszy",
+                "leshenhound",
+                "hunddeswaldschrats",
+                "caodeliche"
+            ],
+            "name": "LeshenHound",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "oszluzg szary",
+                "gosluzg",
+                "gray slyzard",
+                "gray slizard",
+                "grey slyzard",
+                "graue flugschlange",
+                "lagaz acinzentado",
+                "серыйящер",
+                "grsl",
+                "oszluzgszary",
+                "grayslyzard",
+                "grayslizard",
+                "greyslyzard",
+                "graueflugschlange",
+                "lagazacinzentado"
+            ],
+            "name": "GraySlyzard",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "parszywiec",
+                "skurwier",
+                "skurwiel",
+                "scurver",
+                "espinhoso",
+                "падальщик",
+                "sc"
+            ],
+            "name": "Scurver",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "silvan dearg",
+                "silvan",
+                "dearg",
+                "sylvan",
+                "sylvan dearg",
+                "silvan deraug",
+                "slyvan dearg",
+                "silvano esvarlate",
+                "silvano escarlate",
+                "карминныйсильван",
+                "syde",
+                "silvandearg",
+                "sylvandearg",
+                "silvanderaug",
+                "slyvandearg",
+                "silvanoesvarlate",
+                "silvanoescarlate"
+            ],
+            "name": "SylvanDearg",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "skrzekacz",
+                "schrieker",
+                "shriekee",
+                "shrieker",
+                "shriek",
+                "shreker",
+                "shriker",
+                "sgrieker",
+                "berrador",
+                "клекотун",
+                "sh"
+            ],
+            "name": "Shrieker",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "stechlec",
+                "putrifer",
+                "putrifier",
+                "purifier",
+                "putrificador",
+                "тухляк",
+                "pu"
+            ],
+            "name": "Putrifier",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "strzyga",
+                "stryga",
+                "striga",
+                "striege",
+                "estrige",
+                "стрыга",
+                "st"
+            ],
+            "name": "Striga",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "sukkub nocy",
+                "night succ",
+                "succ",
+                "zucc",
+                "night succubus",
+                "sucave",
+                "sucabe",
+                "nigh succubus",
+                "night succuba",
+                "sukkub nocny",
+                "nachtsukkubus",
+                "sucubo noturna",
+                "ночнойсуккуб",
+                "nisu",
+                "sukkubnocy",
+                "nightsucc",
+                "nightsuccubus",
+                "nighsuccubus",
+                "nightsuccuba",
+                "sukkubnocny",
+                "sucubonoturna"
+            ],
+            "name": "NightSuccubus",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "szarlej rdzawy",
+                "ruset shaelmaar",
+                "russetsh",
+                "russet sh",
+                "russet shaelmaar",
+                "szarley rdzawy",
+                "rysset shaelmaar",
+                "russet shalemaar",
+                "shaelmaar avermelhado",
+                "бурыйшарлей",
+                "rush",
+                "szarlejrdzawy",
+                "rusetshaelmaar",
+                "russetshaelmaar",
+                "szarleyrdzawy",
+                "ryssetshaelmaar",
+                "russetshalemaar",
+                "shaelmaaravermelhado"
+            ],
+            "name": "RussetShaelmaar",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "topielec",
+                "bad swimmer",
+                "drowned dead",
+                "drowne dead",
+                "drowned ead",
+                "driwned dead",
+                "ertrunkener toter",
+                "afogador mortal",
+                "топяк",
+                "drde",
+                "badswimmer",
+                "drowneddead",
+                "drownedead",
+                "driwneddead",
+                "ertrunkenertoter",
+                "afogadormortal"
+            ],
+            "name": "DrownedDead",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "troll magmowy",
+                "magma trol",
+                "magma troll",
+                "troll de magma",
+                "вулканическийтролль",
+                "matr",
+                "trollmagmowy",
+                "magmatrol",
+                "magmatroll",
+                "trolldemagma"
+            ],
+            "name": "MagmaTroll",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "truchlica",
+                "burgir",
+                "burger",
+                "burgier",
+                "burier",
+                "truchluca",
+                "bestatterin",
+                "enterradora",
+                "копальщица",
+                "bu"
+            ],
+            "name": "Burier",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "widlogon siny",
+                "blue forktaol",
+                "blue",
+                "blue forktail",
+                "tordo azul",
+                "синийвилохвост",
+                "bufo",
+                "widlogonsiny",
+                "blueforktaol",
+                "blueforktail",
+                "tordoazul"
+            ],
+            "name": "BlueForktail",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "wyjec",
+                "wujec",
+                "chujec",
+                "howler",
+                "howlrt",
+                "kreischling",
+                "uivador",
+                "ревун",
+                "ho"
+            ],
+            "name": "Howler",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "wywerna krolewska",
+                "royal wywern",
+                "royal wyvern",
+                "königswyvern",
+                "wyvern real",
+                "королевскаявиверна",
+                "rowy",
+                "wywernakrolewska",
+                "royalwywern",
+                "royalwyvern",
+                "wyvernreal"
+            ],
+            "name": "RoyalWyvern",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "zjadarka",
+                "devorer",
+                "devourer",
+                "devorour",
+                "devorador",
+                "яга",
+                "de"
+            ],
+            "name": "Devourer",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "zmora nocna",
+                "n word",
+                "n-word",
+                "nightmere",
+                "nighmare",
+                "nighmere",
+                "nightmare",
+                "zmora",
+                "hungry bench",
+                "bonjovinieznajdzienightmare",
+                "pesadelo",
+                "мара",
+                "ni",
+                "zmoranocna",
+                "nword",
+                "hungrybench"
+            ],
+            "name": "Nightmare",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "zalobnica",
+                "wailwrath",
+                "walwraith",
+                "wallwraith",
+                "wailwraith",
+                "плакальщица",
+                "wa"
+            ],
+            "name": "Wailwraith",
+            "type": 0
+        },
+        {
+            "triggers": [
+                "zywiola kognia",
+                "fire elementrap",
+                "fire elemental",
+                "zywiolak ognia",
+                "fire lemental",
+                "fir elemental",
+                "fire elementap",
+                "feuergenius",
+                "constructos de fogo",
+                "элементаль огня",
+                "fiel",
+                "zywiolakognia",
+                "fireelementrap",
+                "fireelemental",
+                "firelemental",
+                "fireelementap",
+                "constructosdefogo",
+                "элементальогня"
+            ],
+            "name": "FireElemental",
+            "type": 0
+        }
+    ]
+}

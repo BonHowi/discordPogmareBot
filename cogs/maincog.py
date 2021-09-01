@@ -8,7 +8,8 @@ Current commands:
 /warn -     warn @user with reason
 /warns -    send @user warns to author's DM
 /nword -    Changes N-Word killed channel name  -   UNSTABLE
-
+/updatetotmem - Update #TotalMembers channel
+/updatecommon - Update common spotting channel with new monster name
 """
 import asyncio
 import discord
@@ -19,6 +20,7 @@ from discord_slash.model import SlashCommandPermissionType
 import json
 from cogs.base import BaseCog
 from modules.get_settings import get_settings
+from modules.pull_config.convert import convert
 
 guild_ids = get_settings("guild")
 
@@ -120,13 +122,13 @@ class MainCog(BaseCog):
             await ctx.author.send(f"{user.name} has never been warned")
             await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
-    @cog_ext.cog_slash(name="updatemcount", guild_ids=guild_ids,
-                       description="Update number of members",
+    @cog_ext.cog_slash(name="updatetotmem", guild_ids=guild_ids,
+                       description="Update total number of members",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def update_member_count_command(self, ctx: SlashContext):
         await self.bot.update_member_count(ctx)
-        await ctx.send(f"Member count updated", hidden=True)
+        await ctx.send(f"Total Members count updated", hidden=True)
 
     @cog_ext.cog_slash(name="updatecommons", guild_ids=guild_ids,
                        description="Update common channel name",
@@ -137,7 +139,23 @@ class MainCog(BaseCog):
         channel = self.bot.get_channel(self.bot.CH_COMMON)
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
+
     # Does not work if used too much
+
+    @cog_ext.cog_slash(name="pullconfig", guild_ids=guild_ids,
+                       description="Pull config from google sheets",
+                       default_permission=False,
+                       permissions={
+                           guild_ids[0]: [
+                               create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
+                           ]
+                       })
+    async def pull_config(self, ctx: SlashContext):
+        convert()
+        with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
+            self.bot.config = json.load(fp)
+            self.bot.reload_extension("cogs.rolecog")
+        await ctx.send(f"Config.json updated", hidden=True)
 
     # OTHER
 

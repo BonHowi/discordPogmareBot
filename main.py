@@ -30,8 +30,6 @@ intents = discord.Intents.all()
 # CH_LOGS = int(os.getenv("DC_CH_LOGS"))
 # added a test command
 
-guild_ids = get_settings("guild")
-
 
 class MyBot(commands.Bot):
 
@@ -40,6 +38,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
         print("[INFO]: Init Bot")
         self.GUILD = get_settings("guild")
+        self.ADMIN = get_settings("ADMIN")
         self.MOD_ROLES = get_settings("MOD_ROLES")
         self.PERMISSIONS_MODS = {
             self.GUILD[0]: [

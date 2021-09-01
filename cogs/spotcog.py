@@ -5,10 +5,8 @@ Current commands:
 /
 
 """
-import discord
 from discord.utils import get
 from discord.ext import commands
-from discord_slash import cog_ext, SlashContext
 from cogs.base import BaseCog
 from modules.get_settings import get_settings
 
@@ -42,12 +40,12 @@ class SpotCog(BaseCog):
             elif ctx.content[0] in cords_beginning:
                 return
 
-            # If member sends normal message
-            else:
-                return
-                # await ctx.channel.send(
-                #     f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
-                #     delete_after=5.0)
+            # # If member sends normal message
+            # else:
+            #     return
+            #     await ctx.channel.send(
+            #         f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
+            #         delete_after=5.0)
 
 
 def setup(bot: commands.Bot):

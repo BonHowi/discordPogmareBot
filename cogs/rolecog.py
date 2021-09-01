@@ -2,7 +2,7 @@
 Cog with role related commands available in the Bot.
 
 Current commands:
-/
+/role
 
 """
 import discord

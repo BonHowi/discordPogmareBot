@@ -5,6 +5,7 @@ template_json = {
     "token": "None",
     "git_token": "None",
     "guild": [881161915689209936],
+    "ADMIN": "None",
     "MOD_ROLES": [],
     "CH_ROLE_REQUEST": "None",
     "CH_TOTAL_MEMBERS": "None",
@@ -15,7 +16,8 @@ template_json = {
     "CH_LOGS": "None",
     "CH_VOICE_CHAT": "None",
     "CH_DISCUSSION_EN": "None",
-    "CAT_SPOTTING": "None"
+    "CAT_SPOTTING": "None",
+    "EXCEL_ID": "None"
 }
 
 
