@@ -26,7 +26,7 @@ class SpotCog(BaseCog):
             return
 
         prefix = "/"
-        cords_beginning = ['-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         if ctx.channel.id == self.bot.CH_COMMON:
             if ctx.content[0] in cords_beginning:
                 pass
@@ -41,10 +41,13 @@ class SpotCog(BaseCog):
                     await ctx.channel.send(f"{role.mention}")
             elif ctx.content[0] in cords_beginning:
                 return
+
+            # If member sends normal message
             else:
-                await ctx.channel.send(
-                    f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
-                    delete_after=5.0)
+                return
+                # await ctx.channel.send(
+                #     f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
+                #     delete_after=5.0)
 
 
 def setup(bot: commands.Bot):
