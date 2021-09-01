@@ -13,25 +13,18 @@ Current commands:
 import asyncio
 import discord
 from discord_slash.utils.manage_commands import create_permission
-from dotenv import load_dotenv
-import os
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from discord_slash.model import SlashCommandPermissionType
 import json
 from cogs.base import BaseCog
+from modules.get_settings import get_settings
 
-# Load environment variables
-load_dotenv()
-TOKEN = os.getenv("DC_TOKEN")
+guild_ids = get_settings("guild")
 
-# Must be converted to int as python recognizes as str otherwise
-GUILD = int(os.getenv("DC_MAIN_GUILD"))
-CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
-CH_NWORD_KILLED = int(os.getenv("DC_CH_NIGHTMARE_KILL"))
-MODERATION_IDS = list(os.getenv("DC_MODERATION_ROLES").split(","))
+MODERATION_IDS = get_settings("MOD_ROLES")
 PERMISSIONS_MODS = {
-    GUILD: [
+    guild_ids[0]: [
         create_permission(MODERATION_IDS[0], SlashCommandPermissionType.ROLE, True),
         create_permission(MODERATION_IDS[1], SlashCommandPermissionType.ROLE, True)
     ]
@@ -42,20 +35,17 @@ class MainCog(BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
-        # self.bot = bot
-        # print("[INFO]: Init MainCog")
-
     # GENERAL FUNCTIONS
     # Check latency
-    @cog_ext.cog_slash(name="ping", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="ping", guild_ids=guild_ids,
                        description="Test function for checking latency",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def _ping(self, ctx: SlashContext):
-        await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
+        await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
     # Clear messages
-    @cog_ext.cog_slash(name="clear", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="clear", guild_ids=guild_ids,
                        description="Function for clearing messages on channel",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
@@ -65,22 +55,23 @@ class MainCog(BaseCog):
         await ctx.send(f"Cleared {num_messages} messages!", delete_after=4.0)
 
     # Disconnect Bot
-    @cog_ext.cog_slash(name="exit", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="exit", guild_ids=guild_ids,
                        description="Turn off the bot",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def _exit(self, ctx: SlashContext):
-        await ctx.send(f"Closing Bot", delete_after=10.0)
+        await ctx.send(f"Closing Bot", delete_after=1.0)
         print("[INFO]: Exiting Bot")
+        await asyncio.sleep(2)
         await self.bot.close()
 
     # WARN FUNCTIONS
     # Warn user
-    @cog_ext.cog_slash(name="warn", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="warn", guild_ids=guild_ids,
                        description="Function for warning users",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
-    async def _warn(self, ctx, user: discord.User, reason: str):
+    async def _warn(self, ctx: SlashContext, user: discord.User, reason: str):
         with open('./json_files/warns.json', encoding='utf-8') as f:
             try:
                 report = json.load(f)
@@ -106,11 +97,11 @@ class MainCog(BaseCog):
                        f"Number of warns: {len(current_user['reasons'])}")
 
     # Get list of user's warns
-    @cog_ext.cog_slash(name="warns", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="warns", guild_ids=guild_ids,
                        description="Function for getting user's warns",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
-    async def _warns(self, ctx, user: discord.User):
+    async def _warns(self, ctx: SlashContext, user: discord.User):
         with open('./json_files/warns.json', encoding='utf-8') as f:
             try:
                 report = json.load(f)
@@ -129,16 +120,35 @@ class MainCog(BaseCog):
             await ctx.author.send(f"{user.name} has never been warned")
             await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
+    @cog_ext.cog_slash(name="updatemcount", guild_ids=guild_ids,
+                       description="Update number of members",
+                       default_permission=False,
+                       permissions=PERMISSIONS_MODS)
+    async def update_member_count_command(self, ctx: SlashContext):
+        await self.bot.update_member_count(ctx)
+        await ctx.send(f"Member count updated", hidden=True)
+
+    @cog_ext.cog_slash(name="updatecommons", guild_ids=guild_ids,
+                       description="Update common channel name",
+                       default_permission=False,
+                       permissions=PERMISSIONS_MODS)
+    async def update_commons_ch(self, ctx: SlashContext, common: str):
+        new_name = f"common-{common}"
+        channel = self.bot.get_channel(self.bot.CH_COMMON)
+        await discord.TextChannel.edit(channel, name=new_name)
+        await ctx.send(f"Common channel updated", hidden=True)
+    # Does not work if used too much
+
     # OTHER
 
     # Did BonJowi killed N-Word? (unstable)
     # Apparently you can not use this command more often than every x minutes
-    @cog_ext.cog_slash(name="nword", guild_ids=[GUILD],
+    @cog_ext.cog_slash(name="nword", guild_ids=guild_ids,
                        description="Change N-Word channel name",
                        permissions=PERMISSIONS_MODS)
     async def rename_nword_channel(self, ctx, status: str):
         new_status = status
-        channel = self.bot.get_channel(CH_NWORD_KILLED)
+        channel = self.bot.get_channel(self.bot.CH_NIGHTMARE_KILLED)
         if new_status in channel.name:
             await ctx.send(f"{channel.name} has been changed", hidden=True)
             return
