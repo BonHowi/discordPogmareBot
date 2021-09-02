@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import json
-from .. import get_settings
+from modules import get_settings
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'

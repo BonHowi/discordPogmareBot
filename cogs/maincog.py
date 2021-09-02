@@ -80,28 +80,31 @@ class MainCog(BaseCog):
             except ValueError:
                 report = {'users': []}
 
-        reason = ' '.join(reason)
+        warned = False
+        reason = ''.join(reason)
         for current_user in report['users']:
             if current_user['id'] == user.id:
                 current_user['reasons'].append(reason)
+                warned = True
+                await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n"
+                               f"Number of warns: {len(current_user['reasons'])}")
                 break
-        else:
+        if not warned:
             report['users'].append({
                 'id': user.id,
                 'name': user.display_name,
                 'reasons': [reason, ]
             })
-            # TODO: Improve 'reasons' format
+            # TODO: Improve 'reasons' format(or not?)
+            await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n")
 
         with open('./json_files/warns.json', 'w+') as f:
             json.dump(report, f, indent=4)
 
-        await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n"
-                       f"Number of warns: {len(current_user['reasons'])}")
-
     # Get list of user's warns
+    # Does not work if used too much
     @cog_ext.cog_slash(name="warns", guild_ids=guild_ids,
-                       description="Function for getting user's warns",
+                       description="Function for warning users",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def _warns(self, ctx: SlashContext, user: discord.User):
@@ -123,7 +126,35 @@ class MainCog(BaseCog):
             await ctx.author.send(f"{user.name} has never been warned")
             await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
-    @cog_ext.cog_slash(name="updatetotmem", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="removeWarns", guild_ids=guild_ids,
+                       description="Function for managing user's warns",
+                       default_permission=False,
+                       permissions=PERMISSIONS_MODS)
+    async def remove_warns(self, ctx: SlashContext, user: discord.User, nr_to_delete: int):
+        if nr_to_delete < 0:
+            await ctx.send(f"Really? Negative nr?", hidden=True)
+            return
+
+        with open('./json_files/warns.json', encoding='utf-8') as f:
+            try:
+                report = json.load(f)
+            except ValueError:
+                report = {'users': []}
+
+        warns_removed = False
+        for current_user in report['users']:
+            if current_user['id'] == user.id:
+                current_user['reasons'] = current_user['reasons'][:-nr_to_delete or None]
+                await ctx.send(f"{user.display_name}'s last {nr_to_delete} warns were deleted", delete_after=5.0)
+                warns_removed = True
+                break
+        if not warns_removed:
+            await ctx.send(f"{user.display_name} did not have any warns", delete_after=5.0)
+
+        with open('./json_files/warns.json', 'w+') as f:
+            json.dump(report, f, indent=4)
+
+    @cog_ext.cog_slash(name="updateTotMem", guild_ids=guild_ids,
                        description="Update total number of members",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
@@ -131,7 +162,7 @@ class MainCog(BaseCog):
         await self.bot.update_member_count(ctx)
         await ctx.send(f"Total Members count updated", hidden=True)
 
-    @cog_ext.cog_slash(name="updatecommons", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="updateCommons", guild_ids=guild_ids,
                        description="Update common channel name",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
@@ -141,10 +172,8 @@ class MainCog(BaseCog):
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
 
-    # Does not work if used too much
-
     # Pull config.json from Google Sheets
-    @cog_ext.cog_slash(name="pullconfig", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="pullConfig", guild_ids=guild_ids,
                        description="Pull config from google sheets",
                        default_permission=False,
                        permissions={
@@ -173,7 +202,7 @@ class MainCog(BaseCog):
             await ctx.send(f"{channel.name} has been changed", hidden=True)
             return
         else:
-            await discord.VoiceChannel.edit(channel, name=f"N-Word killed: {new_status}")
+            await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # async def rename_nword_channel(self, ctx):

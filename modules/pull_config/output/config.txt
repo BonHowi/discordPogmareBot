@@ -15,6 +15,10 @@
     ],
     "types": [
         {
+            "id": 4,
+            "label": "Common"
+        },
+        {
             "id": 3,
             "label": "Event_Likan"
         },
