@@ -91,7 +91,7 @@ def convert():
 
     print("Creating output")
 
-    types = {'id': [3, 2, 1, 0], 'label': ["Event_Likan", "Event_Ulf", "Legendary", "Rare"]}
+    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event_Likan", "Event_Ulf", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     milestones = {'total': [150, 1000, 5000], 'name': ["Rare Spotter", "Legendary Spotter", "Mythic Spotter"]}
     milestones_df = pd.DataFrame(data=milestones)

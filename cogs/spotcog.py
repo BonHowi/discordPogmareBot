@@ -27,7 +27,7 @@ class SpotCog(BaseCog):
         cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         if ctx.channel.id == self.bot.CH_COMMON:
             if ctx.content[0] in cords_beginning:
-                pass
+                await self.count_spot(ctx, 4)
             else:
                 await ctx.delete()
 
@@ -36,8 +36,10 @@ class SpotCog(BaseCog):
                 spotted_monster = await self.get_monster(ctx, ctx.content.replace(prefix, ""))
                 if spotted_monster:
                     role = get(ctx.guild.roles, name=spotted_monster["name"])
+                    await ctx.delete()
                     await ctx.channel.send(f"{role.mention}")
-            elif ctx.content[0] in cords_beginning:
+                    await self.count_spot(ctx, spotted_monster["type"])
+            elif ctx.content[0] in cords_beginning:                 # I think this should be 1st in checking if
                 return
 
             # # If member sends normal message

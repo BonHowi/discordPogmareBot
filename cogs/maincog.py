@@ -88,10 +88,11 @@ class MainCog(BaseCog):
         else:
             report['users'].append({
                 'id': user.id,
-                'name': user.name,
+                'name': user.display_name,
                 'reasons': [reason, ]
             })
             # TODO: Improve 'reasons' format
+
         with open('./json_files/warns.json', 'w+') as f:
             json.dump(report, f, indent=4)
 
@@ -111,7 +112,7 @@ class MainCog(BaseCog):
                 report = {'users': []}
 
         for current_user in report['users']:
-            if user.name == current_user['name']:
+            if user.id == current_user['id']:
                 message = f"{user.name} has been warned {len(current_user['reasons'])} times\nReasons:\n " \
                           f"{','.join(current_user['reasons'])}"
                 # TODO: Improve 'reasons' message formatting
