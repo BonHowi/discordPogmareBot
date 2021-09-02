@@ -142,6 +142,7 @@ class MainCog(BaseCog):
 
     # Does not work if used too much
 
+    # Pull config.json from Google Sheets
     @cog_ext.cog_slash(name="pullconfig", guild_ids=guild_ids,
                        description="Pull config from google sheets",
                        default_permission=False,
@@ -189,7 +190,6 @@ class MainCog(BaseCog):
     #     await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Disconnect Bot using "!" prefix (For safety reasons in case Slash commands are not working
-
     @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
     async def exit_bot(self, ctx):
         print("[INFO]: Exiting Bot")
