@@ -35,8 +35,6 @@ class RoleCog(BaseCog):
                     aval_commands.append(command["name"])
 
             embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x00ff00)
-            # embed_var.add_field(name="Field1", value="hi", inline=False)
-            # embed_var.add_field(name="Field2", value="hi2", inline=False)
             await role_channel.send(embed=embed_command)
 
         guide_content = "TBA"

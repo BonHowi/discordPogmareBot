@@ -4,7 +4,7 @@ Cog with general commands available in the Bot.
 Current commands:
 /ping -     check Bot latency
 /clear -    clear x messages on the channel
-/exit -     end Bot's runtime and disconnect from the server
+/exit | !exit -     end Bot's runtime and disconnect from the server
 /warn -     warn @user with reason
 /warns -    send @user warns to author's DM
 /nword -    Changes N-Word killed channel name  -   UNSTABLE
@@ -93,7 +93,7 @@ class MainCog(BaseCog):
             })
             # TODO: Improve 'reasons' format
         with open('./json_files/warns.json', 'w+') as f:
-            json.dump(report, f)
+            json.dump(report, f, indent=4)
 
         await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n"
                        f"Number of warns: {len(current_user['reasons'])}")

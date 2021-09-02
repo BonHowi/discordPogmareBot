@@ -1,3 +1,5 @@
+import json
+
 import discord
 from discord.ext import commands
 from discord_slash import SlashContext
@@ -34,3 +36,44 @@ class BaseCog(commands.Cog):
         else:
             monster["role"] = monster["role"].id
         return monster
+
+    # Count spot
+    async def count_spot(self, ctx: SlashContext, common: bool):        # common: Change to role id
+        with open('./json_files/monster_spots.json', encoding='utf-8') as f:
+            try:
+                spots = json.load(f)
+            except ValueError:
+                spots = {'users': []}
+                await ctx.send(f"monster_spots.json created", hidden=True)
+
+        if common:
+            for current_user in spots['users']:
+                if current_user['id'] == ctx.author.id:
+                    current_user['common_spots'] += 1
+                    break
+            else:
+                spots['users'].append({
+                    'id': ctx.author.id,
+                    'name': ctx.author.name,
+                    "lege_spots": 0,
+                    "rare_spots": 0,
+                    "total": 0,
+                    "common_spots": 1
+                })
+        else:
+            for current_user in spots['users']:
+                if current_user['id'] == ctx.author.id:
+                    current_user['rare_spots'] += 1         # LOGIC???
+                    current_user["total"] = current_user["lege_spots"] * 5 + current_user["rare_spots"]
+                    break
+            else:
+                spots['users'].append({
+                    'id': ctx.author.id,
+                    'name': ctx.author.name,
+                    "lege_spots": 0,
+                    "rare_spots": 0,
+                    "total": 0,
+                    "common_spots": 1
+                })
+        with open('./json_files/warns.json', 'w+') as f:
+            json.dump(spots, f, indent=4)

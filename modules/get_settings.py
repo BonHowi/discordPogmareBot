@@ -46,17 +46,3 @@ def get_settings(key: str):
             f.seek(0)
             json.dump(_json, f, indent=2)
         exit(1)
-
-# def sanity_check():
-#     """Sanity checks the bot settings file to ensure smooth operation
-#     Note: These are sanity checks, they only check that the file is "sane" nothing more"""
-#     print(f"Sanity checking bot_settings.json\n{''.center(33, '=')}")
-#     failed = False
-#     for key in f.keys():
-#         data = get_settings(key)
-#         if data is None or data in ["Put Bot Token Here", "Put Git Token Here"]:
-#             failed = True
-#             print(f"{key} has not been set to a value")
-#     if failed:
-#         exit(1)
-#     print("Sanity checks passed\n\n")
