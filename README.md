@@ -1,5 +1,5 @@
 # discordBot
  
-INSTALLATION:
+Install dependencies:
 > pip install .
 
