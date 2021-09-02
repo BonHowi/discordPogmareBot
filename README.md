@@ -5,5 +5,5 @@
 
  
 Install dependencies:
-> pip -r install .
+`pip -r install .`
 
