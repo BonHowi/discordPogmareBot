@@ -1,4 +1,4 @@
-# discordBot
+# discordPogmareBot
 
 [![wakatime](https://wakatime.com/badge/github/BonHowi/discordBot.svg)](https://wakatime.com/badge/github/BonHowi/discordBot)
 
