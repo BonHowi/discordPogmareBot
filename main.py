@@ -83,7 +83,7 @@ class MyBot(commands.Bot):
         # If not on role-request channel
         if ctx.content.startswith("!") and ctx.channel.id != self.CH_ROLE_REQUEST:
             await ctx.channel.send(
-                f"{ctx.author.mention} Please use \"/\" instead of \"!\" to use commands on the server!",
+                fr"{ctx.author.mention} Please use / instead of ! to use commands on the server!",
                 delete_after=5.0)
             await ctx.delete()
 
