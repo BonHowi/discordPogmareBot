@@ -74,9 +74,9 @@ class SpotCog(BaseCog):
         :return:
         :rtype:
         """
-        with open("./json_files/monster_spots.json", encoding="utf-8") as F:
+        with open("./json_files/monster_spots.json", encoding="utf-8") as f:
             try:
-                spots = json.load(F)
+                spots = json.load(f)
             except ValueError:
                 spots = {"users": []}
                 await ctx.channel.send("monster_spots.json created", delete_after=1)
@@ -117,14 +117,27 @@ class SpotCog(BaseCog):
                     "common_spots": 0
                 })
 
-        with open("./json_files/monster_spots.json", "w+") as F:
-            json.dump(spots, F, indent=4)
+        with open("./json_files/monster_spots.json", "w+") as f:
+            json.dump(spots, f, indent=4)
 
     @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=guild_ids,
                        description="Function for managing user's warns",
                        default_permission=False,
                        permissions=PERMISSIONS_MODS)
     async def set_spot_count(self, ctx: SlashContext, user: discord.User, monster_type: int, number: int):
+        """
+
+        :param ctx:
+        :type ctx:
+        :param user:
+        :type user:
+        :param monster_type:
+        :type monster_type:
+        :param number:
+        :type number:
+        :return:
+        :rtype:
+        """
         if number < 0:
             await ctx.channel.send("Nr of spots can't be lower than 0", delete_after=2)
             return

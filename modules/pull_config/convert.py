@@ -71,7 +71,7 @@ def convert():
     monsters_df["type"] = pd.to_numeric(df["type"])
 
     triggers = df.drop(['name', 'role', 'type', 'id'], axis=1)
-    triggers = triggers.applymap(lambda s: s.lower() if type(s) == str else s)
+    triggers = triggers.applymap(lambda s: s.lower() if isinstance(s) == str else s)
     # triggers = triggers.applymap(lambda s: unidecode.unidecode(s) if type(s) == str else s)
 
     triggers_list = []
@@ -114,18 +114,18 @@ def convert():
     }
 
     # write to disk
-    with open('json_files/config.json', 'w', encoding='utf8') as fp:
+    with open('json_files/config.json', 'w', encoding='utf8') as f:
         json.dump(
             data_dict,
-            fp,
+            f,
             indent=4,
             ensure_ascii=False,
             sort_keys=False
         )
-    with open('modules/pull_config/output/config.txt', 'w', encoding='utf8') as fp:
+    with open('modules/pull_config/output/config.txt', 'w', encoding='utf8') as f:
         json.dump(
             data_dict,
-            fp,
+            f,
             indent=4,
             ensure_ascii=False
         )
