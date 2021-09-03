@@ -55,7 +55,7 @@ def import_from_sheets():
     return values_input
 
 
-def convert():
+def get_config():
     """
 
     :return:
@@ -134,4 +134,4 @@ def convert():
 
 
 if __name__ == "__main__":
-    convert()
+    get_config()

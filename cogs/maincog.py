@@ -20,7 +20,7 @@ from discord_slash.model import SlashCommandPermissionType
 import json
 from cogs.base import BaseCog
 from modules.get_settings import get_settings
-from modules.pull_config.convert import convert
+from modules.pull_config.convert import get_config
 
 guild_ids = get_settings("guild")
 
@@ -182,7 +182,7 @@ class MainCog(BaseCog):
                            ]
                        })
     async def pull_config(self, ctx: SlashContext):
-        convert()
+        get_config()
         with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
             self.bot.reload_extension("cogs.rolecog")
