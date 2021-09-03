@@ -20,6 +20,11 @@ SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
 
 def import_from_sheets():
+    """
+
+    :return:
+    :rtype:
+    """
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -51,6 +56,11 @@ def import_from_sheets():
 
 
 def convert():
+    """
+
+    :return:
+    :rtype:
+    """
     pd.set_option('mode.chained_assignment', None)
     print("Loading data")
     values_input = import_from_sheets()
@@ -100,7 +110,7 @@ def convert():
     # convert dataframes into dictionaries
     data_dict = {
         key: json_final[key].to_dict(orient='records')
-        for key in json_final.keys()
+        for key in json_final
     }
 
     # write to disk
