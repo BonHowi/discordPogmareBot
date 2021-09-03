@@ -18,9 +18,9 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from discord_slash.model import SlashCommandPermissionType
 import json
-from cogs.base import BaseCog
+from cogs.cogbase import BaseCog
 from modules.get_settings import get_settings
-from modules.pull_config.get_config import get_config
+from modules.pull_config.pull_config import get_config
 
 guild_ids = get_settings("guild")
 

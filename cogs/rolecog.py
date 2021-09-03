@@ -9,7 +9,7 @@ import discord
 from discord.utils import get
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from cogs.base import BaseCog
+from cogs.cogbase import BaseCog
 from modules.get_settings import get_settings
 
 guild_ids = get_settings("guild")
