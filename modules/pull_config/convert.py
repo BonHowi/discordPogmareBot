@@ -80,7 +80,7 @@ def convert():
             helpt = pd.Series(row)
             helpt = helpt[~helpt.isna()]
             # Drop empty strings
-            helpt = pd.Series(filter(lambda x: len(x), helpt))
+            helpt = pd.Series(filter(None, helpt))
             # Copy strings with spaces without keeping them
             for trigger in helpt:
                 trigger_nospace = trigger.replace(' ', '')
