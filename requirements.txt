@@ -1,4 +1,4 @@
-Cython==0.29.24
+Cython>=0.29.24
 discord.py==1.7.3
 cryptography==3.4.8
 tqdm==4.61.0
