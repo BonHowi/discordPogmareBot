@@ -10,7 +10,7 @@
 
 <br />
 
-Server members:   
+### Server members:   
 [![Discord](https://img.shields.io/discord/871434324023599155?logo=server)](https://discord.gg/Kt35Jtc5nT)
 
 
