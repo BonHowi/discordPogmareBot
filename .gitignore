@@ -4,6 +4,7 @@
 *.html
 *.yaml
 *.coveragerc
+**/__pycache__/
 .DS_Store
 bot-env/
 coverage_html_report/
