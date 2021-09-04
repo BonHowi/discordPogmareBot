@@ -3,6 +3,5 @@
 *.json
 *.html
 *.yaml
-*.coverage
 *.coveragerc
 coverage_html_report/

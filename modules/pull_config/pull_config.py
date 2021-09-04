@@ -71,7 +71,7 @@ def get_config():
     monsters_df["type"] = pd.to_numeric(df["type"])
 
     triggers = df.drop(['name', 'role', 'type', 'id'], axis=1)
-    triggers = triggers.applymap(lambda s: s.lower() if isinstance(s) == str else s)
+    triggers = triggers.applymap(lambda s: s.lower() if type(s) == str else s)
     # triggers = triggers.applymap(lambda s: unidecode.unidecode(s) if type(s) == str else s)
 
     triggers_list = []
