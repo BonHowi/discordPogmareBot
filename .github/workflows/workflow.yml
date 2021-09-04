@@ -16,7 +16,7 @@ jobs:
       run: |
         pip install coverage
         pip install pytest-cov
-        coverage report -i
+        coverage run main.py --branch
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       
