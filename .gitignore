@@ -5,3 +5,4 @@
 *.yaml
 *.coveragerc
 coverage_html_report/
+discordBot.egg-info/
