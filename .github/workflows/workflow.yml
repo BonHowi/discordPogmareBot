@@ -18,6 +18,7 @@ jobs:
         pip install pytest-cov
         pip install .
         pip install discord-py-slash-command
+        pip install pandas
         coverage run main.py --branch
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
