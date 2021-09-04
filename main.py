@@ -93,7 +93,7 @@ def main():
     print(f"[INFO]: Rate limited: {pogmare.is_ws_ratelimited()}")
 
     # Allow slash commands
-    slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=True)
+    slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
 
     # Load cogs
     for cog in os.listdir("./cogs"):

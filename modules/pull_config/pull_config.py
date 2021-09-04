@@ -1,5 +1,5 @@
-import pandas as pd
 import sys
+import pandas as pd
 from tqdm import tqdm
 import os.path
 from os import path
@@ -27,8 +27,7 @@ def import_from_sheets():
     """
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time
+    # created automatically when the authorization flow completes for the first time
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in
