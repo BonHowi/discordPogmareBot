@@ -22,7 +22,7 @@ template_json = {
 
 
 @lru_cache()
-def get_settings(key: str):
+def get_settings(key):
     """Get the selected key from the settings file"""
     try:
         with open("json_files/bot_settings.json", "r", encoding="UTF-8") as f:
