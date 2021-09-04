@@ -1,5 +1,6 @@
 # discordPogmareBot
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/BonHowi/discordPogmareBot)
 [![wakatime](https://wakatime.com/badge/github/BonHowi/discordPogmareBot.svg)](https://wakatime.com/badge/github/BonHowi/discordPogmareBot)
 
 ![GitHub top language](https://img.shields.io/github/languages/top/BonHowi/discordPogmareBot) 
