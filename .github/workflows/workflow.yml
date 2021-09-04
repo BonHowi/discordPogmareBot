@@ -17,6 +17,7 @@ jobs:
         pip install coverage
         pip install pytest-cov
         pip install .
+        pip install discord-py-slash-command
         coverage run main.py --branch
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
