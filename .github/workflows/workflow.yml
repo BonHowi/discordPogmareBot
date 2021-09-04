@@ -17,8 +17,24 @@ jobs:
         pip install coverage
         pip install pytest-cov
         pip install .
+        pip install Cython
+        pip install lxml
+        pip install numpy
+        pip install ordereddict
+        pip install discord.py
         pip install discord-py-slash-command
+        pip install crytography
+        pip install ipaddr
         pip install pandas
+        pip install tqdm
+        pip install google_auth_oauthlib
+        pip install Brotli
+        pip install discord
+        pip install google_api_python_client
+        pip install protobuf
+        pip install pyOpenSSL
+        pip install wincertstore
+        pip install keyring
         coverage run main.py --branch
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
