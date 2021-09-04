@@ -14,7 +14,6 @@
 ### Server info:   
 [![Discord Shield](https://discordapp.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
 
-
 <br />
 
  
