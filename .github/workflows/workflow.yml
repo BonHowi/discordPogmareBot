@@ -2,23 +2,21 @@ name: Send .coverage to Codecov
 on: [push]
 jobs:
   run:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
+    runs-on: windows-latest
     env:
-      OS: ${{ matrix.os }}
+      OS: windows-latest
       PYTHON: '3.7.7'
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
       uses: actions/setup-python@master
       with:
-        python-version: 3.7
+        python-version: 3.7.7
     - name: Generate coverage report
       run: |
-        pip install pytest
+        pip install coverage
         pip install pytest-cov
-        pytest --cov=./ --cov-report=xml
+        coverage report
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
+      
