@@ -1,2 +1,4 @@
 bot-env/
 json_files/
+.idea/
+__pycache__/
