@@ -6,7 +6,7 @@
 [![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/BonHowi/discordPogmareBot)](https://scrutinizer-ci.com/g/BonHowi/discordPogmareBot/reports/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/21f9778f27d5853ff976/maintainability)](https://codeclimate.com/github/BonHowi/discordPogmareBot/maintainability)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=BonHowi_discordPogmareBot&metric=alert_status)](https://sonarcloud.io/dashboard?id=BonHowi_discordPogmareBot)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=BonHowi_discordPogmareBot&metric=ncloc)](https://sonarcloud.io/dashboard?id=BonHowi_discordPogmareBot)
+[![Lines of Code](https://tokei.rs/b1/github/BonHowi/discordPogmareBot?category=code)](https://github.com/BonHowi/discordPogmareBot)
 
 [comment]: <![GitHub repo file count](https://img.shields.io/github/directory-file-count/BonHowi/discordPogmareBot)>
 
