@@ -1,4 +1,4 @@
-pywin32==301
+pypiwin32>=301
 Brotli==1.0.9
 cryptography==3.4.8
 keyring==23.1.0
