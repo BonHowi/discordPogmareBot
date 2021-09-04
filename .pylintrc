@@ -36,7 +36,7 @@ ignore-patterns=
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
-jobs=1
+jobs=0
 
 # Control the amount of potential inferred values when inferring a single
 # object. This can help the performance when dealing with large functions or
@@ -271,6 +271,8 @@ good-names=i,
            k,
            ex,
            Run,
+           f,
+           db,
            _
 
 # Good variable names regexes, separated by a comma. If names match any regex,
@@ -338,7 +340,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=120
 
 # Maximum number of lines in a module.
 max-module-lines=1000
