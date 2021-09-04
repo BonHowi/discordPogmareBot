@@ -4,9 +4,12 @@
 *.html
 *.yaml
 *.coveragerc
+.DS_Store
+bot-env/
 coverage_html_report/
 discordBot.egg-info/
 __pycache__/
+**/__pycache__/
 *.pyc
 .idea/
 .Python
