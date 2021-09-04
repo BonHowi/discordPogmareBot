@@ -4,5 +4,7 @@
 *.html
 *.yaml
 *.coveragerc
+.DS_Store
+bot-env/
 coverage_html_report/
 discordBot.egg-info/
