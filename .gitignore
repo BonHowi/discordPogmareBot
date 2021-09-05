@@ -28,3 +28,4 @@ var/
 bot-creds/
 credentials/
 data/
+venv/
