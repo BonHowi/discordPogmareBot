@@ -6,14 +6,14 @@ from modules.get_settings import get_settings
 
 
 guild_ids = get_settings("guild")
-MODERATION_IDS = get_settings("MOD_ROLES")
-PERMISSIONS_MODS = {
+moderation_ids = get_settings("MOD_ROLES")
+permission_mods = {
     guild_ids[0]: [
-        create_permission(MODERATION_IDS[0], SlashCommandPermissionType.ROLE, True),
-        create_permission(MODERATION_IDS[1], SlashCommandPermissionType.ROLE, True)
+        create_permission(moderation_ids[0], SlashCommandPermissionType.ROLE, True),
+        create_permission(moderation_ids[1], SlashCommandPermissionType.ROLE, True)
     ]
 }
-PERMISSION_BONJOWI = {
+permission_bonjowi = {
     guild_ids[0]: [
         create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
     ]

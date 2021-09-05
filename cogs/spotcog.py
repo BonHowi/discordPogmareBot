@@ -27,13 +27,13 @@ class SpotCog(cogbase.BaseCog):
         cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
         # If common spotted
-        if ctx.channel.id == self.bot.CH_COMMON:
+        if ctx.channel.id == self.bot.ch_common:
             if ctx.content[0] in cords_beginning:
                 await self.count_spot(ctx, 4)
             else:
                 await ctx.delete()
 
-        elif ctx.channel.category.id == self.bot.CAT_SPOTTING:
+        elif ctx.channel.category.id == self.bot.cat_spotting:
             if ctx.content.startswith(prefix):
                 spotted_monster = await self.get_monster(ctx, ctx.content.replace(prefix, ""))
                 if spotted_monster:
@@ -43,13 +43,6 @@ class SpotCog(cogbase.BaseCog):
                     await self.count_spot(ctx, spotted_monster["type"])
             elif ctx.content[0] in cords_beginning:  # I think this should be 1st in checking if
                 return
-
-            # # If member sends normal message
-            # else:
-            #     return
-            #     await ctx.channel.send(
-            #         f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
-            #         delete_after=5.0)
 
     async def count_spot(self, ctx: SlashContext, monster_type: int):
         """
@@ -110,7 +103,7 @@ class SpotCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.guild_ids,
                        description="Function for managing user's warns",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def set_spot_count(self, ctx: SlashContext, user: discord.User, monster_type: int, number: int):
         """
 

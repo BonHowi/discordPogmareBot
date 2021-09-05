@@ -19,7 +19,7 @@ class RoleCog(cogbase.BaseCog):
     # Print available roles/commands on monster-request
     @commands.Cog.listener()
     async def on_ready(self):
-        role_channel = self.bot.get_channel(self.bot.CH_ROLE_REQUEST)
+        role_channel = self.bot.get_channel(self.bot.ch_role_request)
         await role_channel.purge(limit=10)
 
         for mon_type in self.bot.config["types"]:
@@ -44,7 +44,7 @@ class RoleCog(cogbase.BaseCog):
         if ctx.author.id == self.bot.user.id:
             return
 
-        if ctx.channel.id == self.bot.CH_ROLE_REQUEST:
+        if ctx.channel.id == self.bot.ch_role_request:
             if ctx.content.startswith("/"):
                 await ctx.channel.send(
                     f"{ctx.author.mention} For adding or removing role use */role monstername* command",
@@ -58,8 +58,8 @@ class RoleCog(cogbase.BaseCog):
                        description="Function for adding monster role to user",
                        default_permission=True)
     async def _role(self, ctx: SlashContext, monster_name: str):
-        if ctx.channel.id != self.bot.CH_ROLE_REQUEST:
-            await ctx.send(f"Use <#{self.bot.CH_ROLE_REQUEST}> to request a role!", hidden=True)
+        if ctx.channel.id != self.bot.ch_role_request:
+            await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
             return
 
         else:

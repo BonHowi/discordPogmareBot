@@ -29,7 +29,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="ping", guild_ids=cogbase.guild_ids,
                        description="Test function for checking latency",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def _ping(self, ctx: SlashContext):
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
@@ -37,7 +37,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="clear", guild_ids=cogbase.guild_ids,
                        description="Function for clearing messages on channel",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def _purge(self, ctx: SlashContext, number):
         num_messages = int(number)
         await ctx.channel.purge(limit=num_messages)
@@ -47,7 +47,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.guild_ids,
                        description="Turn off the bot",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
         print("[INFO]: Exiting Bot")
@@ -59,7 +59,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="warn", guild_ids=cogbase.guild_ids,
                        description="Function for warning users",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def _warn(self, ctx: SlashContext, user: discord.User, reason: str):
         with open('./json_files/warns.json', encoding='utf-8') as f:
             try:
@@ -93,7 +93,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="warns", guild_ids=cogbase.guild_ids,
                        description="Function for warning users",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def _warns(self, ctx: SlashContext, user: discord.User):
         with open('./json_files/warns.json', encoding='utf-8') as f:
             try:
@@ -116,7 +116,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="removeWarns", guild_ids=cogbase.guild_ids,
                        description="Function for managing user's warns",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def remove_warns(self, ctx: SlashContext, user: discord.User, nr_to_delete: int):
         if nr_to_delete < 0:
             await ctx.send(f"Really? Negative nr?", hidden=True)
@@ -144,7 +144,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="updateTotMem", guild_ids=cogbase.guild_ids,
                        description="Update total number of members",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def update_member_count_command(self, ctx: SlashContext):
         await self.bot.update_member_count(ctx)
         await ctx.send(f"Total Members count updated", hidden=True)
@@ -152,10 +152,10 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="updateCommons", guild_ids=cogbase.guild_ids,
                        description="Update common channel name",
                        default_permission=False,
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_mods)
     async def update_commons_ch(self, ctx: SlashContext, common: str):
         new_name = f"common-{common}"
-        channel = self.bot.get_channel(self.bot.CH_COMMON)
+        channel = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
 
@@ -163,7 +163,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="pullConfig", guild_ids=cogbase.guild_ids,
                        description="Pull config from google sheets",
                        default_permission=False,
-                       permissions=cogbase.PERMISSION_BONJOWI)
+                       permissions=cogbase.permission_bonjowi)
     async def pull_config(self, ctx: SlashContext):
         get_config()
         with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
@@ -177,10 +177,10 @@ class MainCog(cogbase.BaseCog):
     # Apparently you can not use this command more often than every x minutes
     @cog_ext.cog_slash(name="nword", guild_ids=cogbase.guild_ids,
                        description="Change N-Word channel name",
-                       permissions=cogbase.PERMISSIONS_MODS)
+                       permissions=cogbase.permission_bonjowi)
     async def rename_nword_channel(self, ctx, status: str):
         new_status = status
-        channel = self.bot.get_channel(self.bot.CH_NIGHTMARE_KILLED)
+        channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
         if new_status in channel.name:
             await ctx.send(f"{channel.name} has been changed", hidden=True)
             return
