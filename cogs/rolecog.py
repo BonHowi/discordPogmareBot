@@ -54,7 +54,7 @@ class RoleCog(cogbase.BaseCog):
                 await ctx.delete()
 
     # Add or remove monster role to an user
-    @cog_ext.cog_slash(name="role", guild_ids=cogbase.guild_ids,
+    @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
                        description="Function for adding monster role to user",
                        default_permission=True)
     async def _role(self, ctx: SlashContext, monster_name: str):

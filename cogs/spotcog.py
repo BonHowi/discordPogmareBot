@@ -44,7 +44,8 @@ class SpotCog(cogbase.BaseCog):
             elif ctx.content[0] in cords_beginning:  # I think this should be 1st in checking if
                 return
 
-    async def count_spot(self, ctx: SlashContext, monster_type: int):
+    @staticmethod
+    async def count_spot(ctx: SlashContext, monster_type: int):
         """
 
         :param ctx:
@@ -100,10 +101,10 @@ class SpotCog(cogbase.BaseCog):
         with open("./json_files/monster_spots.json", "w+") as f:
             json.dump(spots, f, indent=4)
 
-    @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.guild_ids,
+    @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.GUILD_IDS,
                        description="Function for managing user's warns",
                        default_permission=False,
-                       permissions=cogbase.permission_mods)
+                       permissions=cogbase.PERMISSION_MODS)
     async def set_spot_count(self, ctx: SlashContext, user: discord.User, monster_type: int, number: int):
         """
 
