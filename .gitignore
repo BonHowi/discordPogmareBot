@@ -4,14 +4,10 @@
 *.html
 *.yaml
 *.coveragerc
-.DS_Store
-bot-env/
 coverage_html_report/
 discordBot.egg-info/
 __pycache__/
-**/__pycache__/
 *.pyc
-.idea/
 .Python
 env/
 build/
@@ -28,3 +24,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+bot-creds/
+credentials/
+data/
+venv/

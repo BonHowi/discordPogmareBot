@@ -7,26 +7,13 @@ Current commands:
 """
 import json
 import discord
+import cogs.cogbase as cogbase
 from discord.utils import get
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_permission
-
-from cogs.cogbase import BaseCog
-from modules.get_settings import get_settings
-
-guild_ids = get_settings("guild")
-MODERATION_IDS = get_settings("MOD_ROLES")
-PERMISSIONS_MODS = {
-    guild_ids[0]: [
-        create_permission(MODERATION_IDS[0], SlashCommandPermissionType.ROLE, True),
-        create_permission(MODERATION_IDS[1], SlashCommandPermissionType.ROLE, True)
-    ]
-}
 
 
-class SpotCog(BaseCog):
+class SpotCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
@@ -40,13 +27,13 @@ class SpotCog(BaseCog):
         cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
         # If common spotted
-        if ctx.channel.id == self.bot.CH_COMMON:
+        if ctx.channel.id == self.bot.ch_common:
             if ctx.content[0] in cords_beginning:
                 await self.count_spot(ctx, 4)
             else:
                 await ctx.delete()
 
-        elif ctx.channel.category.id == self.bot.CAT_SPOTTING:
+        elif ctx.channel.category.id == self.bot.cat_spotting:
             if ctx.content.startswith(prefix):
                 spotted_monster = await self.get_monster(ctx, ctx.content.replace(prefix, ""))
                 if spotted_monster:
@@ -57,14 +44,8 @@ class SpotCog(BaseCog):
             elif ctx.content[0] in cords_beginning:  # I think this should be 1st in checking if
                 return
 
-            # # If member sends normal message
-            # else:
-            #     return
-            #     await ctx.channel.send(
-            #         f"{ctx.author.mention} Use {self.bot.get_channel(self.bot.CH_DISCUSSION_EN).mention}",
-            #         delete_after=5.0)
-
-    async def count_spot(self, ctx: SlashContext, monster_type: int):
+    @staticmethod
+    async def count_spot(ctx: SlashContext, monster_type: int):
         """
 
         :param ctx:
@@ -120,10 +101,10 @@ class SpotCog(BaseCog):
         with open("./json_files/monster_spots.json", "w+") as f:
             json.dump(spots, f, indent=4)
 
-    @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.GUILD_IDS,
                        description="Function for managing user's warns",
                        default_permission=False,
-                       permissions=PERMISSIONS_MODS)
+                       permissions=cogbase.PERMISSION_MODS)
     async def set_spot_count(self, ctx: SlashContext, user: discord.User, monster_type: int, number: int):
         """
 

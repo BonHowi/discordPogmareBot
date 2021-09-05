@@ -1,8 +1,23 @@
-import json
-
 import discord
 from discord.ext import commands
-from discord_slash import SlashContext
+from discord_slash.model import SlashCommandPermissionType
+from discord_slash.utils.manage_commands import create_permission
+from modules.get_settings import get_settings
+
+
+GUILD_IDS = get_settings("guild")
+MODERATION_IDS = get_settings("MOD_ROLES")
+PERMISSION_MODS = {
+    GUILD_IDS[0]: [
+        create_permission(MODERATION_IDS[0], SlashCommandPermissionType.ROLE, True),
+        create_permission(MODERATION_IDS[1], SlashCommandPermissionType.ROLE, True)
+    ]
+}
+PERMISSION_BONJOWI = {
+    GUILD_IDS[0]: [
+        create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
+    ]
+}
 
 
 class BaseCog(commands.Cog):
@@ -11,7 +26,7 @@ class BaseCog(commands.Cog):
         print(f"[INFO]: Init {self.__class__.__name__}")
 
     # Find monster in config
-    async def get_monster(self, ctx: SlashContext, name: str):
+    async def get_monster(self, ctx, name: str):
         """
 
         :param ctx:
