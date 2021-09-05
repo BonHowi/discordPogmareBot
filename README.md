@@ -16,7 +16,7 @@
 <br />
 
 ### Server info:   
-[![Discord Shield](https://discordapp.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
+[![Discord Shield](https://discord.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
 [![Discord Nightmare](https://img.shields.io/badge/Nightmare%20killed-no-red)](https://discord.gg/Kt35Jtc5nT)
 
 <br />
