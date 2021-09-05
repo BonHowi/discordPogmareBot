@@ -7,7 +7,7 @@ jobs:
     name: Test Run
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: shadowmoose/GHA-LoC-Badge@1.0.0
 
       - name: Launch the local action
         uses: ./ # Uses an action in the root directory
