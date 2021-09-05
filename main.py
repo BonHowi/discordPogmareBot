@@ -18,18 +18,6 @@ logger.addHandler(handler)
 # Set bot privileges
 intents = discord.Intents.all()
 
-# Load environment variables
-# from dotenv import load_dotenv
-# load_dotenv()
-# TOKEN = os.getenv("DC_TOKEN")
-
-# Must be converted to int as python recognizes as str otherwise
-# GUILD = int(os.getenv("DC_MAIN_GUILD"))
-# CH_MEMBER_COUNT = int(os.getenv("DC_CH_MEMBERS"))
-# MODERATION_ROLES_IDS = os.getenv("DC_MODERATION_ROLES")
-# CH_LOGS = int(os.getenv("DC_CH_LOGS"))
-# added a test command
-
 
 class MyBot(commands.Bot):
 

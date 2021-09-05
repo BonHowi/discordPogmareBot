@@ -5,7 +5,6 @@ discord_py_slash_command==3.0.1
 ordereddict==1.1
 tqdm==4.61.0
 lxml==4.6.3
-pywin32==301
 Cython==0.29.24
 cryptography==3.4.8
 google_auth_oauthlib==0.4.5
@@ -17,3 +16,6 @@ google_api_python_client==2.19.1
 protobuf==3.17.3
 pyOpenSSL==20.0.1
 wincertstore>=0.2
+globals~=0.3.1
+google~=3.0.0
+setuptools~=47.2.0

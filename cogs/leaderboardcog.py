@@ -1,9 +1,6 @@
-from discord.utils import get
+import cogs.cogbase as cogbase
 from discord.ext import commands
 from cogs.cogbase import BaseCog
-from modules.get_settings import get_settings
-
-guild_ids = get_settings("guild")
 
 
 class LeaderboardsCog(BaseCog):

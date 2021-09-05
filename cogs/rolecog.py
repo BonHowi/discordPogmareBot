@@ -6,16 +6,13 @@ Current commands:
 
 """
 import discord
+import cogs.cogbase as cogbase
 from discord.utils import get
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from cogs.cogbase import BaseCog
-from modules.get_settings import get_settings
-
-guild_ids = get_settings("guild")
 
 
-class RoleCog(BaseCog):
+class RoleCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
@@ -57,7 +54,7 @@ class RoleCog(BaseCog):
                 await ctx.delete()
 
     # Add or remove monster role to an user
-    @cog_ext.cog_slash(name="role", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="role", guild_ids=cogbase.guild_ids,
                        description="Function for adding monster role to user",
                        default_permission=True)
     async def _role(self, ctx: SlashContext, monster_name: str):
