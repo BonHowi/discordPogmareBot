@@ -12,9 +12,7 @@ from modules import get_settings
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'
-CREDENTIALS_FILE = 'pull_config/credentials/client_secret_824511649166-rd0kn8jg71odnik0backligb356p0vc8.apps' \
-                   '.googleusercontent' \
-                   '.com.json '
+CREDENTIALS_FILE = 'pull_config/credentials/client_secret.com.json '
 
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 

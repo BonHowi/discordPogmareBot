@@ -107,11 +107,6 @@ class DatabaseCog(cogbase.BaseCog):
         conn.commit()
 
 
-if __name__ == "__main__":
-    connection = DatabaseCog()
-    DatabaseCog.close_connection()
-
-
 def setup(bot: commands.Bot):
     bot.add_cog(DatabaseCog(bot))
 
