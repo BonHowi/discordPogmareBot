@@ -1,3 +1,5 @@
+import atexit
+
 import discord
 from discord.ext import commands
 from discord_slash.model import SlashCommandPermissionType

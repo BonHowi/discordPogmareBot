@@ -1,44 +1,48 @@
-import discord
+import sqlalchemy
 import sqlite3
 from sqlite3 import Error
-
 from discord.ext import commands
-
 import cogs.cogbase as cogbase
-
-
-# from modules.database_funcs import *
 
 
 class DatabaseCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
+
+        # Connect to database
         self.database = r'database\server_database.db'
         self.connection = self.create_connection()
+
+        # Create tables if not exist
+        self.create_table(self.connection, "member", a=0)
 
     def create_connection(self):
         """ create a database connection to a SQLite database """
         conn = None
         try:
             conn = sqlite3.connect(self.database)
-            print(sqlite3.version)
+            # print(sqlite3.version)
         except Error as e:
             print(e)
         finally:
             return conn
 
+    # no idea how to actually use it
     def close_connection(self):
         if self.connection:
             self.connection.close()
             print("[INFO]: Database connection closed")
 
     @staticmethod
-    def create_table(conn, create_table_sql):
+    def create_table(conn, table_name: str, **kwargs):
         """ create a table from the create_table_sql statement
+        :param table_name:
+        :type table_name:
         :param conn: Connection object
-        :param create_table_sql: a CREATE TABLE statement
         :return:
         """
+        create_table_sql = f"""CREATE TABLE IF NOT EXISTS {table_name} (\n"""
+
         try:
             c = conn.cursor()
             c.execute(create_table_sql)
@@ -109,4 +113,3 @@ class DatabaseCog(cogbase.BaseCog):
 
 def setup(bot: commands.Bot):
     bot.add_cog(DatabaseCog(bot))
-
