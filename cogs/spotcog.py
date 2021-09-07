@@ -55,7 +55,7 @@ class SpotCog(cogbase.BaseCog):
         :return:
         :rtype:
         """
-        with open("./json_files/monster_spots.json", encoding="utf-8") as f:
+        with open("./server_files/monster_spots.json", encoding="utf-8") as f:
             try:
                 spots = json.load(f)
             except ValueError:
@@ -98,7 +98,7 @@ class SpotCog(cogbase.BaseCog):
                     "common_spots": 0
                 })
 
-        with open("./json_files/monster_spots.json", "w+") as f:
+        with open("./server_files/monster_spots.json", "w+") as f:
             json.dump(spots, f, indent=4)
 
     @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.GUILD_IDS,
@@ -122,7 +122,7 @@ class SpotCog(cogbase.BaseCog):
         if number < 0:
             await ctx.channel.send("Nr of spots can't be lower than 0", delete_after=2)
             return
-        with open("./json_files/monster_spots.json", encoding="utf-8") as f:
+        with open("./server_files/monster_spots.json", encoding="utf-8") as f:
             try:
                 spots = json.load(f)
             except ValueError:
@@ -148,7 +148,7 @@ class SpotCog(cogbase.BaseCog):
                 current_user["total"] = current_user["lege_spots"] * 5 + current_user["rare_spots"]
                 break
 
-        with open("./json_files/monster_spots.json", "w+") as f:
+        with open("./server_files/monster_spots.json", "w+") as f:
             json.dump(spots, f, indent=4)
         await ctx.channel.send(f"Nr of spots changed for {user.display_name}", delete_after=4)
 

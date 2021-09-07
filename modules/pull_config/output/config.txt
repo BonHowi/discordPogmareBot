@@ -6,6 +6,18 @@
         },
         {
             "total": 1000,
+            "name": "Pepega Spotter"
+        },
+        {
+            "total": 2000,
+            "name": "Pog Spotter"
+        },
+        {
+            "total": 3000,
+            "name": "Pogmare Spotter"
+        },
+        {
+            "total": 4000,
             "name": "Legendary Spotter"
         },
         {

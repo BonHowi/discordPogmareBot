@@ -6,8 +6,10 @@
       <excludeFolder url="file://$MODULE_DIR$/modules/pull_config/bot_creds" />
       <excludeFolder url="file://$MODULE_DIR$/modules/pull_config/credentials" />
       <excludeFolder url="file://$MODULE_DIR$/modules/pull_config/data" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/database" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (discordBot)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

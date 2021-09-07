@@ -1,12 +1,12 @@
+import inspect
 import os
 import logging
 import json
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_permission
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord_slash import SlashCommand
 from modules.get_settings import get_settings
+from datetime import datetime
 
 # Create logger
 logger = logging.getLogger('discord')
@@ -25,6 +25,7 @@ class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
         print("[INFO]: Init Bot")
+        self.guild = get_settings("guild")
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
         self.ch_total_members = get_settings("CH_TOTAL_MEMBERS")
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
@@ -32,8 +33,9 @@ class MyBot(commands.Bot):
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
         self.cat_spotting = get_settings("CAT_SPOTTING")
+        self.update_ch_commons_loop.start()
 
-        with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
+        with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             # fp.encoding = 'utf-8-sig'
             self.config = json.load(fp)
 
@@ -65,6 +67,35 @@ class MyBot(commands.Bot):
                 fr"{ctx.author.mention} Please use / instead of ! to use commands on the server!",
                 delete_after=5.0)
             await ctx.delete()
+
+    # Loop tasks
+    # Update common spotting channel name
+    async def update_ch_commons(self):
+        with open('./server_files/commons.txt') as f:
+            try:
+                commons = f.read().splitlines()
+            except ValueError:
+                print(ValueError)
+
+        new_name = f"common-{commons[0]}"
+        channel = self.get_channel(self.ch_common)
+        await discord.TextChannel.edit(channel, name=new_name)
+        print(f"[{self.__class__.__name__}]: Common channel name updated: {new_name}")
+
+        commons.append(commons.pop(commons.index(commons[0])))
+        with open('./server_files/commons.txt', 'w') as f:
+            for item in commons:
+                f.write("%s\n" % item)
+
+    @tasks.loop(minutes=60.0)
+    async def update_ch_commons_loop(self):
+        if datetime.now().hour == 12:
+            print("enter")
+            await self.update_ch_commons()
+
+    @update_ch_commons_loop.before_loop
+    async def before_update_ch_commons(self):
+        await self.wait_until_ready()
 
 
 def main():
