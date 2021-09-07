@@ -113,7 +113,7 @@ def get_config():
     }
 
     # write to disk
-    with open('json_files/config.json', 'w', encoding='utf8') as f:
+    with open('server_files/config.json', 'w', encoding='utf8') as f:
         json.dump(
             data_dict,
             f,
