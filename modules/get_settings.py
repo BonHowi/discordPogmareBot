@@ -35,15 +35,6 @@ def get_settings(key: str):
         print("No bot_settings.json found. One has been created, please populate it and restart")
         exit(1)
     except KeyError:
-        print(f"Incomplete bot_settings.json found,")
-        print("Adding missing keys to bot_settings.json...")
-        with open("server_files/bot_settings.json", "r+", encoding="UTF-8") as f:
-            _json = json.load(f)
-            for key in template_json.keys():
-                if key not in _json.keys():
-                    _json[key] = template_json[key]
-                    print(f"Added {key}")
-            f.truncate(0)
-            f.seek(0)
-            json.dump(_json, f, indent=2)
+        print(f"Incomplete bot_settings.json found\n"
+              f"Check your file")
         exit(1)

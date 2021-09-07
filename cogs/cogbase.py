@@ -6,7 +6,6 @@ from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
 
-
 GUILD_IDS = get_settings("guild")
 MODERATION_IDS = get_settings("MOD_ROLES")
 PERMISSION_MODS = {
@@ -45,9 +44,8 @@ class BaseCog(commands.Cog):
             if monsters["name"].lower() == name:
                 monster = monsters
                 break
-            for monster_triggers in monsters["triggers"]:
-                if monster_triggers == name:
-                    monster = monsters
+            if name in monsters["triggers"]:
+                monster = monsters
 
         if not monster:
             print("Monster not found")
