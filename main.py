@@ -1,8 +1,6 @@
 import os
 import logging
 import json
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_permission
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand
@@ -25,6 +23,7 @@ class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
         print("[INFO]: Init Bot")
+        self.guild = get_settings("guild")
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
         self.ch_total_members = get_settings("CH_TOTAL_MEMBERS")
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
