@@ -77,8 +77,7 @@ def get_config():
         # Copy strings with spaces without keeping them
         for trigger in helpt:
             trigger_nospace = trigger.replace(' ', '')
-            if trigger_nospace != trigger:
-                helpt = helpt.append(pd.Series(trigger_nospace))
+            helpt = helpt.append(pd.Series(trigger_nospace))
         helpt = helpt.drop_duplicates()
         triggers_list.append(helpt)
 
