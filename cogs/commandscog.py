@@ -61,7 +61,7 @@ class MainCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def _warn(self, ctx: SlashContext, user: discord.User, reason: str):
-        with open('./json_files/warns.json', encoding='utf-8') as f:
+        with open('./server_files/warns.json', encoding='utf-8') as f:
             try:
                 report = json.load(f)
             except ValueError:
@@ -85,7 +85,7 @@ class MainCog(cogbase.BaseCog):
             # TODO: Improve 'reasons' format(or not?)
             await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n")
 
-        with open('./json_files/warns.json', 'w+') as f:
+        with open('./server_files/warns.json', 'w+') as f:
             json.dump(report, f, indent=4)
 
     # Get list of user's warns
@@ -95,7 +95,7 @@ class MainCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def _warns(self, ctx: SlashContext, user: discord.User):
-        with open('./json_files/warns.json', encoding='utf-8') as f:
+        with open('./server_files/warns.json', encoding='utf-8') as f:
             try:
                 report = json.load(f)
             except ValueError:
@@ -122,7 +122,7 @@ class MainCog(cogbase.BaseCog):
             await ctx.send(f"Really? Negative nr?", hidden=True)
             return
 
-        with open('./json_files/warns.json', encoding='utf-8') as f:
+        with open('./server_files/warns.json', encoding='utf-8') as f:
             try:
                 report = json.load(f)
             except ValueError:
@@ -138,7 +138,7 @@ class MainCog(cogbase.BaseCog):
         if not warns_removed:
             await ctx.send(f"{user.display_name} did not have any warns", delete_after=5.0)
 
-        with open('./json_files/warns.json', 'w+') as f:
+        with open('./server_files/warns.json', 'w+') as f:
             json.dump(report, f, indent=4)
 
     @cog_ext.cog_slash(name="updateTotMem", guild_ids=cogbase.GUILD_IDS,
@@ -166,7 +166,7 @@ class MainCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_BONJOWI)
     async def pull_config(self, ctx: SlashContext):
         get_config()
-        with open('json_files/config.json', 'r', encoding='utf-8-sig') as fp:
+        with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
             self.bot.reload_extension("cogs.rolecog")
         await ctx.send(f"Config.json updated", hidden=True)
