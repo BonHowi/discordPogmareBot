@@ -1,7 +1,7 @@
 # discordPogmareBot
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/BonHowi/discordPogmareBot)
-[![wakatime](https://wakatime.com/badge/github/BonHowi/discordPogmareBot.svg)](https://wakatime.com/badge/github/BonHowi/discordPogmareBot)
+[![Wakatime](https://wakatime.com/badge/github/BonHowi/discordPogmareBot.svg)](https://wakatime.com/projects/discordPogmareBot)
 
 ![GitHub top language](https://img.shields.io/github/languages/top/BonHowi/discordPogmareBot) 
 [![Lines of Code](https://tokei.rs/b1/github/BonHowi/discordPogmareBot?category=code)](https://github.com/BonHowi/discordPogmareBot)
@@ -18,6 +18,7 @@
 ### Server info:   
 [![Discord Shield](https://discordapp.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
 [![Discord Nightmare](https://img.shields.io/badge/Nightmare%20killed-no-red)](https://discord.gg/Kt35Jtc5nT)
+
 
 <br />
 
