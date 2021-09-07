@@ -47,7 +47,7 @@ class DatabaseCog(cogbase.BaseCog):
 
         # Connect to database
         password = get_settings("DB_P")
-        self.engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
+        self.engine = create_engine(f"mysql+mysqldb://BonHow:{password}@localhost/server_database")
         metadata_obj.create_all(self.engine)
         self.conn = self.engine.connect()
         self.db_update_loop.start()
@@ -78,100 +78,6 @@ class DatabaseCog(cogbase.BaseCog):
     @db_update_loop.after_loop
     async def on_db_update_cancel(self):
         print(f"[{self.__class__.__name__}]: Placeholder for future improvements")
-
-    # def create_connection(self):
-    #     """ create a database connection to a SQLite database """
-    #     conn = None
-    #     try:
-    #         conn = sqlite3.connect(self.database)
-    #         # print(sqlite3.version)
-    #     except Error as e:
-    #         print(e)
-    #     finally:
-    #         return conn
-    #
-    # # no idea how to actually use it
-    # def close_connection(self):
-    #     if self.connection:
-    #         self.connection.close()
-    #         print("[INFO]: Database connection closed")
-    #
-    # @staticmethod
-    # def create_table(conn, table_name: str, **kwargs):
-    #     """ create a table from the create_table_sql statement
-    #     :param table_name:
-    #     :type table_name:
-    #     :param conn: Connection object
-    #     :return:
-    #     """
-    #     create_table_sql = f"""CREATE TABLE IF NOT EXISTS {table_name} (\n"""
-    #
-    #     try:
-    #         c = conn.cursor()
-    #         c.execute(create_table_sql)
-    #     except Error as e:
-    #         print(e)
-    #
-    # @staticmethod
-    # def create_project(conn, project):
-    #     """
-    #     Create a new project into the projects table
-    #     :param conn:
-    #     :param project:
-    #     :return: project id
-    #     """
-    #     sql = ''' INSERT INTO projects(name,begin_date,end_date)
-    #                   VALUES(?,?,?) '''
-    #     cur = conn.cursor()
-    #     cur.execute(sql, project)
-    #     conn.commit()
-    #     return cur.lastrowid
-    #
-    # @staticmethod
-    # def update_task(conn, task):
-    #     """
-    #     update priority, begin_date, and end date of a task
-    #     :param conn:
-    #     :param task:
-    #     :return: project id
-    #     """
-    #     sql = ''' UPDATE tasks
-    #                   SET priority = ? ,
-    #                       begin_date = ? ,
-    #                       end_date = ?
-    #                   WHERE id = ?'''
-    #     cur = conn.cursor()
-    #     cur.execute(sql, task)
-    #     conn.commit()
-    #
-    # @staticmethod
-    # def select_all_tasks(conn):
-    #     """
-    #     Query all rows in the tasks table
-    #     :param conn: the Connection object
-    #     :return:
-    #     """
-    #     cur = conn.cursor()
-    #     cur.execute("SELECT * FROM tasks")
-    #
-    #     rows = cur.fetchall()
-    #
-    #     for row in rows:
-    #         print(row)
-    #
-    # @staticmethod
-    # def delete_task(conn, where):
-    #     """
-    #     Delete a task by task id
-    #     :param where:
-    #     :param where: id of the task
-    #     :param conn:  Connection to the SQLite database
-    #     :return:
-    #     """
-    #     sql = 'DELETE FROM tasks WHERE id=?'
-    #     cur = conn.cursor()
-    #     cur.execute(sql, (where,))
-    #     conn.commit()
 
 
 def setup(bot: commands.Bot):
