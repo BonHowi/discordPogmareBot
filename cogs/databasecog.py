@@ -46,7 +46,7 @@ class DatabaseCog(cogbase.BaseCog):
         super().__init__(base)
 
         # Connect to database
-        password = get_settings("DB_PASSWORD")
+        password = get_settings("DB_P")
         self.engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
         metadata_obj.create_all(self.engine)
         self.conn = self.engine.connect()
