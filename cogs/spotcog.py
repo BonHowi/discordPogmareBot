@@ -41,7 +41,7 @@ class SpotCog(cogbase.BaseCog):
                     await ctx.delete()
                     await ctx.channel.send(f"{role.mention}")
                     await self.count_spot(ctx, spotted_monster["type"])
-            elif ctx.content[0] in cords_beginning:  # I think this should be 1st in checking if
+            elif ctx.content[0] in cords_beginning:
                 return
 
     @staticmethod

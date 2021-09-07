@@ -1,8 +1,5 @@
-import sys
 import pandas as pd
-from tqdm import tqdm
 import os.path
-from os import path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -72,33 +69,28 @@ def get_config():
     # triggers = triggers.applymap(lambda s: unidecode.unidecode(s) if type(s) == str else s)
 
     triggers_list = []
-    with tqdm(total=len(triggers), file=sys.stdout) as pbar:
-        for row in triggers.itertuples(index=False):
-            helpt = pd.Series(row)
-            helpt = helpt[~helpt.isna()]
-            # Drop empty strings
-            helpt = pd.Series(filter(None, helpt))
-            # Copy strings with spaces without keeping them
-            for trigger in helpt:
-                trigger_nospace = trigger.replace(' ', '')
-                if trigger_nospace != trigger:
-                    helpt = helpt.append(pd.Series(trigger_nospace))
-            helpt = helpt.drop_duplicates()
-            triggers_list.append(helpt)
-            pbar.update(1)
+    for row in triggers.itertuples(index=False):
+        helpt = pd.Series(row)
+        helpt = helpt[~helpt.isna()]
+        # Drop empty strings
+        helpt = pd.Series(filter(None, helpt))
+        # Copy strings with spaces without keeping them
+        for trigger in helpt:
+            trigger_nospace = trigger.replace(' ', '')
+            helpt = helpt.append(pd.Series(trigger_nospace))
+        helpt = helpt.drop_duplicates()
+        triggers_list.append(helpt)
 
     print("Creating trigger structure")
     triggers_def = []
-    with tqdm(total=len(triggers_list), file=sys.stdout) as pbar:
-        for i in triggers_list:
-            triggers_def.append(list(i))
-            pbar.update(1)
+    for i in triggers_list:
+        triggers_def.append(list(i))
     triggers_def_series = pd.Series(triggers_def)
     monsters_df.insert(loc=0, column='triggers', value=triggers_def_series)
 
     print("Creating output")
 
-    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event_Likan", "Event_Ulf", "Legendary", "Rare"]}
+    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     milestones = {'total': [150, 1000, 2000, 3000, 4000, 5000],
                   'name': ["Rare Spotter", "Pepega Spotter", "Pog Spotter", "Pogmare Spotter", "Legendary Spotter",
@@ -121,14 +113,6 @@ def get_config():
             ensure_ascii=False,
             sort_keys=False
         )
-    with open('modules/pull_config/output/config.txt', 'w', encoding='utf8') as f:
-        json.dump(
-            data_dict,
-            f,
-            indent=4,
-            ensure_ascii=False
-        )
-
     print(".json saved")
 
 

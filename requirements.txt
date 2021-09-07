@@ -1,6 +1,5 @@
 pandas==1.3.2
 discord_py_slash_command==3.0.1
-tqdm==4.62.2
 discord.py==1.7.3
 google_auth_oauthlib==0.4.6
 discord==1.7.3
