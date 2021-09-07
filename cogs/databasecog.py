@@ -1,4 +1,6 @@
+import inspect
 from discord.ext import commands, tasks
+from modules.get_settings import get_settings
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Date, BigInteger
 from sqlalchemy import create_engine, UniqueConstraint
 from sqlalchemy.dialects.mysql import insert
@@ -44,14 +46,16 @@ class DatabaseCog(cogbase.BaseCog):
         super().__init__(base)
 
         # Connect to database
-        self.engine = create_engine("mysql+mysqldb://BonHowi:Atosik@localhost/server_database")
+        password = get_settings("DB_PASSWORD")
+        self.engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
         metadata_obj.create_all(self.engine)
         self.conn = self.engine.connect()
         self.db_update_loop.start()
 
     # Add or refresh all guild members to database
     async def db_update(self):
-        print(f"[{self.__class__.__name__}]: Refreshing member count")
+        print(f"[{self.__class__.__name__}]:\t"
+              f"{inspect.stack()[0][3]}: Refreshing member count")
         guild = self.bot.get_guild(self.bot.guild[0])
         for guild_member in guild.members:
             stmt = insert(member).values(
