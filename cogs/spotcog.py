@@ -6,8 +6,11 @@ Current commands:
 
 """
 import json
+
+import cogs
 import discord
 import cogs.cogbase as cogbase
+from cogs.databasecog import DatabaseCog
 from discord.utils import get
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
@@ -31,19 +34,28 @@ class SpotCog(cogbase.BaseCog):
         # If common spotted
         if ctx.channel.id == self.bot.ch_common:
             if ctx.content[0] in cords_beginning:
-                await self.count_spot(ctx, 4)
+                # await self.count_spot(ctx, 4)
+                await DatabaseCog.db_count_spot(ctx.author.id, monster_type_dict[4])
+                await DatabaseCog.db_save_coords(ctx.content, monster_type_dict[4])
             else:
                 await ctx.delete()
 
-        elif ctx.channel.category.id == self.bot.cat_spotting:
+        elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
             if ctx.content.startswith(prefix):
                 spotted_monster = await self.get_monster(ctx, ctx.content.replace(prefix, ""))
                 if spotted_monster:
                     role = get(ctx.guild.roles, name=spotted_monster["name"])
                     await ctx.delete()
                     await ctx.channel.send(f"{role.mention}")
-                    await self.count_spot(ctx, spotted_monster["type"])
+                    # await self.count_spot(ctx, spotted_monster["type"])
+                    await DatabaseCog.db_count_spot(ctx.author.id,
+                                                    monster_type_dict[spotted_monster["type"]])
+                    return
+                else:
+                    await ctx.channel.send(
+                        f"{ctx.author.mention} monster not found; are you sure that name is correct?", delete_after=5)
             elif ctx.content[0] in cords_beginning:
+                await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
                 return
 
     @staticmethod

@@ -46,14 +46,14 @@ class BaseCog(commands.Cog):
                 monster = monsters
 
         if not monster:
-            print("Monster not found")
-            await ctx.send("Monster not found", hidden=True)
+            print(f"[{self.__class__.__name__}]: Monster not found")
+            # await ctx.channel.send("Monster not found", delete_after=5.0)
             return
 
         monster["role"] = discord.utils.get(ctx.guild.roles, name=monster["name"])
         if not monster["role"]:
-            print(f"Failed to fetch roleID for monster {monster['name']}")
-            await ctx.send("Role not found", hidden=True)
+            print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster['name']}")
+            # await ctx.channel.send("Role not found", delete_after=5.0)
             return
 
         else:

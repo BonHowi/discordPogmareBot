@@ -215,7 +215,6 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext):
         for cog in list(self.bot.extensions.keys()):
-            print(cog)
             await self.reload_cog(ctx, cog)
 
 
