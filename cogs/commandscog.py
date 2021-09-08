@@ -75,40 +75,19 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_MODS)
     async def _warns(self, ctx: SlashContext, user: discord.User):
         warns, nr_of_warns = await DatabaseCog.db_get_warns(user.id)
-        print(warns)
         nl = "\n"
-        message = f"**{user.name}** has been warned *{nr_of_warns}* times\n\n_Reasons_:\n" \
+        message = f"**{user.name}** has been warned **{nr_of_warns}** times\n\n_Reasons_:\n" \
                   f"{nl.join(warns)}"
         await ctx.author.send(message)
         await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
     @cog_ext.cog_slash(name="removeWarns", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for managing user's warns",
+                       description="Function for removing user's all warns",
                        default_permission=False,
-                       permissions=cogbase.PERMISSION_MODS)
-    async def remove_warns(self, ctx: SlashContext, user: discord.User, nr_to_delete: int):
-        if nr_to_delete < 0:
-            await ctx.send(f"Really? Negative nr?", hidden=True)
-            return
-
-        with open('./server_files/warns.json', encoding='utf-8') as f:
-            try:
-                report = json.load(f)
-            except ValueError:
-                report = {'users': []}
-
-        warns_removed = False
-        for current_user in report['users']:
-            if current_user['id'] == user.id:
-                current_user['reasons'] = current_user['reasons'][:-nr_to_delete or None]
-                await ctx.send(f"{user.display_name}'s last {nr_to_delete} warns were deleted", delete_after=5.0)
-                warns_removed = True
-                break
-        if not warns_removed:
-            await ctx.send(f"{user.display_name} did not have any warns", delete_after=5.0)
-
-        with open('./server_files/warns.json', 'w+') as f:
-            json.dump(report, f, indent=4)
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def remove_warns(self, ctx: SlashContext, user: discord.User):
+        await DatabaseCog.db_remove_warns(user.id)
+        await ctx.send(f"{user.display_name}'s warns were deleted", hidden=True)
 
     @cog_ext.cog_slash(name="updateTotMem", guild_ids=cogbase.GUILD_IDS,
                        description="Update total number of members",
@@ -141,6 +120,13 @@ class CommandsCog(cogbase.BaseCog):
         await ctx.send(f"Config.json updated", hidden=True)
 
     # OTHER
+    @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
+                       description="Clear temp spots table in database",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def clear_temp_spots_table(self, ctx):
+        await DatabaseCog.db_clear_spots_temp_table()
+        await ctx.send(f"Temp spots table was cleared", hidden=True)
+        await self.reload_cog("cogs.databasecog")
 
     # Did BonJowi killed N-Word? (unstable)
     # Apparently you can not use this command more often than every x minutes

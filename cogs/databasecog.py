@@ -1,8 +1,8 @@
 import inspect
 from discord.ext import commands, tasks
 from modules.get_settings import get_settings
-from sqlalchemy import create_engine, UniqueConstraint, Table, Column, Integer, String, MetaData, ForeignKey, \
-    BigInteger, update, select, DateTime
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
+    BigInteger, update, select, DateTime, delete
 from sqlalchemy.dialects.mysql import insert
 import cogs.cogbase as cogbase
 from datetime import datetime
@@ -121,18 +121,26 @@ class DatabaseCog(cogbase.BaseCog):
         result = cls.conn.execute(stmt)
         for nr_of_kills in result.columns(monster_type):
             counter = nr_of_kills[0]
-
         stmt = update(spots).where(spots.c.member_id == _id).values({f"{monster_type}": counter + 1})
+        cls.conn.execute(stmt)
+
+        stmt = select(spots_temp.c.member_id, spots_temp.c.legendary, spots_temp.c.rare, spots_temp.c.common).where(
+            spots_temp.c.member_id == _id)
+        result = cls.conn.execute(stmt)
+        for nr_of_kills in result.columns(monster_type):
+            counter = nr_of_kills[0]
+        stmt = update(spots_temp).where(spots_temp.c.member_id == _id).values({f"{monster_type}": counter + 1})
         cls.conn.execute(stmt)
 
     @classmethod
     async def db_save_coords(cls, _coords: str, _monster_type):
         stmt = insert(coords).values(coords=_coords, monster_type=_monster_type)
         do_update_stmt = stmt.on_duplicate_key_update(coords=_coords, monster_type=_monster_type)
-        cls.conn.execute(do_update_stmt)
 
-    async def db_clear_spots_temp_table(self):
-        pass
+    @classmethod
+    async def db_clear_spots_temp_table(cls):
+        stmt = delete(spots_temp)
+        cls.conn.execute(stmt)
 
     # ----- LEADERBOARD OPERATIONS -----
 
@@ -163,8 +171,10 @@ class DatabaseCog(cogbase.BaseCog):
         warns_list = [': \t'.join([str(elem) for elem in sublist]) for sublist in date_warn]
         return warns_list, counter
 
-
-    async def db_remove_warns(self):
+    @classmethod
+    async def db_remove_warns(cls, _member: int):
+        stmt = delete(warn).where(warn.c.member_id == _member)
+        cls.conn.execute(stmt)
         pass
 
 
