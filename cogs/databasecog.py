@@ -1,10 +1,11 @@
 import inspect
 from discord.ext import commands, tasks
 from modules.get_settings import get_settings
-from sqlalchemy import create_engine, UniqueConstraint, Table, Column, Integer, String, MetaData, ForeignKey, Date, \
-    BigInteger, update, select
+from sqlalchemy import create_engine, UniqueConstraint, Table, Column, Integer, String, MetaData, ForeignKey, \
+    BigInteger, update, select, DateTime
 from sqlalchemy.dialects.mysql import insert
 import cogs.cogbase as cogbase
+from datetime import datetime
 
 metadata_obj = MetaData()
 member = Table('member', metadata_obj,
@@ -30,9 +31,8 @@ spots_temp = Table('spots_temp', metadata_obj,
 warn = Table('warn', metadata_obj,
              Column('id', Integer, primary_key=True),
              Column('member_id', BigInteger, ForeignKey("member.id")),
-             Column('warn', String(50), nullable=False),
-             Column('Date', Date, nullable=False),
-             UniqueConstraint("member_id")
+             Column('reason', String(120), nullable=False),
+             Column('date', DateTime, nullable=False),
              )
 
 coords = Table('coords', metadata_obj,
@@ -116,9 +116,9 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_count_spot(cls, _id: int, monster_type: str):
         # Get member nr of spots for certain monster type
-        statement = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
+        stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
             spots.c.member_id == _id)
-        result = cls.conn.execute(statement)
+        result = cls.conn.execute(stmt)
         for nr_of_kills in result.columns(monster_type):
             counter = nr_of_kills[0]
 
@@ -144,11 +144,25 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- WARN OPERATIONS -----
 
-    async def db_save_warn(self):
-        pass
+    @classmethod
+    async def db_add_warn(cls, _member: int, _reason: str):
+        stmt = insert(warn).values(member_id=_member, reason=_reason, date=datetime.now())
+        cls.conn.execute(stmt)
 
-    async def db_get_warns(self):
-        pass
+    @classmethod
+    async def db_get_warns(cls, _member: int):
+        stmt = select(warn.c.reason, warn.c.date).select_from(member).join(warn, member.c.id == warn.c.member_id).where(
+            member.c.id == _member)
+        result = cls.conn.execute(stmt)
+        date_warn = []
+        counter = 0
+        for warns in result.columns("reason", "date"):
+            reason_with_date = [warns[1], warns[0]]
+            date_warn.append(reason_with_date)
+            counter += 1
+        warns_list = [': \t'.join([str(elem) for elem in sublist]) for sublist in date_warn]
+        return warns_list, counter
+
 
     async def db_remove_warns(self):
         pass

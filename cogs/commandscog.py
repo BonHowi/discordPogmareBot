@@ -17,6 +17,7 @@ import discord
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+from cogs.databasecog import DatabaseCog
 from modules.pull_config.pull_config import get_config
 
 
@@ -47,7 +48,7 @@ class CommandsCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.GUILD_IDS,
                        description="Turn off the bot",
                        default_permission=False,
-                       permissions=cogbase.PERMISSION_MODS)
+                       permissions=cogbase.PERMISSION_ADMINS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
         print(f"[{self.__class__.__name__}]: Exiting Bot")
@@ -61,32 +62,10 @@ class CommandsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def _warn(self, ctx: SlashContext, user: discord.User, reason: str):
-        with open('./server_files/warns.json', encoding='utf-8') as f:
-            try:
-                report = json.load(f)
-            except ValueError:
-                report = {'users': []}
 
-        warned = False
-        reason = ''.join(reason)
-        for current_user in report['users']:
-            if current_user['id'] == user.id:
-                current_user['reasons'].append(reason)
-                warned = True
-                await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n"
-                               f"Number of warns: {len(current_user['reasons'])}")
-                break
-        if not warned:
-            report['users'].append({
-                'id': user.id,
-                'name': user.display_name,
-                'reasons': [reason, ]
-            })
-            # TODO: Improve 'reasons' format(or not?)
-            await ctx.send(f"{user.mention} was warned for:\n\"{reason}\"\n")
-
-        with open('./server_files/warns.json', 'w+') as f:
-            json.dump(report, f, indent=4)
+        await DatabaseCog.db_add_warn(user.id, reason)
+        await ctx.send(
+            f"{user.mention} was warned for:\n*\"{reason}\"*\n")  # f"Number of warns: {len(current_user['reasons'])}")
 
     # Get list of user's warns
     # Does not work if used too much
@@ -95,23 +74,13 @@ class CommandsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def _warns(self, ctx: SlashContext, user: discord.User):
-        with open('./server_files/warns.json', encoding='utf-8') as f:
-            try:
-                report = json.load(f)
-            except ValueError:
-                report = {'users': []}
-
-        for current_user in report['users']:
-            if user.id == current_user['id']:
-                message = f"{user.name} has been warned {len(current_user['reasons'])} times\nReasons:\n " \
-                          f"{','.join(current_user['reasons'])}"
-                # TODO: Improve 'reasons' message formatting
-                await ctx.author.send(message)
-                await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
-                break
-        else:
-            await ctx.author.send(f"{user.name} has never been warned")
-            await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
+        warns, nr_of_warns = await DatabaseCog.db_get_warns(user.id)
+        print(warns)
+        nl = "\n"
+        message = f"**{user.name}** has been warned *{nr_of_warns}* times\n\n_Reasons_:\n" \
+                  f"{nl.join(warns)}"
+        await ctx.author.send(message)
+        await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
     @cog_ext.cog_slash(name="removeWarns", guild_ids=cogbase.GUILD_IDS,
                        description="Function for managing user's warns",
@@ -189,33 +158,34 @@ class CommandsCog(cogbase.BaseCog):
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
-    async def reload_cog(self, ctx: SlashContext, module: str):
+    async def reload_cog(self, module: str, ctx: SlashContext = None):
         """Reloads a module."""
         try:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
         except Exception as e:
-            await ctx.send(f'[{module}] not reloaded', hidden=True)
+            # await ctx.send(f'[{module}] not reloaded', hidden=True)
             print(f'[{module}] not reloaded')
             print(f'{type(e)}: {e}')
         else:
-            await ctx.send(f'[{module}] reloaded', hidden=True)
+            # await ctx.send(f'[{module}] reloaded', hidden=True)
             print(f'[{module}] reloaded')
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
                        description="Reload cog",
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_cog_command(self, ctx: SlashContext, module: str):
+    async def reload_cog_command(self, module: str, ctx: SlashContext = None):
         await self.reload_cog(ctx, module)
 
     # Command for reloading all cogs
     @cog_ext.cog_slash(name="reloadAllCogs", guild_ids=cogbase.GUILD_IDS,
                        description="Reload cog",
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_all_cogs(self, ctx: SlashContext):
+    async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
-            await self.reload_cog(ctx, cog)
+            await self.reload_cog(cog)
+            await ctx.send(f'All cogs reloaded', hidden=True)
 
 
 def setup(bot: commands.Bot):
