@@ -52,7 +52,7 @@ class DatabaseCog(cogbase.BaseCog):
         self.conn = self.engine.connect()
         self.db_update_loop.start()
 
-    # Add or refresh all guild members to database
+    # Add or refresh all guild members and spots to database
     async def db_update(self):
         print(f"[{self.__class__.__name__}]:\t"
               f"{inspect.stack()[0][3]}: Refreshing member count")
@@ -65,6 +65,26 @@ class DatabaseCog(cogbase.BaseCog):
                 name=stmt.inserted.name, display_name=stmt.inserted.display_name
             )
             self.conn.execute(do_update_stmt)
+        print(f"[{self.__class__.__name__}]:\t"
+              f"{inspect.stack()[0][3]}: Member count refreshed")
+
+        print(f"[{self.__class__.__name__}]:\t"
+              f"{inspect.stack()[0][3]}: Creating members' spots tables")
+        guild = self.bot.get_guild(self.bot.guild[0])
+        for guild_member in guild.members:
+            stmt = insert(spots).values(
+                member_id=guild_member.id, legendary=0,
+                rare=0, common=0)
+            do_update_stmt = stmt.on_duplicate_key_update(member_id=stmt.inserted.member_id)
+            self.conn.execute(do_update_stmt)
+        for guild_member in guild.members:
+            stmt = insert(spots_temp).values(
+                member_id=guild_member.id, legendary=0,
+                rare=0, common=0)
+            do_update_stmt = stmt.on_duplicate_key_update(member_id=stmt.inserted.member_id)
+            self.conn.execute(do_update_stmt)
+        print(f"[{self.__class__.__name__}]:\t"
+              f"{inspect.stack()[0][3]}: Member spots tables created")
 
     @tasks.loop(hours=12)
     async def db_update_loop(self):

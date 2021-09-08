@@ -12,6 +12,8 @@ from discord.utils import get
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 
+monster_type_dict = {0: "rare", 1: "legendary", 2: "event1", 3: "event2", 4: "common"}
+
 
 class SpotCog(cogbase.BaseCog):
     def __init__(self, base):
@@ -102,7 +104,7 @@ class SpotCog(cogbase.BaseCog):
             json.dump(spots, f, indent=4)
 
     @cog_ext.cog_slash(name="setMemberSpotsCounter", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for managing user's warns",
+                       description="Function for managing user's spots",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def set_spot_count(self, ctx: SlashContext, user: discord.User, monster_type: int, number: int):

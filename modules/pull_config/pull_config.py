@@ -89,7 +89,6 @@ def get_config():
     monsters_df.insert(loc=0, column='triggers', value=triggers_def_series)
 
     print("Creating output")
-
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     milestones = {'total': [150, 1000, 2000, 3000, 4000, 5000],
@@ -116,5 +115,9 @@ def get_config():
     print(".json saved")
 
 
-if __name__ == "__main__":
+def main():
     get_config()
+
+
+if __name__ == "__main__":
+    main()

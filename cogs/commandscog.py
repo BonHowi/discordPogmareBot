@@ -20,7 +20,7 @@ from discord_slash import cog_ext, SlashContext
 from modules.pull_config.pull_config import get_config
 
 
-class MainCog(cogbase.BaseCog):
+class CommandsCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
@@ -50,7 +50,7 @@ class MainCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_MODS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        print("[INFO]: Exiting Bot")
+        print(f"[{self.__class__.__name__}]: Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
 
@@ -163,7 +163,7 @@ class MainCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="pullConfig", guild_ids=cogbase.GUILD_IDS,
                        description="Pull config from google sheets",
                        default_permission=False,
-                       permissions=cogbase.PERMISSION_BONJOWI)
+                       permissions=cogbase.PERMISSION_ADMINS)
     async def pull_config(self, ctx: SlashContext):
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
@@ -177,7 +177,7 @@ class MainCog(cogbase.BaseCog):
     # Apparently you can not use this command more often than every x minutes
     @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
                        description="Change N-Word channel name",
-                       permissions=cogbase.PERMISSION_BONJOWI)
+                       permissions=cogbase.PERMISSION_ADMINS)
     async def rename_nword_channel(self, ctx, status: str):
         new_status = status
         channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
@@ -188,27 +188,36 @@ class MainCog(cogbase.BaseCog):
             await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
-    # async def rename_nword_channel(self, ctx):
-    #     channel = self.bot.get_channel(CH_NWORD_KILLED)
-    #     if "YES" in channel.name:
-    #         new_status = "NO"
-    #     elif "NO" in channel.name:
-    #         new_status = "YES"
-    #     else:
-    #         return
-    #     # new_status = "YES" if "NO" in channel.name else "NO" if "YES" in channel.name else ""
-    #     print(type(new_status))
-    #     print(new_status)
-    #     await discord.VoiceChannel.edit(channel, name=f"N-Word killed: {new_status}")
-    #     await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
+    # Reloads cog, very useful because there is no need to exit the bot after updating cog
+    async def reload_cog(self, ctx: SlashContext, module: str):
+        """Reloads a module."""
+        try:
+            self.bot.unload_extension(module)
+            self.bot.load_extension(module)
+        except Exception as e:
+            await ctx.send(f'[{module}] not reloaded', hidden=True)
+            print(f'[{module}] not reloaded')
+            print(f'{type(e)}: {e}')
+        else:
+            await ctx.send(f'[{module}] reloaded', hidden=True)
+            print(f'[{module}] reloaded')
 
-    # Disconnect Bot using "!" prefix (For safety reasons in case Slash commands are not working
-    @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
-    async def exit_bot(self, ctx):
-        print("[INFO]: Exiting Bot")
-        await ctx.send(f"Closing Bot")
-        await self.bot.close()
+    # Command for reloading specific cog
+    @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
+                       description="Reload cog",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def reload_cog_command(self, ctx: SlashContext, module: str):
+        await self.reload_cog(ctx, module)
+
+    # Command for reloading all cogs
+    @cog_ext.cog_slash(name="reloadAllCogs", guild_ids=cogbase.GUILD_IDS,
+                       description="Reload cog",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def reload_all_cogs(self, ctx: SlashContext):
+        for cog in list(self.bot.extensions.keys()):
+            print(cog)
+            await self.reload_cog(ctx, cog)
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(MainCog(bot))
+    bot.add_cog(CommandsCog(bot))
