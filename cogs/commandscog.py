@@ -171,7 +171,7 @@ class CommandsCog(cogbase.BaseCog):
     async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
             await self.reload_cog(cog)
-            await ctx.send(f'All cogs reloaded', hidden=True)
+        await ctx.send(f'All cogs reloaded', hidden=True)
 
 
 def setup(bot: commands.Bot):

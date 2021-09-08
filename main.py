@@ -104,7 +104,7 @@ class MyBot(commands.Bot):
     async def exit_bot(self, ctx):
         await ctx.send(f"Closing Bot", delete_after=1.0)
         print(f"[{self.__class__.__name__}]: Exiting Bot")
-        await self.bot.close()
+        await self.close()
 
 
 def main():

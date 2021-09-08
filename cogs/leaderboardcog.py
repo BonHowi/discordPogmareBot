@@ -1,11 +1,8 @@
-# Tu bedo funkcje od leaderboardow i nadawania rol za spoty
-
 import cogs.cogbase as cogbase
 from discord.ext import commands
-from cogs.cogbase import BaseCog
 
 
-class LeaderboardsCog(BaseCog):
+class LeaderboardsCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
