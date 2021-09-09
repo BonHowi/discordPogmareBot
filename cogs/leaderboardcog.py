@@ -57,7 +57,12 @@ class LeaderboardsCog(cogbase.BaseCog):
         await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
 
     async def update_role(self):
-        pass
+        guild = self.bot.get_guild(self.bot.guild[0])
+        for guild_member in guild.members:
+            spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
+            # check progress
+            # if progress update role
+            pass
 
 
 def setup(bot: commands.Bot):
