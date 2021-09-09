@@ -7,6 +7,7 @@ template_json = {
     "guild": [881161915689209936],
     "ADMIN": "None",
     "MOD_ROLES": [],
+    "CH_ADMIN_POSTING": "None",
     "CH_ROLE_REQUEST": "None",
     "CH_TOTAL_MEMBERS": "None",
     "CH_NIGHTMARE_KILLED": "None",
