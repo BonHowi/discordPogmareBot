@@ -116,6 +116,7 @@ class DatabaseCog(cogbase.BaseCog):
         stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
             spots.c.member_id == _id)
         result = cls.conn.execute(stmt)
+        counter = []
         for nr_of_kills in result.columns(monster_type):
             counter = nr_of_kills[0]
         stmt = update(spots).where(spots.c.member_id == _id).values({f"{monster_type}": counter + 1})
