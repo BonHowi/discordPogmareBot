@@ -144,6 +144,7 @@ class CommandsCog(cogbase.BaseCog):
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
+    # TODO: load cog if not loaded
     async def reload_cog(self, module: str, ctx: SlashContext = None):
         """Reloads a module."""
         try:

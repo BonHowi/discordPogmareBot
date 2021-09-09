@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 from sqlalchemy.dialects.mysql import insert
 import cogs.cogbase as cogbase
 from datetime import datetime
+import pandas as pd
 
 metadata_obj = MetaData()
 member = Table('member', metadata_obj,
@@ -100,10 +101,6 @@ class DatabaseCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
-    @db_update_loop.after_loop
-    async def on_db_update_loop_cancel(self):
-        print(f"[{self.__class__.__name__}]: Placeholder for future improvements")
-
     # Placeholder for simpler function(now it updates whole tables instead of one row)
     @commands.Cog.listener()
     async def on_member_join(self, _member):
@@ -135,7 +132,7 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_save_coords(cls, _coords: str, _monster_type):
         stmt = insert(coords).values(coords=_coords, monster_type=_monster_type)
-        do_update_stmt = stmt.on_duplicate_key_update(coords=_coords, monster_type=_monster_type)
+        cls.conn.execute(stmt)
 
     @classmethod
     async def db_clear_spots_temp_table(cls):
@@ -144,8 +141,13 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- LEADERBOARD OPERATIONS -----
 
-    async def db_get_leaderboards(self):
-        pass
+    @classmethod
+    async def db_get_spots_df(cls):
+        stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
+            spots,
+            member.c.id == spots.c.member_id)
+        df = pd.read_sql(stmt, cls.conn)
+        return df
 
     async def db_update_spotting_roles(self):
         pass
@@ -175,7 +177,16 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_remove_warns(cls, _member: int):
         stmt = delete(warn).where(warn.c.member_id == _member)
         cls.conn.execute(stmt)
-        pass
+
+    # ----- MEMBER OPERATIONS -----
+
+    @classmethod
+    async def db_get_member_stats(cls, _member: int):
+        stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
+            spots,
+            member.c.id == spots.c.member_id).where(spots.c.member_id == _member)
+        df = pd.read_sql(stmt, cls.conn)
+        return df
 
 
 def setup(bot: commands.Bot):

@@ -30,6 +30,8 @@ class MyBot(commands.Bot):
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
         self.ch_total_members = get_settings("CH_TOTAL_MEMBERS")
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
+        self.ch_leaderboards = get_settings("CH_LEADERBOARDS")
+        self.ch_leaderboards_common = get_settings("CH_LEADERBOARDS_COMMON")
         self.ch_common = get_settings("CH_COMMON")
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")

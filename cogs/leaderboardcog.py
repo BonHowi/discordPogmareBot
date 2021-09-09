@@ -1,16 +1,61 @@
+import discord
+from discord_slash import cog_ext
+
 import cogs.cogbase as cogbase
-from discord.ext import commands
+from discord.ext import commands, tasks
+import pandas as pd
+
+from cogs.databasecog import DatabaseCog
 
 
 class LeaderboardsCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
+        self.update_leaderboards_loop.start()
 
-    async def update_leaderboards(self):
-        pass
+    async def update_leaderboards(self, channel: int, ch_type: str):
+        top_ch = self.bot.get_channel(channel)
 
-    async def print_leaderboards(self):
-        pass
+        legend_multiplier = 5
+        spots_df = await DatabaseCog.db_get_spots_df()
+        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+        spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
+
+        spots_df_top = spots_df_top[["display_name", ch_type]]
+
+        await top_ch.purge(limit=10)
+
+        top_print = []
+        for index, row in spots_df_top.iterrows():
+            member_stats = [f"**[{index}]**.  {row['display_name']} - {row[ch_type]}"]
+            top_print.append(member_stats)
+        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+        top_print = "\n".join(top_print)
+        embed_command = discord.Embed(title="TOP 15", description=top_print,
+                                      color=0x00ff00)
+        await top_ch.send(embed=embed_command)
+
+    @tasks.loop(minutes=15)
+    async def update_leaderboards_loop(self):
+        await self.update_leaderboards(self.bot.ch_leaderboards, "total")
+        await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
+        print(f'[{self.__class__.__name__}]: Leaderboards updated')
+
+    @update_leaderboards_loop.before_loop
+    async def before_db_update_loop(self):
+        print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
+        await self.bot.wait_until_ready()
+
+    @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
+                       description="Function for",
+                       default_permission=True)
+    async def get_stats(self, ctx):
+        spots_df = await DatabaseCog.db_get_member_stats(ctx.author.id)
+        message = f"**Legends**: {spots_df.at[0, 'legendary']}\n" \
+                  f"**Rares**: {spots_df.at[0, 'rare']}\n" \
+                  f"**Commons**: {spots_df.at[0, 'common']}"
+        # TODO: role progress
+        await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
 
 
 def setup(bot: commands.Bot):
