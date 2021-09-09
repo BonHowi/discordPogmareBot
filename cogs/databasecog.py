@@ -1,5 +1,5 @@
-import inspect
 from discord.ext import commands, tasks
+from discord_slash import cog_ext
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
@@ -18,16 +18,20 @@ fk_member_id = "member.id"
 
 spots = Table('spots', metadata_obj,
               Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
-              Column('legendary', Integer),
-              Column('rare', Integer),
-              Column('common', Integer)
+              Column('legendary', Integer, default=0),
+              Column('rare', Integer, default=0),
+              Column('common', Integer, default=0),
+              Column('event1', Integer, default=0),
+              Column('event2', Integer, default=0)
               )
 
 spots_temp = Table('spots_temp', metadata_obj,
                    Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
-                   Column('legendary', Integer),
-                   Column('rare', Integer),
-                   Column('common', Integer)
+                   Column('legendary', Integer, default=0),
+                   Column('rare', Integer, default=0),
+                   Column('common', Integer, default=0),
+                   Column('event1', Integer, default=0),
+                   Column('event2', Integer, default=0)
                    )
 
 warn = Table('warn', metadata_obj,
@@ -73,8 +77,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     def db_add_update_spots(self, spots_table, guild_member):
         stmt = insert(spots_table).values(
-            member_id=guild_member.id, legendary=0,
-            rare=0, common=0)
+            member_id=guild_member.id)
         do_update_stmt = stmt.on_duplicate_key_update(member_id=stmt.inserted.member_id)
         self.conn.execute(do_update_stmt)
 
@@ -88,7 +91,6 @@ class DatabaseCog(cogbase.BaseCog):
         print(f"[{self.__class__.__name__}]: Member count refreshed")
 
         # Spots tables
-        guild = self.bot.get_guild(self.bot.guild[0])
         for guild_member in guild.members:
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
@@ -102,12 +104,38 @@ class DatabaseCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
-    # Placeholder for simpler function(now it updates whole tables instead of one row)
+    # TODO: Placeholder for simpler function(now it updates whole tables instead of one row)
     @commands.Cog.listener()
     async def on_member_join(self, _member):
         self.db_add_update_member(_member)
         self.db_add_update_spots(spots, _member)
         self.db_add_update_spots(spots_temp, _member)
+
+    @cog_ext.cog_slash(name="updateSpotsWithOld", guild_ids=cogbase.GUILD_IDS,
+                       description="Change N-Word channel name",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def db_update_spots_old(self, ctx):
+        import json
+        with open('server_files/old_base_test.json', 'r', encoding='utf-8-sig') as fp:
+            old_db = json.load(fp)
+
+        for mem_id in old_db:
+            stmt = insert(spots).values(
+                member_id=mem_id, legendary=old_db[mem_id]["type_1"],
+                rare=old_db[mem_id]["type_0"])
+            do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary,
+                                                          rare=stmt.inserted.rare,
+                                                          common=stmt.inserted.common)
+            self.conn.execute(do_update_stmt)
+            stmt = insert(spots_temp).values(
+                member_id=mem_id, legendary=old_db[mem_id]["type_1"],
+                rare=old_db[mem_id]["type_0"])
+            do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary,
+                                                          rare=stmt.inserted.rare,
+                                                          common=stmt.inserted.common)
+            self.conn.execute(do_update_stmt)
+        await ctx.send(f"Spot tables updated with old data", delete_after=3.0)
+        print(f'[{self.__class__.__name__}]: Spot tables updated with old data')
 
     # ----- SPOTTING OPERATIONS -----
 
