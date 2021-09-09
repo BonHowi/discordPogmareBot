@@ -50,6 +50,18 @@ def import_from_sheets():
     return values_input
 
 
+def format_triggers(helpt):
+    helpt = helpt[~helpt.isna()]
+    # Drop empty strings
+    helpt = pd.Series(filter(None, helpt))
+    # Copy strings with spaces without keeping them
+    for trigger in helpt:
+        trigger_nospace = trigger.replace(' ', '')
+        helpt = helpt.append(pd.Series(trigger_nospace))
+    helpt = helpt.drop_duplicates()
+    return helpt
+
+
 def get_config():
     """
 
@@ -71,14 +83,7 @@ def get_config():
     triggers_list = []
     for row in triggers.itertuples(index=False):
         helpt = pd.Series(row)
-        helpt = helpt[~helpt.isna()]
-        # Drop empty strings
-        helpt = pd.Series(filter(None, helpt))
-        # Copy strings with spaces without keeping them
-        for trigger in helpt:
-            trigger_nospace = trigger.replace(' ', '')
-            helpt = helpt.append(pd.Series(trigger_nospace))
-        helpt = helpt.drop_duplicates()
+        helpt = format_triggers(helpt)
         triggers_list.append(helpt)
 
     print("Creating trigger structure")
@@ -91,7 +96,8 @@ def get_config():
     print("Creating output")
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
-    milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000], "Pogmare Spotter": [3000],
+    milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
+                  "Pogmare Spotter": [3000],
                   "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
     milestones_df = pd.DataFrame(data=milestones)
     json_final = {'milestones': milestones_df, 'types': types_df, 'commands': monsters_df}
