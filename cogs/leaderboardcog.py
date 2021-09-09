@@ -20,7 +20,6 @@ class LeaderboardsCog(cogbase.BaseCog):
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
-
         spots_df_top = spots_df_top[["display_name", ch_type]]
 
         await top_ch.purge(limit=10)
@@ -42,7 +41,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Leaderboards updated')
 
     @update_leaderboards_loop.before_loop
-    async def before_db_update_loop(self):
+    async def before_update_leaderboards_loop(self):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
@@ -56,6 +55,9 @@ class LeaderboardsCog(cogbase.BaseCog):
                   f"**Commons**: {spots_df.at[0, 'common']}"
         # TODO: role progress
         await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
+
+    async def update_role(self):
+        pass
 
 
 def setup(bot: commands.Bot):
