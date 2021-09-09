@@ -121,7 +121,7 @@ class CommandsCog(cogbase.BaseCog):
             self.bot.reload_extension("cogs.requestcog")
             for mon_type in self.bot.config["milestones"][0]:
                 if get(ctx.guild.roles, name=mon_type):
-                    pass
+                    continue
                 else:
                     await ctx.guild.create_role(name=mon_type)
                     print(f"[{self.__class__.__name__}]: {mon_type} role created")
@@ -147,7 +147,6 @@ class CommandsCog(cogbase.BaseCog):
         channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
         if new_status in channel.name:
             await ctx.send(f"{channel.name} has been changed", hidden=True)
-            return
         else:
             await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)

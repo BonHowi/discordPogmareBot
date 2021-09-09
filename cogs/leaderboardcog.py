@@ -72,9 +72,7 @@ class LeaderboardsCog(cogbase.BaseCog):
                 await guild_member.add_roles(role_new)
                 await guild_member.remove_roles(role_old)
             else:
-                pass
-            # check progress
-            # if progress update role
+                continue
 
 
 def setup(bot: commands.Bot):

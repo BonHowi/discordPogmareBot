@@ -14,16 +14,17 @@ member = Table('member', metadata_obj,
                Column('name', String(50), nullable=False),
                Column('display_name', String(50), nullable=False)
                )
+fk_member_id = "member.id"
 
 spots = Table('spots', metadata_obj,
-              Column('member_id', BigInteger, ForeignKey("member.id"), primary_key=True),
+              Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
               Column('legendary', Integer),
               Column('rare', Integer),
               Column('common', Integer)
               )
 
 spots_temp = Table('spots_temp', metadata_obj,
-                   Column('member_id', BigInteger, ForeignKey("member.id"), primary_key=True),
+                   Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
                    Column('legendary', Integer),
                    Column('rare', Integer),
                    Column('common', Integer)
@@ -31,7 +32,7 @@ spots_temp = Table('spots_temp', metadata_obj,
 
 warn = Table('warn', metadata_obj,
              Column('id', Integer, primary_key=True),
-             Column('member_id', BigInteger, ForeignKey("member.id")),
+             Column('member_id', BigInteger, ForeignKey(fk_member_id)),
              Column('reason', String(120), nullable=False),
              Column('date', DateTime, nullable=False),
              )

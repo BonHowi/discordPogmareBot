@@ -39,7 +39,6 @@ class MyBot(commands.Bot):
         self.update_ch_commons_loop.start()
 
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
-            # fp.encoding = 'utf-8-sig'
             self.config = json.load(fp)
 
     # On Client Start

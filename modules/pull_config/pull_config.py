@@ -20,11 +20,12 @@ def import_from_sheets():
     :return:
     :rtype:
     """
+    token = "token.json"
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists(token):
+        creds = Credentials.from_authorized_user_file(token, SCOPES)
     # If there are no (valid) credentials available, let the user log in
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -34,7 +35,7 @@ def import_from_sheets():
                 CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open(token, 'w') as token:
             token.write(creds.to_json())
 
     service = build('sheets', 'v4', credentials=creds)
@@ -66,7 +67,6 @@ def get_config():
 
     triggers = df.drop(['name', 'role', 'type', 'id'], axis=1)
     triggers = triggers.applymap(lambda s: s.lower() if type(s) == str else s)
-    # triggers = triggers.applymap(lambda s: unidecode.unidecode(s) if type(s) == str else s)
 
     triggers_list = []
     for row in triggers.itertuples(index=False):
