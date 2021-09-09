@@ -14,6 +14,8 @@ Current commands:
 import asyncio
 import json
 import discord
+from discord.utils import get
+
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -116,7 +118,14 @@ class CommandsCog(cogbase.BaseCog):
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
-            self.bot.reload_extension("cogs.rolecog")
+            self.bot.reload_extension("cogs.requestcog")
+            for mon_type in self.bot.config["milestones"][0]:
+                if get(ctx.guild.roles, name=mon_type):
+                    pass
+                else:
+                    await ctx.guild.create_role(name=mon_type)
+                    print(f"[{self.__class__.__name__}]: {mon_type} role created")
+            print(f"[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
     # OTHER
