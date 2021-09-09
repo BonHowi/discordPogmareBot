@@ -46,7 +46,6 @@ class MyBot(commands.Bot):
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
-        print(f"[{self.__class__.__name__}]: Bot now online")
 
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -94,7 +93,6 @@ class MyBot(commands.Bot):
     @tasks.loop(minutes=60.0)
     async def update_ch_commons_loop(self):
         if datetime.now().hour == 12:
-            print("enter")
             await self.update_ch_commons()
 
     @update_ch_commons_loop.before_loop
