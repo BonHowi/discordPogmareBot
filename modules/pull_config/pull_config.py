@@ -91,7 +91,7 @@ def get_config():
     print("Creating output")
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
-    milestones = {"Rare Spotter": [150], "Pepega Spotter": [1000], "Pog Spotter": [2000], "Pogmare Spotter": [3000],
+    milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000], "Pogmare Spotter": [3000],
                   "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
     milestones_df = pd.DataFrame(data=milestones)
     json_final = {'milestones': milestones_df, 'types': types_df, 'commands': monsters_df}
