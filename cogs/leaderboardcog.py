@@ -1,4 +1,5 @@
 import discord
+from discord.utils import get
 from discord_slash import cog_ext
 
 import cogs.cogbase as cogbase
@@ -6,6 +7,8 @@ from discord.ext import commands, tasks
 import pandas as pd
 
 from cogs.databasecog import DatabaseCog
+
+legend_multiplier = 5
 
 
 class LeaderboardsCog(cogbase.BaseCog):
@@ -16,7 +19,6 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)
 
-        legend_multiplier = 5
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
@@ -38,6 +40,7 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards_loop(self):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
+        await self.update_role()
         print(f'[{self.__class__.__name__}]: Leaderboards updated')
 
     @update_leaderboards_loop.before_loop
@@ -58,11 +61,20 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     async def update_role(self):
         guild = self.bot.get_guild(self.bot.guild[0])
+        spot_roles = self.bot.config["milestones"][0]
         for guild_member in guild.members:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
+            spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+            role_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] >= value]
+            if role_list:
+                role_new = get(guild.roles, name=role_list[-1])
+                role_old = get(guild.roles, name=role_list[-2])
+                await guild_member.add_roles(role_new)
+                await guild_member.remove_roles(role_old)
+            else:
+                pass
             # check progress
             # if progress update role
-            pass
 
 
 def setup(bot: commands.Bot):
