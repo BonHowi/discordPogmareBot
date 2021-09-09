@@ -50,16 +50,16 @@ def import_from_sheets():
     return values_input
 
 
-def format_triggers(helpt):
-    helpt = helpt[~helpt.isna()]
+def format_triggers(trigger_ser):
+    trigger_ser = trigger_ser[~trigger_ser.isna()]
     # Drop empty strings
-    helpt = pd.Series(filter(None, helpt))
+    trigger_ser = pd.Series(filter(None, trigger_ser))
     # Copy strings with spaces without keeping them
-    for trigger in helpt:
+    for trigger in trigger_ser:
         trigger_nospace = trigger.replace(' ', '')
-        helpt = helpt.append(pd.Series(trigger_nospace))
-    helpt = helpt.drop_duplicates()
-    return helpt
+        helpt = trigger_ser.append(pd.Series(trigger_nospace))
+    helpt = trigger_ser.drop_duplicates()
+    return trigger_ser
 
 
 def get_config():
@@ -82,9 +82,9 @@ def get_config():
 
     triggers_list = []
     for row in triggers.itertuples(index=False):
-        helpt = pd.Series(row)
-        helpt = format_triggers(helpt)
-        triggers_list.append(helpt)
+        help_ser = pd.Series(row)
+        help_ser = format_triggers(help_ser)
+        triggers_list.append(help_ser)
 
     print("Creating trigger structure")
     triggers_def = []
