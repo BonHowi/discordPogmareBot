@@ -57,8 +57,8 @@ def format_triggers(trigger_ser):
     # Copy strings with spaces without keeping them
     for trigger in trigger_ser:
         trigger_nospace = trigger.replace(' ', '')
-        helpt = trigger_ser.append(pd.Series(trigger_nospace))
-    helpt = trigger_ser.drop_duplicates()
+        trigger_ser = trigger_ser.append(pd.Series(trigger_nospace))
+    trigger_ser = trigger_ser.drop_duplicates()
     return trigger_ser
 
 
