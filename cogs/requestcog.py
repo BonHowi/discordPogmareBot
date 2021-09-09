@@ -60,7 +60,6 @@ class RoleCog(cogbase.BaseCog):
     async def _role(self, ctx: SlashContext, monster_name: str):
         if ctx.channel.id != self.bot.ch_role_request:
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
-            return
 
         else:
             monster = await self.get_monster(ctx, monster_name)

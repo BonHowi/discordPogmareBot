@@ -48,13 +48,11 @@ class SpotCog(cogbase.BaseCog):
                     await ctx.channel.send(f"{role.mention}")
                     await DatabaseCog.db_count_spot(ctx.author.id,
                                                     monster_type_dict[spotted_monster["type"]])
-                    return
                 else:
                     await ctx.channel.send(
                         f"{ctx.author.mention} monster not found; are you sure that name is correct?", delete_after=5)
             elif ctx.content[0] in cords_beginning:
                 await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
-                return
 
 
 def setup(bot: commands.Bot):
