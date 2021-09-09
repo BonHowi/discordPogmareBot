@@ -28,7 +28,7 @@ class LeaderboardsCog(cogbase.BaseCog):
 
         top_print = []
         for index, row in spots_df_top.iterrows():
-            member_stats = [f"**[{index}]**.  {row['display_name']} - {row[ch_type]}"]
+            member_stats = [f"**[{index + 1}]**  {row['display_name']} - {row[ch_type]}"]
             top_print.append(member_stats)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
