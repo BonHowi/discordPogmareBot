@@ -1,5 +1,3 @@
-import atexit
-
 import discord
 from discord.ext import commands
 from discord_slash.model import SlashCommandPermissionType
@@ -14,7 +12,7 @@ PERMISSION_MODS = {
         create_permission(MODERATION_IDS[1], SlashCommandPermissionType.ROLE, True)
     ]
 }
-PERMISSION_BONJOWI = {
+PERMISSION_ADMINS = {
     GUILD_IDS[0]: [
         create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
     ]
@@ -24,7 +22,7 @@ PERMISSION_BONJOWI = {
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print(f"[INFO]: Init {self.__class__.__name__}")
+        print(f"[{self.__class__.__name__}]: Init")
 
     # Find monster in config
     async def get_monster(self, ctx, name: str):
@@ -48,16 +46,18 @@ class BaseCog(commands.Cog):
                 monster = monsters
 
         if not monster:
-            print("Monster not found")
-            await ctx.send("Monster not found", hidden=True)
+            print(f"[{self.__class__.__name__}]: Monster not found")
+            # await ctx.channel.send("Monster not found", delete_after=5.0)
             return
 
         monster["role"] = discord.utils.get(ctx.guild.roles, name=monster["name"])
         if not monster["role"]:
-            print(f"Failed to fetch roleID for monster {monster['name']}")
-            await ctx.send("Role not found", hidden=True)
+            print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster['name']}")
+            # await ctx.channel.send("Role not found", delete_after=5.0)
             return
 
         else:
             monster["role"] = monster["role"].id
         return monster
+
+
