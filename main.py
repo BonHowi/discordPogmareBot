@@ -27,6 +27,7 @@ class MyBot(commands.Bot):
         print(f"[{self.__class__.__name__}]: Init")
         print(f"[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
         self.guild = get_settings("guild")
+        self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
         self.ch_total_members = get_settings("CH_TOTAL_MEMBERS")
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
@@ -79,9 +80,12 @@ class MyBot(commands.Bot):
                 print(ValueError)
 
         new_name = f"common-{commons[0]}"
-        channel = self.get_channel(self.ch_common)
-        await discord.TextChannel.edit(channel, name=new_name)
+        common_ch = self.get_channel(self.ch_common)
+        await discord.TextChannel.edit(common_ch, name=new_name)
         print(f"[{self.__class__.__name__}]: Common channel name updated: {new_name}")
+
+        admin_posting = self.bot.get_channel(self.ch_admin_posting)
+        await admin_posting.send(f"Commons changed: {new_name}")
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:
