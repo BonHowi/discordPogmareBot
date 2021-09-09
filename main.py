@@ -82,9 +82,9 @@ class MyBot(commands.Bot):
         new_name = f"common-{commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        print(f"[{self.__class__.__name__}]: Common channel name updated: {new_name}")
+        print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
-        admin_posting = self.bot.get_channel(self.ch_admin_posting)
+        admin_posting = self.get_channel(self.ch_admin_posting)
         await admin_posting.send(f"Commons changed: {new_name}")
 
         commons.append(commons.pop(commons.index(commons[0])))
