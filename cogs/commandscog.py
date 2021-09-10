@@ -83,6 +83,7 @@ class CommandsCog(cogbase.BaseCog):
         await ctx.author.send(message)
         await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
+    # Remove all member's warns
     @cog_ext.cog_slash(name="removeWarns", guild_ids=cogbase.GUILD_IDS,
                        description="Function for removing user's all warns",
                        default_permission=False,
@@ -91,6 +92,35 @@ class CommandsCog(cogbase.BaseCog):
         await DatabaseCog.db_remove_warns(user.id)
         await ctx.send(f"{user.display_name}'s warns were deleted", hidden=True)
 
+    # Mute member
+    @cog_ext.cog_slash(name="mute", guild_ids=cogbase.GUILD_IDS,
+                       description="Mute member for x minutes",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def _mute(self, ctx: SlashContext, user: discord.User, time: int, reason: str):
+        duration = time * 60
+        guild = ctx.guild
+        muted = discord.utils.get(guild.roles, name="Muted")
+
+        if not muted:
+            muted = await guild.create_role(name="Muted")
+            for channel in guild.channels:
+                await channel.set_permissions(muted, speak=False, send_messages=False, read_message_history=True,
+                                              read_messages=False)
+        await user.add_roles(muted, reason=reason)
+        muted_embed = discord.Embed(title="Muted a user",
+                                    description=f"{user.mention} Was muted by {ctx.author.mention} "
+                                                f"for {reason} to {time}")
+        await ctx.send(embed=muted_embed)
+        await asyncio.sleep(duration)
+        await user.remove_roles(muted)
+        unmute_embed = discord.Embed(title="Mute over!",
+                                     description=f"{ctx.author.mention} muted to {user.mention} "
+                                                 f"for {reason} is over after {time}")
+        await ctx.send(embed=unmute_embed)
+
+    # CHANNEL NAMES UPDATES
+    # Total member channel name
     @cog_ext.cog_slash(name="updateTotMem", guild_ids=cogbase.GUILD_IDS,
                        description="Update total number of members",
                        default_permission=False,
@@ -99,6 +129,7 @@ class CommandsCog(cogbase.BaseCog):
         await self.bot.update_member_count(ctx)
         await ctx.send(f"Total Members count updated", hidden=True)
 
+    # Commons channel name
     @cog_ext.cog_slash(name="updateCommons", guild_ids=cogbase.GUILD_IDS,
                        description="Update common channel name",
                        default_permission=False,
@@ -108,6 +139,22 @@ class CommandsCog(cogbase.BaseCog):
         channel = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
+
+    # N-Word spotted channel name
+    # Doesn't work if used too many times in a short period of time
+    @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
+                       description="Change N-Word channel name",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def rename_nword_channel(self, ctx, status: str):
+        new_status = status
+        channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
+        if new_status in channel.name:
+            await ctx.send(f"{channel.name} has been changed", hidden=True)
+        else:
+            await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
+            await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
+
+    # OTHER
 
     # Pull config.json from Google Sheets
     @cog_ext.cog_slash(name="pullConfig", guild_ids=cogbase.GUILD_IDS,
@@ -133,7 +180,7 @@ class CommandsCog(cogbase.BaseCog):
                 await ctx.guild.create_role(name=mon_type)
                 print(f"[{self.__class__.__name__}]: {mon_type} role created")
 
-    # OTHER
+    # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
                        description="Clear temp spots table in database",
                        permissions=cogbase.PERMISSION_ADMINS)
@@ -141,20 +188,6 @@ class CommandsCog(cogbase.BaseCog):
         await DatabaseCog.db_clear_spots_temp_table()
         await ctx.send(f"Temp spots table was cleared", hidden=True)
         await self.reload_cog(ctx, "cogs.databasecog")
-
-    # Did BonJowi killed N-Word? (unstable)
-    # Apparently you can not use this command more often than every x minutes
-    @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
-                       description="Change N-Word channel name",
-                       permissions=cogbase.PERMISSION_ADMINS)
-    async def rename_nword_channel(self, ctx, status: str):
-        new_status = status
-        channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
-        if new_status in channel.name:
-            await ctx.send(f"{channel.name} has been changed", hidden=True)
-        else:
-            await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
-            await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     async def reload_cog(self, ctx: SlashContext, module: str):
