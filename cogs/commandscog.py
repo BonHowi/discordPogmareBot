@@ -109,15 +109,6 @@ class CommandsCog(cogbase.BaseCog):
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
 
-    async def create_roles(self, ctx: SlashContext, common: bool):
-        milestones = "common_milestones" if common else "total_milestones"
-        for mon_type in self.bot.config[milestones][0]:
-            if get(ctx.guild.roles, name=mon_type):
-                continue
-            else:
-                await ctx.guild.create_role(name=mon_type)
-                print(f"[{self.__class__.__name__}]: {mon_type} role created")
-
     # Pull config.json from Google Sheets
     @cog_ext.cog_slash(name="pullConfig", guild_ids=cogbase.GUILD_IDS,
                        description="Pull config from google sheets",
@@ -131,6 +122,16 @@ class CommandsCog(cogbase.BaseCog):
 
             print(f"[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
+
+    # Create roles if pull_config gets non existent roles
+    async def create_roles(self, ctx: SlashContext, common: bool):
+        milestones = "common_milestones" if common else "total_milestones"
+        for mon_type in self.bot.config[milestones][0]:
+            if get(ctx.guild.roles, name=mon_type):
+                continue
+            else:
+                await ctx.guild.create_role(name=mon_type)
+                print(f"[{self.__class__.__name__}]: {mon_type} role created")
 
     # OTHER
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
