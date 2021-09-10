@@ -39,8 +39,8 @@ class BaseCog(commands.Cog):
         :return:
         :rtype:
         """
-        monster_found = []
         name = name.lower()
+        monster_found = []
 
         for monster in self.bot.config["commands"]:
             if monster["name"].lower() == name or name in monster["triggers"]:
