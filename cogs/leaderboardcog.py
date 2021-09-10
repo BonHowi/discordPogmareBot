@@ -19,7 +19,6 @@ class LeaderboardsCog(cogbase.BaseCog):
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
-        spots_df_top = spots_df_top[["member_id", "display_name", ch_type]]
 
         await top_ch.purge(limit=10)
 
