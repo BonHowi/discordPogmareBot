@@ -50,7 +50,7 @@ def import_from_sheets():
     return values_input
 
 
-def create_trigger_list(triggers):
+def create_trigger_list(triggers) -> list:
     triggers_list = []
     for row in triggers.itertuples(index=False):
         help_ser = pd.Series(row)
@@ -66,7 +66,7 @@ def create_trigger_list(triggers):
     return triggers_list
 
 
-def create_output(monsters_df):
+def create_output(monsters_df) -> dict:
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
