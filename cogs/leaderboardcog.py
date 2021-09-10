@@ -13,6 +13,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         super().__init__(base)
         self.update_leaderboards_loop.start()
 
+    # Send leaderboards to specified channel
     async def update_leaderboards(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)
 
@@ -34,6 +35,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
         await top_ch.send(embed=embed_command)
 
+    # Update member spotting role(total/common)
     async def update_role(self, guild, guild_member, spot_roles, common: bool):
         roles_type = "common" if common else "total"
         try:
@@ -50,6 +52,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         except KeyError as e:
             print(e)
 
+    # Create role if in config and not on server
     async def create_role(self, guild, roles_list):
         if get(guild.roles, name=roles_list[-1]):
             return
@@ -57,6 +60,7 @@ class LeaderboardsCog(cogbase.BaseCog):
             await guild.create_role(name=roles_list[-1])
             print(f"[{self.__class__.__name__}]: {roles_list[-1]} role created")
 
+    # Update members' spotting roles
     async def update_member_roles(self):
         guild = self.bot.get_guild(self.bot.guild[0])
         spot_roles_total = self.bot.config["total_milestones"][0]
@@ -77,6 +81,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
+    # Get own spotting stats
     @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
                        description="Get your spot stats",
                        default_permission=True)
