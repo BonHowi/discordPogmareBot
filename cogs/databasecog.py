@@ -43,8 +43,8 @@ warn = Table('warn', metadata_obj,
 
 coords = Table('coords', metadata_obj,
                Column('id', Integer, primary_key=True),
-               Column('coords', String(50), nullable=False),
-               Column('monster_type', String(50), nullable=False)
+               Column('coords', String(100), nullable=False),
+               Column('monster_type', String(20), nullable=False)
                )
 
 
