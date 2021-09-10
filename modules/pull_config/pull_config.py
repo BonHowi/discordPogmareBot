@@ -89,6 +89,14 @@ def create_output(monsters_df) -> dict:
     return data_dict
 
 
+def create_trigger_structure(triggers_list):
+    triggers_def = []
+    for i in triggers_list:
+        triggers_def.append(list(i))
+    triggers_def_series = pd.Series(triggers_def)
+    return triggers_def_series
+
+
 def get_config():
     """
 
@@ -110,11 +118,8 @@ def get_config():
     triggers_list = create_trigger_list(triggers)
 
     print(f"[{get_config.__name__}]: Creating trigger structure")
-    triggers_def = []
-    for i in triggers_list:
-        triggers_def.append(list(i))
-    triggers_def_series = pd.Series(triggers_def)
-    monsters_df.insert(loc=0, column='triggers', value=triggers_def_series)
+    triggers_def = create_trigger_structure(triggers_list)
+    monsters_df.insert(loc=0, column='triggers', value=triggers_def)
 
     print(f"[{get_config.__name__}]: Creating output")
     data_dict = create_output(monsters_df)
