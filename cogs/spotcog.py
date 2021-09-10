@@ -44,7 +44,7 @@ class SpotCog(cogbase.BaseCog):
 
     async def hanlde_spotted_monster(self, ctx):
         if ctx.content.startswith(prefix):
-            spotted_monster = await self.get_monster(ctx, ctx.content.replace(prefix, ""))
+            spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
             if spotted_monster:
                 role = get(ctx.guild.roles, name=spotted_monster["name"])
                 await ctx.delete()
