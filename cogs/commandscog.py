@@ -70,7 +70,6 @@ class CommandsCog(cogbase.BaseCog):
             f"{user.mention} was warned for:\n*\"{reason}\"*\n")  # f"Number of warns: {len(current_user['reasons'])}")
 
     # Get list of user's warns
-    # Does not work if used too much
     @cog_ext.cog_slash(name="warns", guild_ids=cogbase.GUILD_IDS,
                        description="Function for warning users",
                        default_permission=False,
@@ -79,7 +78,7 @@ class CommandsCog(cogbase.BaseCog):
         warns, nr_of_warns = await DatabaseCog.db_get_warns(user.id)
         nl = "\n"
         message = f"**{user.name}** has been warned **{nr_of_warns}** times\n\n_Reasons_:\n" \
-                  f"{nl.join(warns)}"
+                  f"{nl.join(warns)}\n"
         await ctx.author.send(message)
         await ctx.send(f"{user.name} warns has been sent to DM", hidden=True)
 
