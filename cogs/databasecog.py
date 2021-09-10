@@ -48,6 +48,7 @@ coords = Table('coords', metadata_obj,
                )
 
 
+# noinspection PyPropertyAccess
 class DatabaseCog(cogbase.BaseCog):
     password = get_settings("DB_P")
     engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
@@ -58,11 +59,9 @@ class DatabaseCog(cogbase.BaseCog):
         super().__init__(base)
 
         # Connect to database
-        # TODO: self to cls
-        password = get_settings("DB_P")
-        self.engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
+        self.engine = DatabaseCog.engine
         metadata_obj.create_all(self.engine)
-        self.conn = self.engine.connect()
+        self.conn = DatabaseCog.conn
         self.db_update_loop.start()
 
     # ----- BASE DATABASE OPERATIONS -----
@@ -105,7 +104,6 @@ class DatabaseCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
-    # TODO: Placeholder for simpler function(now it updates whole tables instead of one row)
     @commands.Cog.listener()
     async def on_member_join(self, _member):
         self.db_add_update_member(_member)

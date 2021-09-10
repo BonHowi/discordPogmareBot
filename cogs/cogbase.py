@@ -19,10 +19,14 @@ PERMISSION_ADMINS = {
 }
 
 
+# noinspection PyTypeChecker
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print(f"[{self.__class__.__name__}]: Init")
+
+    def get_bot(self):
+        return self.bot
 
     # Find monster in config
     async def get_monster(self, ctx, name: str):
@@ -57,5 +61,3 @@ class BaseCog(commands.Cog):
         else:
             monster["role"] = monster["role"].id
         return monster
-
-

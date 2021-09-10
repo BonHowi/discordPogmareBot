@@ -1,5 +1,5 @@
 {
-    "milestones": [
+    "total_milestones": [
         {
             "total": 150,
             "name": "Rare Spotter"

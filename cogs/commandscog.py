@@ -119,12 +119,19 @@ class CommandsCog(cogbase.BaseCog):
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
             self.bot.reload_extension("cogs.requestcog")
-            for mon_type in self.bot.config["milestones"][0]:
+            for mon_type in self.bot.config["total_milestones"][0]:
                 if get(ctx.guild.roles, name=mon_type):
                     continue
                 else:
                     await ctx.guild.create_role(name=mon_type)
                     print(f"[{self.__class__.__name__}]: {mon_type} role created")
+            for mon_type in self.bot.config["common_milestones"][0]:
+                if get(ctx.guild.roles, name=mon_type):
+                    continue
+                else:
+                    await ctx.guild.create_role(name=mon_type)
+                    print(f"[{self.__class__.__name__}]: {mon_type} role created")
+
             print(f"[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
@@ -135,7 +142,7 @@ class CommandsCog(cogbase.BaseCog):
     async def clear_temp_spots_table(self, ctx):
         await DatabaseCog.db_clear_spots_temp_table()
         await ctx.send(f"Temp spots table was cleared", hidden=True)
-        await self.reload_cog("cogs.databasecog")
+        await self.reload_cog(ctx, "cogs.databasecog")
 
     # Did BonJowi killed N-Word? (unstable)
     # Apparently you can not use this command more often than every x minutes
@@ -152,19 +159,20 @@ class CommandsCog(cogbase.BaseCog):
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
-    # TODO: load cog if not loaded
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
         try:
+            self.bot.load_extension(f"{module}")
+            await ctx.send(f'[{module}] loaded', hidden=True)
+            print(f'[{self.__class__.__name__}]: {module} loaded')
+        except commands.ExtensionAlreadyLoaded:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
-        except Exception as e:
-            await ctx.send(f'[{module}] not reloaded', hidden=True)
-            print(f'[{module}] not reloaded')
-            print(f'{type(e)}: {e}')
-        else:
             await ctx.send(f'[{module}] reloaded', hidden=True)
-            print(f'[{module}] reloaded')
+            print(f'[{self.__class__.__name__}]: {module} reloaded')
+        except commands.ExtensionNotFound:
+            await ctx.send(f'[{module}] not found', hidden=True)
+            print(f'[{self.__class__.__name__}]: {module} not found')
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
@@ -179,7 +187,7 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
-            await self.reload_cog(cog)
+            await self.reload_cog(ctx, cog)
         await ctx.send(f'All cogs reloaded', hidden=True)
 
 

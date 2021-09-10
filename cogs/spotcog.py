@@ -5,15 +5,11 @@ Current commands:
 /remove_spot
 
 """
-import json
 
-import cogs
-import discord
+from discord.ext import commands
+from discord.utils import get
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
-from discord.utils import get
-from discord.ext import commands
-from discord_slash import SlashContext, cog_ext
 
 monster_type_dict = {0: "rare", 1: "legendary", 2: "event1", 3: "event2", 4: "common"}
 

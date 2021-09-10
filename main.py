@@ -1,12 +1,13 @@
-import inspect
-import os
-import logging
 import json
+import logging
+import os
+from datetime import datetime
+
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
+
 from modules.get_settings import get_settings
-from datetime import datetime
 
 # Create logger
 logger = logging.getLogger('discord')
@@ -114,6 +115,7 @@ def main():
     pogmare = MyBot()
 
     # Allow slash commands
+    # noinspection PyUnusedLocal
     slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
 
     # Load cogs
