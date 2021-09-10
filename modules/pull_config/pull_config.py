@@ -69,7 +69,7 @@ def create_trigger_list(triggers) -> list:
 def create_output(monsters_df) -> dict:
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
-    total_milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
+    total_milestones = {"Rare Spotter": [150], "tescior": [151], "Pepega Spotter": [1000], "Pog Spotter": [2000],
                         "Pogmare Spotter": [3000],
                         "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
     total_milestones_df = pd.DataFrame(data=total_milestones)
