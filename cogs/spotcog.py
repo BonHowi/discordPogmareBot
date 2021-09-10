@@ -57,7 +57,7 @@ class SpotCog(cogbase.BaseCog):
             else:
                 await ctx.delete()
                 await ctx.channel.send(
-                    f"{ctx.author.mention} monster not found; are you sure that the name is correct?", delete_after=5)
+                    f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
 
