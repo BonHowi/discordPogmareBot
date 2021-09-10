@@ -117,13 +117,7 @@ def get_config():
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
-        json.dump(
-            data_dict,
-            f,
-            indent=4,
-            ensure_ascii=False,
-            sort_keys=False
-        )
+        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False)
     print(f"[{get_config.__name__}]: .json saved")
 
 
