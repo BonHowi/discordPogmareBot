@@ -30,15 +30,6 @@ class BaseCog(commands.Cog):
 
     # Find monster in config
     def get_monster(self, ctx, name: str):
-        """
-
-        :param ctx:
-        :type ctx:
-        :param name:
-        :type name:
-        :return:
-        :rtype:
-        """
         name = name.lower()
         monster_found = []
 
