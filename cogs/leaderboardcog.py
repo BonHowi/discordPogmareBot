@@ -52,7 +52,7 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     async def create_role(self, guild, roles_list):
         if get(guild.roles, name=roles_list[-1]):
-            pass
+            return
         else:
             await guild.create_role(name=roles_list[-1])
             print(f"[{self.__class__.__name__}]: {roles_list[-1]} role created")
