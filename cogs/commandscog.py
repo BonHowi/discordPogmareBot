@@ -108,16 +108,11 @@ class CommandsCog(cogbase.BaseCog):
                 await channel.set_permissions(muted, speak=False, send_messages=False, read_message_history=True,
                                               read_messages=False)
         await user.add_roles(muted, reason=reason)
-        muted_embed = discord.Embed(title="Muted a user",
-                                    description=f"{user.mention} Was muted by {ctx.author.mention} "
-                                                f"for {reason} to {time}")
-        await ctx.send(embed=muted_embed)
+        await ctx.send(f"{user.mention} Was muted by {ctx.author.name} for {time} min\n"
+                       f"Reason: {reason}", delete_after=10)
         await asyncio.sleep(duration)
         await user.remove_roles(muted)
-        unmute_embed = discord.Embed(title="Mute over!",
-                                     description=f"{ctx.author.mention} muted to {user.mention} "
-                                                 f"for {reason} is over after {time}")
-        await ctx.send(embed=unmute_embed)
+        await ctx.send(f"{ctx.author.mention} mute is over", delete_after=10)
 
     # CHANNEL NAMES UPDATES
     # Total member channel name
