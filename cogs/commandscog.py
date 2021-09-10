@@ -104,7 +104,7 @@ class CommandsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def update_commons_ch(self, ctx: SlashContext, common: str):
-        new_name = f"common-{common}"
+        new_name = f"common {common}"
         channel = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
