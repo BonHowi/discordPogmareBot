@@ -50,16 +50,36 @@ def import_from_sheets():
     return values_input
 
 
-def format_triggers(trigger_ser):
-    trigger_ser = trigger_ser[~trigger_ser.isna()]
-    # Drop empty strings
-    trigger_ser = pd.Series(filter(None, trigger_ser))
-    # Copy strings with spaces without keeping them
-    for trigger in trigger_ser:
-        trigger_nospace = trigger.replace(' ', '')
-        trigger_ser = trigger_ser.append(pd.Series(trigger_nospace))
-    trigger_ser = trigger_ser.drop_duplicates()
-    return trigger_ser
+def create_trigger_list(triggers):
+    triggers_list = []
+    for row in triggers.itertuples(index=False):
+        help_ser = pd.Series(row)
+        help_ser = help_ser[~help_ser.isna()]
+        # Drop empty strings
+        help_ser = pd.Series(filter(None, help_ser))
+        # Copy strings with spaces without keeping them
+        for trigger in help_ser:
+            trigger_nospace = trigger.replace(' ', '')
+            help_ser = help_ser.append(pd.Series(trigger_nospace))
+        help_ser = help_ser.drop_duplicates()
+        triggers_list.append(help_ser)
+    return triggers_list
+
+
+def create_output(monsters_df):
+    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
+    types_df = pd.DataFrame(data=types)
+    milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
+                  "Pogmare Spotter": [3000],
+                  "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
+    milestones_df = pd.DataFrame(data=milestones)
+    json_final = {'milestones': milestones_df, 'types': types_df, 'commands': monsters_df}
+    # convert dataframes into dictionaries
+    data_dict = {
+        key: json_final[key].to_dict(orient='records')
+        for key in json_final
+    }
+    return data_dict
 
 
 def get_config():
@@ -80,11 +100,7 @@ def get_config():
     triggers = df.drop(['name', 'role', 'type', 'id'], axis=1)
     triggers = triggers.applymap(lambda s: s.lower() if type(s) == str else s)
 
-    triggers_list = []
-    for row in triggers.itertuples(index=False):
-        help_ser = pd.Series(row)
-        help_ser = format_triggers(help_ser)
-        triggers_list.append(help_ser)
+    triggers_list = create_trigger_list(triggers)
 
     print("Creating trigger structure")
     triggers_def = []
@@ -94,19 +110,7 @@ def get_config():
     monsters_df.insert(loc=0, column='triggers', value=triggers_def_series)
 
     print("Creating output")
-    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
-    types_df = pd.DataFrame(data=types)
-    milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
-                  "Pogmare Spotter": [3000],
-                  "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
-    milestones_df = pd.DataFrame(data=milestones)
-    json_final = {'milestones': milestones_df, 'types': types_df, 'commands': monsters_df}
-
-    # convert dataframes into dictionaries
-    data_dict = {
-        key: json_final[key].to_dict(orient='records')
-        for key in json_final
-    }
+    data_dict = create_output(monsters_df)
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
