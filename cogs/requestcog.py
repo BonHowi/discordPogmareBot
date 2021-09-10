@@ -31,14 +31,14 @@ class RoleCog(cogbase.BaseCog):
                 if command["type"] == mon_type["id"]:
                     aval_commands.append(command["name"])
 
-            embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x00ff00)
+            embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x674ea7)
             await role_ch.send(embed=embed_command)
 
         guide_content = "**/role monstername** - " \
                         "get role with monster name to be notified when the monster is spotted,\n" \
                         "use again to remove the role\n\n" \
                         "*Check #guides for more info*"
-        embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=0x00ff00)
+        embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=0x674ea7)
         await role_ch.send(embed=embed_guide)
 
     # Remove normal messages from monster-request
