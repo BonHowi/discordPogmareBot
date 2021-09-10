@@ -63,16 +63,19 @@ class LeaderboardsCog(cogbase.BaseCog):
         guild = self.bot.get_guild(self.bot.guild[0])
         spot_roles = self.bot.config["milestones"][0]
         for guild_member in guild.members:
-            spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
-            spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
-            role_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] >= value]
-            if role_list:
-                role_new = get(guild.roles, name=role_list[-1])
-                role_old = get(guild.roles, name=role_list[-2])
-                await guild_member.add_roles(role_new)
-                await guild_member.remove_roles(role_old)
-            else:
-                continue
+            try:
+                spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
+                spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+                role_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] >= value]
+                if role_list:
+                    role_new = get(guild.roles, name=role_list[-1])
+                    role_old = get(guild.roles, name=role_list[-2])
+                    await guild_member.add_roles(role_new)
+                    await guild_member.remove_roles(role_old)
+                else:
+                    continue
+            except KeyError as e:
+                print(e)
 
 
 def setup(bot: commands.Bot):
