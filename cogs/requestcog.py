@@ -23,7 +23,7 @@ class RoleCog(cogbase.BaseCog):
         await role_ch.purge(limit=10)
 
         for mon_type in self.bot.config["types"]:
-            if mon_type["id"] in [4]:  # Pass if common/...
+            if mon_type["id"] in [2, 3, 4]:  # Pass if common/...
                 continue
 
             aval_commands = []
@@ -34,8 +34,11 @@ class RoleCog(cogbase.BaseCog):
             embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x00ff00)
             await role_ch.send(embed=embed_command)
 
-        guide_content = "TBA"
-        embed_guide = discord.Embed(title="Channel Guide", description=guide_content)
+        guide_content = "**/role monstername** - " \
+                        "get role with monster name to be notified when the monster is spotted,\n" \
+                        "use again to remove the role\n\n" \
+                        "*Check #guides for more info*"
+        embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=0x00ff00)
         await role_ch.send(embed=embed_guide)
 
     # Remove normal messages from monster-request

@@ -19,10 +19,14 @@ PERMISSION_ADMINS = {
 }
 
 
+# noinspection PyTypeChecker
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print(f"[{self.__class__.__name__}]: Init")
+
+    def get_bot(self):
+        return self.bot
 
     # Find monster in config
     async def get_monster(self, ctx, name: str):
@@ -47,17 +51,13 @@ class BaseCog(commands.Cog):
 
         if not monster:
             print(f"[{self.__class__.__name__}]: Monster not found")
-            # await ctx.channel.send("Monster not found", delete_after=5.0)
             return
 
         monster["role"] = discord.utils.get(ctx.guild.roles, name=monster["name"])
         if not monster["role"]:
             print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster['name']}")
-            # await ctx.channel.send("Role not found", delete_after=5.0)
             return
 
         else:
             monster["role"] = monster["role"].id
         return monster
-
-
