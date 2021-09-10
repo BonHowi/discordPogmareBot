@@ -65,7 +65,7 @@ class RoleCog(cogbase.BaseCog):
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
 
         else:
-            monster = await self.get_monster(ctx, monster_name)
+            monster = self.get_monster(ctx, monster_name)
             member = ctx.author
             if monster:
                 role = get(member.guild.roles, name=monster["name"])
