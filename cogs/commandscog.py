@@ -109,6 +109,15 @@ class CommandsCog(cogbase.BaseCog):
         await discord.TextChannel.edit(channel, name=new_name)
         await ctx.send(f"Common channel updated", hidden=True)
 
+    async def create_roles(self, ctx: SlashContext, common: bool):
+        milestones = "common_milestones" if common else "total_milestones"
+        for mon_type in self.bot.config[milestones][0]:
+            if get(ctx.guild.roles, name=mon_type):
+                continue
+            else:
+                await ctx.guild.create_role(name=mon_type)
+                print(f"[{self.__class__.__name__}]: {mon_type} role created")
+
     # Pull config.json from Google Sheets
     @cog_ext.cog_slash(name="pullConfig", guild_ids=cogbase.GUILD_IDS,
                        description="Pull config from google sheets",
@@ -117,20 +126,8 @@ class CommandsCog(cogbase.BaseCog):
     async def pull_config(self, ctx: SlashContext):
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
-            self.bot.config = json.load(fp)
-            self.bot.reload_extension("cogs.requestcog")
-            for mon_type in self.bot.config["total_milestones"][0]:
-                if get(ctx.guild.roles, name=mon_type):
-                    continue
-                else:
-                    await ctx.guild.create_role(name=mon_type)
-                    print(f"[{self.__class__.__name__}]: {mon_type} role created")
-            for mon_type in self.bot.config["common_milestones"][0]:
-                if get(ctx.guild.roles, name=mon_type):
-                    continue
-                else:
-                    await ctx.guild.create_role(name=mon_type)
-                    print(f"[{self.__class__.__name__}]: {mon_type} role created")
+            await self.create_roles(ctx, True)
+            await self.create_roles(ctx, False)
 
             print(f"[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
