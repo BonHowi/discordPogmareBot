@@ -33,19 +33,14 @@ class LeaderboardsCog(cogbase.BaseCog):
                                       color=0x00ff00)
         await top_ch.send(embed=embed_command)
 
-    @staticmethod
-    async def update_role(guild, guild_member, spot_roles, common: bool):
+    async def update_role(self, guild, guild_member, spot_roles, common: bool):
         roles_type = "common" if common else "total"
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
             spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
             roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, roles_type] >= value]
             if roles_list:
-                if get(guild.roles, name=roles_list[-1]):
-                    pass
-                else:
-                    await guild.create_role(name=roles_list[-1])
-                    print(f"{roles_list[-1]} role created")
+                await self.create_role(guild, roles_list)
                 role_new = get(guild.roles, name=roles_list[-1])
                 await guild_member.add_roles(role_new)
                 if len(roles_list) > 1:
@@ -53,6 +48,14 @@ class LeaderboardsCog(cogbase.BaseCog):
                     await guild_member.remove_roles(role_old)
         except KeyError as e:
             print(e)
+
+    @staticmethod
+    async def create_role(guild, roles_list):
+        if get(guild.roles, name=roles_list[-1]):
+            pass
+        else:
+            await guild.create_role(name=roles_list[-1])
+            print(f"{roles_list[-1]} role created")
 
     async def update_member_roles(self):
         guild = self.bot.get_guild(self.bot.guild[0])
