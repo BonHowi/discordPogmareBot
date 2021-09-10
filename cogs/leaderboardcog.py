@@ -20,7 +20,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
 
-        await top_ch.purge(limit=10)
+        await top_ch.purge()
 
         top_print = []
         for index, row in spots_df_top.iterrows():
@@ -29,7 +29,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
         embed_command = discord.Embed(title=f"TOP 15 {ch_type.upper()}", description=top_print,
-                                      color=0x00ff00)
+                                      color=0xf1c232)
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
         await top_ch.send(embed=embed_command)
