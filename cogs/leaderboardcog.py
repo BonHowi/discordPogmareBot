@@ -19,7 +19,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
-        spots_df_top = spots_df_top[["display_name", ch_type]]
+        spots_df_top = spots_df_top[["member_id", "display_name", ch_type]]
 
         await top_ch.purge(limit=10)
 
@@ -29,8 +29,10 @@ class LeaderboardsCog(cogbase.BaseCog):
             top_print.append(member_stats)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
-        embed_command = discord.Embed(title="TOP 15", description=top_print,
+        embed_command = discord.Embed(title=f"TOP 15 {ch_type.upper()}", description=top_print,
                                       color=0x00ff00)
+        member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
+        embed_command.set_thumbnail(url=f'{member.avatar_url}')
         await top_ch.send(embed=embed_command)
 
     async def update_role(self, guild, guild_member, spot_roles, common: bool):
