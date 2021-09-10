@@ -49,13 +49,12 @@ class LeaderboardsCog(cogbase.BaseCog):
         except KeyError as e:
             print(e)
 
-    @staticmethod
-    async def create_role(guild, roles_list):
+    async def create_role(self, guild, roles_list):
         if get(guild.roles, name=roles_list[-1]):
             pass
         else:
             await guild.create_role(name=roles_list[-1])
-            print(f"{roles_list[-1]} role created")
+            print(f"[{self.__class__.__name__}]: {roles_list[-1]} role created")
 
     async def update_member_roles(self):
         guild = self.bot.get_guild(self.bot.guild[0])
