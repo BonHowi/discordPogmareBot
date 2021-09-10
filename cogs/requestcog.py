@@ -60,12 +60,12 @@ class RoleCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
                        description="Function for adding monster role to user",
                        default_permission=True)
-    async def _role(self, ctx: SlashContext, monster_name: str):
+    async def _role(self, ctx: SlashContext, name: str):
         if ctx.channel.id != self.bot.ch_role_request:
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
 
         else:
-            monster = self.get_monster(ctx, monster_name)
+            monster = self.get_monster(ctx, name)
             member = ctx.author
             if monster:
                 role = get(member.guild.roles, name=monster["name"])
