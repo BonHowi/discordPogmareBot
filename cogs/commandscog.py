@@ -153,24 +153,24 @@ class CommandsCog(cogbase.BaseCog):
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     # TODO: load cog if not loaded
-    async def reload_cog(self, module: str, ctx: SlashContext = None):
+    async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
         try:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
         except Exception as e:
-            # await ctx.send(f'[{module}] not reloaded', hidden=True)
+            await ctx.send(f'[{module}] not reloaded', hidden=True)
             print(f'[{module}] not reloaded')
             print(f'{type(e)}: {e}')
         else:
-            # await ctx.send(f'[{module}] reloaded', hidden=True)
+            await ctx.send(f'[{module}] reloaded', hidden=True)
             print(f'[{module}] reloaded')
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
                        description="Reload cog",
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_cog_command(self, module: str, ctx: SlashContext = None):
+    async def reload_cog_command(self, ctx: SlashContext, module: str):
         await self.reload_cog(ctx, module)
 
     # Command for reloading all cogs
