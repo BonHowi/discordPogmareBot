@@ -80,7 +80,7 @@ class MyBot(commands.Bot):
             except ValueError:
                 print(ValueError)
 
-        new_name = f"common-{commons[0]}"
+        new_name = f"common {commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
         print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
