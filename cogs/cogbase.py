@@ -29,7 +29,7 @@ class BaseCog(commands.Cog):
         return self.bot
 
     # Find monster in config
-    async def get_monster(self, ctx, name: str):
+    def get_monster(self, ctx, name: str):
         """
 
         :param ctx:
@@ -43,11 +43,9 @@ class BaseCog(commands.Cog):
         name = name.lower()
 
         for monsters in self.bot.config["commands"]:
-            if monsters["name"].lower() == name:
-                monster = monsters
+            monster = self.find_monster(monsters, name)
+            if monster:
                 break
-            if name in monsters["triggers"]:
-                monster = monsters
 
         if not monster:
             print(f"[{self.__class__.__name__}]: Monster not found")
@@ -61,3 +59,10 @@ class BaseCog(commands.Cog):
         else:
             monster["role"] = monster["role"].id
         return monster
+
+    @staticmethod
+    def find_monster(monsters, name):
+        if monsters["name"].lower() == name:
+            return monsters
+        elif name in monsters["triggers"]:
+            return monsters

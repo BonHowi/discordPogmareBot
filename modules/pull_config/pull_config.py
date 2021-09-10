@@ -14,6 +14,18 @@ CREDENTIALS_FILE = 'pull_config/credentials/client_secret.com.json '
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
 
+def handle_creds(creds, token):
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    else:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            CREDENTIALS_FILE, SCOPES)
+        creds = flow.run_local_server(port=0)
+    # Save the credentials for the next run
+    with open(token, 'w') as token:
+        token.write(creds.to_json())
+
+
 def import_from_sheets():
     """
 
@@ -28,15 +40,7 @@ def import_from_sheets():
         creds = Credentials.from_authorized_user_file(token, SCOPES)
     # If there are no (valid) credentials available, let the user log in
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CREDENTIALS_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open(token, 'w') as token:
-            token.write(creds.to_json())
+        handle_creds(creds, token)
 
     service = build('sheets', 'v4', credentials=creds)
 
@@ -69,7 +73,7 @@ def create_trigger_list(triggers) -> list:
 def create_output(monsters_df) -> dict:
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
-    total_milestones = {"Rare Spotter": [150], "tescior": 151, "Pepega Spotter": [1000], "Pog Spotter": [2000],
+    total_milestones = {"Rare Spotter": [150], "tescior": [151], "Pepega Spotter": [1000], "Pog Spotter": [2000],
                         "Pogmare Spotter": [3000],
                         "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
     total_milestones_df = pd.DataFrame(data=total_milestones)
@@ -117,13 +121,7 @@ def get_config():
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
-        json.dump(
-            data_dict,
-            f,
-            indent=4,
-            ensure_ascii=False,
-            sort_keys=False
-        )
+        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False)
     print(f"[{get_config.__name__}]: .json saved")
 
 
