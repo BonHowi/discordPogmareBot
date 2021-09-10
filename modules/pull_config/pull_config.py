@@ -98,11 +98,6 @@ def create_trigger_structure(triggers_list):
 
 
 def get_config():
-    """
-
-    :return:
-    :rtype:
-    """
     pd.set_option('mode.chained_assignment', None)
     print(f"[{get_config.__name__}]: Loading data")
     values_input = import_from_sheets()
