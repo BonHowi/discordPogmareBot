@@ -14,6 +14,18 @@ CREDENTIALS_FILE = 'pull_config/credentials/client_secret.com.json '
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
 
+def handle_creds(creds, token):
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    else:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            CREDENTIALS_FILE, SCOPES)
+        creds = flow.run_local_server(port=0)
+    # Save the credentials for the next run
+    with open(token, 'w') as token:
+        token.write(creds.to_json())
+
+
 def import_from_sheets():
     """
 
@@ -28,15 +40,7 @@ def import_from_sheets():
         creds = Credentials.from_authorized_user_file(token, SCOPES)
     # If there are no (valid) credentials available, let the user log in
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CREDENTIALS_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open(token, 'w') as token:
-            token.write(creds.to_json())
+        handle_creds(creds, token)
 
     service = build('sheets', 'v4', credentials=creds)
 
