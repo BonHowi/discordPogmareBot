@@ -34,7 +34,9 @@ class RoleCog(cogbase.BaseCog):
             embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x00ff00)
             await role_ch.send(embed=embed_command)
 
-        guide_content = "TBA"
+        guide_content = "Bot commands: " \
+                        "/role monstername - get rank with monster name, " \
+                        "use again to remove the rank to not be notified when monster is spotted"
         embed_guide = discord.Embed(title="Channel Guide", description=guide_content)
         await role_ch.send(embed=embed_guide)
 
