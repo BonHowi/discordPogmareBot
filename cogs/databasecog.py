@@ -86,10 +86,10 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_update(self):
         guild = self.bot.get_guild(self.bot.guild[0])
         # Member tables
-        print(f"[{self.__class__.__name__}]: Refreshing member count")
+        print(f"[{self.__class__.__name__}]: Refreshing member tables")
         for guild_member in guild.members:
             self.db_add_update_member(guild_member)
-        print(f"[{self.__class__.__name__}]: Member count refreshed")
+        print(f"[{self.__class__.__name__}]: Member tables refreshed")
 
         # Spots tables
         for guild_member in guild.members:
