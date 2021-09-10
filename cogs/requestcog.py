@@ -23,7 +23,7 @@ class RoleCog(cogbase.BaseCog):
         await role_ch.purge(limit=10)
 
         for mon_type in self.bot.config["types"]:
-            if mon_type["id"] in [4]:  # Pass if common/...
+            if mon_type["id"] in [2, 3, 4]:  # Pass if common/...
                 continue
 
             aval_commands = []
