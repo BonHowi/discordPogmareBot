@@ -22,7 +22,6 @@ intents = discord.Intents.all()
 
 class MyBot(commands.Bot):
 
-    # Init
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
         print(f"[{self.__class__.__name__}]: Init")
@@ -43,10 +42,11 @@ class MyBot(commands.Bot):
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.config = json.load(fp)
 
-    # On Client Start
+    # On bot ready
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
+        print(f"[{self.__class__.__name__}]: Bot ready")
 
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -61,10 +61,11 @@ class MyBot(commands.Bot):
 
     # Manage on message actions
     async def on_message(self, ctx):
+        # If bot is the message author
         if ctx.author.id == self.user.id:
             return
 
-        # If not on role-request channel
+        # If there is a message with "!" prefix
         if ctx.content.startswith("!") and ctx.channel.id != self.ch_role_request:
             await ctx.channel.send(
                 fr"{ctx.author.mention} Please use / instead of ! to use commands on the server!",
@@ -115,7 +116,6 @@ def main():
     pogmare = MyBot()
 
     # Allow slash commands
-    # noinspection PyUnusedLocal
     slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
 
     # Load cogs
