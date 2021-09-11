@@ -1,4 +1,5 @@
 import discord
+import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
 from discord_slash import cog_ext
@@ -18,9 +19,10 @@ class LeaderboardsCog(cogbase.BaseCog):
         top_ch = self.bot.get_channel(channel)
 
         spots_df = await DatabaseCog.db_get_spots_df()
+        spots_df = pd.DataFrame(spots_df)
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
-        spots_df_top = spots_df.sort_values(ch_type, ascending=False, ignore_index=True).head(15)
-
+        spots_df_top = spots_df.sort_values(ch_type, ascending=False).head(15)
+        spots_df_top = spots_df_top.reset_index(drop=True)
         await top_ch.purge()
 
         top_print = []

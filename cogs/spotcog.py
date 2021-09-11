@@ -32,7 +32,7 @@ class SpotCog(cogbase.BaseCog):
             await self.handle_spotted_common(ctx)
 
         elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
-            await self.hanlde_spotted_monster(ctx)
+            await self.handle_spotted_monster(ctx)
 
     @staticmethod
     async def handle_spotted_common(ctx):
@@ -42,7 +42,7 @@ class SpotCog(cogbase.BaseCog):
         else:
             await ctx.delete()
 
-    async def hanlde_spotted_monster(self, ctx):
+    async def handle_spotted_monster(self, ctx):
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
             if spotted_monster:
