@@ -50,8 +50,9 @@ coords = Table('coords', metadata_obj,
 
 # noinspection PyPropertyAccess
 class DatabaseCog(cogbase.BaseCog):
+    user = get_settings("DB_U")
     password = get_settings("DB_P")
-    engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
+    engine = create_engine(f"mysql+mysqldb://{user}:{password}@localhost/server_database")
     metadata_obj.create_all(engine)
     conn = engine.connect()
 
