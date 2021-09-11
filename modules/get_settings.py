@@ -19,6 +19,7 @@ template_json = {
     "CH_DISCUSSION_EN": "None",
     "CAT_SPOTTING": "None",
     "EXCEL_ID": "None",
+    "DB_U": "None",
     "DB_P": "None"
 }
 
