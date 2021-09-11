@@ -38,7 +38,7 @@ class BaseCog(commands.Cog):
                 monster_found = monster
 
         if not monster_found:
-            print(f"[{self.__class__.__name__}]: Monster not found")
+            print(f"[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
             return
 
         monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
