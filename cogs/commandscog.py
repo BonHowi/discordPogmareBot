@@ -115,7 +115,7 @@ class CommandsCog(cogbase.BaseCog):
 
     # CHANNEL NAMES UPDATES
     # Total member channel name
-    @cog_ext.cog_slash(name="updateTotMem", guild_ids=cogbase.GUILD_IDS,
+    @cog_ext.cog_slash(name="updateTotalMembers", guild_ids=cogbase.GUILD_IDS,
                        description="Update total number of members",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
@@ -128,11 +128,26 @@ class CommandsCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_commons_ch(self, ctx: SlashContext, common: str):
-        new_name = f"common {common}"
-        channel = self.bot.get_channel(self.bot.ch_common)
-        await discord.TextChannel.edit(channel, name=new_name)
-        await ctx.send(f"Common channel updated", hidden=True)
+    async def update_commons_ch(self, ctx: SlashContext):
+        with open('./server_files/commons.txt') as f:
+            try:
+                commons = f.read().splitlines()
+            except ValueError:
+                print(ValueError)
+
+        new_name = f"common {commons[0]}"
+        common_ch = self.bot.get_channel(self.bot.ch_common)
+        await discord.TextChannel.edit(common_ch, name=new_name)
+        print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
+
+        admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
+        await admin_posting.send(f"Common changed: {commons[0]}")
+        await ctx.send(f"Common changed: {commons[0]}", hidden=True)
+
+        commons.append(commons.pop(commons.index(commons[0])))
+        with open('./server_files/commons.txt', 'w') as f:
+            for item in commons:
+                f.write("%s\n" % item)
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
