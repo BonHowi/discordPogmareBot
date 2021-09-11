@@ -22,7 +22,6 @@ intents = discord.Intents.all()
 
 class MyBot(commands.Bot):
 
-    # Init
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
         print(f"[{self.__class__.__name__}]: Init")
@@ -43,10 +42,11 @@ class MyBot(commands.Bot):
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.config = json.load(fp)
 
-    # On Client Start
+    # On bot ready
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
+        print(f"[{self.__class__.__name__}]: Bot ready")
 
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -61,10 +61,11 @@ class MyBot(commands.Bot):
 
     # Manage on message actions
     async def on_message(self, ctx):
+        # If bot is the message author
         if ctx.author.id == self.user.id:
             return
 
-        # If not on role-request channel
+        # If there is a message with "!" prefix
         if ctx.content.startswith("!") and ctx.channel.id != self.ch_role_request:
             await ctx.channel.send(
                 fr"{ctx.author.mention} Please use / instead of ! to use commands on the server!",
@@ -80,13 +81,13 @@ class MyBot(commands.Bot):
             except ValueError:
                 print(ValueError)
 
-        new_name = f"common-{commons[0]}"
+        new_name = f"common {commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
         print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
         admin_posting = self.get_channel(self.ch_admin_posting)
-        await admin_posting.send(f"Commons changed: {new_name}")
+        await admin_posting.send(f"Common changed: {commons[0]}")
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:
@@ -96,7 +97,7 @@ class MyBot(commands.Bot):
     # Update commons channel name every day at 12:00(?)
     @tasks.loop(minutes=60.0)
     async def update_ch_commons_loop(self):
-        if datetime.now().hour == 12:
+        if datetime.now().hour == 16:
             await self.update_ch_commons()
 
     @update_ch_commons_loop.before_loop
@@ -115,7 +116,6 @@ def main():
     pogmare = MyBot()
 
     # Allow slash commands
-    # noinspection PyUnusedLocal
     slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
 
     # Load cogs

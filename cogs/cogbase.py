@@ -30,39 +30,22 @@ class BaseCog(commands.Cog):
 
     # Find monster in config
     def get_monster(self, ctx, name: str):
-        """
-
-        :param ctx:
-        :type ctx:
-        :param name:
-        :type name:
-        :return:
-        :rtype:
-        """
-        monster = []
         name = name.lower()
+        monster_found = []
 
-        for monsters in self.bot.config["commands"]:
-            monster = self.find_monster(monsters, name)
-            if monster:
-                break
+        for monster in self.bot.config["commands"]:
+            if monster["name"].lower() == name or name in monster["triggers"]:
+                monster_found = monster
 
-        if not monster:
-            print(f"[{self.__class__.__name__}]: Monster not found")
+        if not monster_found:
+            print(f"[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
             return
 
-        monster["role"] = discord.utils.get(ctx.guild.roles, name=monster["name"])
-        if not monster["role"]:
-            print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster['name']}")
+        monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
+        if not monster_found["role"]:
+            print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
             return
 
         else:
-            monster["role"] = monster["role"].id
-        return monster
-
-    @staticmethod
-    def find_monster(monsters, name):
-        if monsters["name"].lower() == name:
-            return monsters
-        elif name in monsters["triggers"]:
-            return monsters
+            monster_found["role"] = monster_found["role"].id
+        return monster_found

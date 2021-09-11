@@ -16,7 +16,7 @@ class RoleCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
-    # Print available roles/commands on monster-request
+    # Print available roles/commands on monster-request channel
     @commands.Cog.listener()
     async def on_ready(self):
         role_ch = self.bot.get_channel(self.bot.ch_role_request)
@@ -41,7 +41,7 @@ class RoleCog(cogbase.BaseCog):
         embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=0x674ea7)
         await role_ch.send(embed=embed_guide)
 
-    # Remove normal messages from monster-request
+    # Remove normal messages from monster-request channel
     @commands.Cog.listener()
     async def on_message(self, ctx):
         if ctx.author.id == self.bot.user.id:
@@ -60,12 +60,12 @@ class RoleCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
                        description="Function for adding monster role to user",
                        default_permission=True)
-    async def _role(self, ctx: SlashContext, monster_name: str):
+    async def _role(self, ctx: SlashContext, name: str):
         if ctx.channel.id != self.bot.ch_role_request:
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
 
         else:
-            monster = self.get_monster(ctx, monster_name)
+            monster = self.get_monster(ctx, name)
             member = ctx.author
             if monster:
                 role = get(member.guild.roles, name=monster["name"])

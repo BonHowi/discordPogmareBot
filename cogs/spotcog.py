@@ -51,9 +51,13 @@ class SpotCog(cogbase.BaseCog):
                 await ctx.channel.send(f"{role.mention}")
                 await DatabaseCog.db_count_spot(ctx.author.id,
                                                 monster_type_dict[spotted_monster["type"]])
+                logs_ch = self.bot.get_channel(self.bot.ch_logs)
+                await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id}) "
+                                   f"requested ping for **{spotted_monster['name']}** role")
             else:
+                await ctx.delete()
                 await ctx.channel.send(
-                    f"{ctx.author.mention} monster not found; are you sure that name is correct?", delete_after=5)
+                    f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
 

@@ -43,15 +43,16 @@ warn = Table('warn', metadata_obj,
 
 coords = Table('coords', metadata_obj,
                Column('id', Integer, primary_key=True),
-               Column('coords', String(50), nullable=False),
-               Column('monster_type', String(50), nullable=False)
+               Column('coords', String(100), nullable=False),
+               Column('monster_type', String(20), nullable=False)
                )
 
 
 # noinspection PyPropertyAccess
 class DatabaseCog(cogbase.BaseCog):
+    user = get_settings("DB_U")
     password = get_settings("DB_P")
-    engine = create_engine(f"mysql+mysqldb://BonHowi:{password}@localhost/server_database")
+    engine = create_engine(f"mysql+mysqldb://{user}:{password}@localhost/server_database")
     metadata_obj.create_all(engine)
     conn = engine.connect()
 
@@ -66,6 +67,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- BASE DATABASE OPERATIONS -----
 
+    # Add or update member in member table
     def db_add_update_member(self, _member):
         stmt = insert(member).values(
             id=_member.id, name=_member.name,
@@ -75,6 +77,7 @@ class DatabaseCog(cogbase.BaseCog):
         )
         self.conn.execute(do_update_stmt)
 
+    # Add or update spots in spots table
     def db_add_update_spots(self, spots_table, guild_member):
         stmt = insert(spots_table).values(
             member_id=guild_member.id)
@@ -84,16 +87,15 @@ class DatabaseCog(cogbase.BaseCog):
     # Add or refresh all guild members and spots to database
     async def db_update(self):
         guild = self.bot.get_guild(self.bot.guild[0])
-        # Member tables
-        print(f"[{self.__class__.__name__}]: Refreshing member tables")
-        for guild_member in guild.members:
-            self.db_add_update_member(guild_member)
-        print(f"[{self.__class__.__name__}]: Member tables refreshed")
 
-        # Spots tables
+        print(f"[{self.__class__.__name__}]: Refreshing member and spots tables")
         for guild_member in guild.members:
+            # Member tables
+            self.db_add_update_member(guild_member)
+            # Spots tables
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
+        print(f"[{self.__class__.__name__}]: Member and spots tables refreshed")
 
     @tasks.loop(hours=12)
     async def db_update_loop(self):
@@ -104,12 +106,14 @@ class DatabaseCog(cogbase.BaseCog):
         print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
+    # Add member to database on member join
     @commands.Cog.listener()
     async def on_member_join(self, _member):
         self.db_add_update_member(_member)
         self.db_add_update_spots(spots, _member)
         self.db_add_update_spots(spots_temp, _member)
 
+    # Command for loading data from previous bot
     @cog_ext.cog_slash(name="updateSpotsWithOld", guild_ids=cogbase.GUILD_IDS,
                        description="Change N-Word channel name",
                        permissions=cogbase.PERMISSION_ADMINS)
@@ -138,6 +142,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- SPOTTING OPERATIONS -----
 
+    # Update spots tables
     @classmethod
     async def db_count_spot(cls, _id: int, monster_type: str):
         # Get member nr of spots for certain monster type
@@ -158,11 +163,13 @@ class DatabaseCog(cogbase.BaseCog):
         stmt = update(spots_temp).where(spots_temp.c.member_id == _id).values({f"{monster_type}": counter + 1})
         cls.conn.execute(stmt)
 
+    # Save coords from spotting channels to database
     @classmethod
     async def db_save_coords(cls, _coords: str, _monster_type):
         stmt = insert(coords).values(coords=_coords, monster_type=_monster_type)
         cls.conn.execute(stmt)
 
+    # Clear data from spots_temp table(for events etc)
     @classmethod
     async def db_clear_spots_temp_table(cls):
         stmt = delete(spots_temp)
@@ -170,25 +177,23 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- LEADERBOARD OPERATIONS -----
 
+    # Return all members' spots
     @classmethod
     async def db_get_spots_df(cls):
         stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare,
-                      spots.c.common).select_from(member).join(
-            spots,
-            member.c.id == spots.c.member_id)
+                      spots.c.common).select_from(member).join(spots, member.c.id == spots.c.member_id)
         df = pd.read_sql(stmt, cls.conn)
         return df
 
-    async def db_update_spotting_roles(self):
-        pass
-
     # ----- WARN OPERATIONS -----
 
+    # Add member's warn to database
     @classmethod
     async def db_add_warn(cls, _member: int, _reason: str):
         stmt = insert(warn).values(member_id=_member, reason=_reason, date=datetime.now())
         cls.conn.execute(stmt)
 
+    # Get member's warns from database
     @classmethod
     async def db_get_warns(cls, _member: int):
         stmt = select(warn.c.reason, warn.c.date).select_from(member).join(warn, member.c.id == warn.c.member_id).where(
@@ -203,6 +208,7 @@ class DatabaseCog(cogbase.BaseCog):
         warns_list = [': \t'.join([str(elem) for elem in sublist]) for sublist in date_warn]
         return warns_list, counter
 
+    # Remove all member's warns
     @classmethod
     async def db_remove_warns(cls, _member: int):
         stmt = delete(warn).where(warn.c.member_id == _member)
@@ -210,6 +216,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     # ----- MEMBER OPERATIONS -----
 
+    # Return member's spots
     @classmethod
     async def db_get_member_stats(cls, _member: int):
         stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
