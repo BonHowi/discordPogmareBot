@@ -3,9 +3,9 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/BonHowi/discordPogmareBot)](https://github.com/BonHowi/discordPogmareBot)
 [![Wakatime](https://wakatime.com/badge/github/BonHowi/discordPogmareBot.svg)](https://wakatime.com/projects/discordPogmareBot)
 
-![GitHub top language](https://img.shields.io/github/languages/top/BonHowi/discordPogmareBot) 
+[![GitHub top language](https://img.shields.io/github/languages/top/BonHowi/discordPogmareBot)](https://github.com/BonHowi/discordPogmareBot)
 [![Lines of Code](https://tokei.rs/b1/github/BonHowi/discordPogmareBot?category=code)](https://github.com/BonHowi/discordPogmareBot)
-![GitHub repo size](https://img.shields.io/github/repo-size/BonHowi/discordPogmareBot)
+[![GitHub repo size](https://img.shields.io/github/repo-size/BonHowi/discordPogmareBot)](https://github.com/BonHowi/discordPogmareBot)
 
 [![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/BonHowi_discordPogmareBot?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/dashboard?id=BonHowi_discordPogmareBot)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/BonHowi/discordPogmareBot)](https://codeclimate.com/github/BonHowi/discordPogmareBot/maintainability)
