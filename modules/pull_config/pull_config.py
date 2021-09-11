@@ -9,7 +9,7 @@ from modules import get_settings
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'
-CREDENTIALS_FILE = 'pull_config/credentials/client_secret.com.json '
+# CREDENTIALS_FILE = 'pull_config/credentials/client_secret.json '
 
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
@@ -17,10 +17,10 @@ SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 def handle_creds(creds, token):
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            CREDENTIALS_FILE, SCOPES)
-        creds = flow.run_local_server(port=0)
+    # else:
+    #     flow = InstalledAppFlow.from_client_secrets_file(
+    #         CREDENTIALS_FILE, SCOPES)
+    #     creds = flow.run_local_server(port=0)
     # Save the credentials for the next run
     with open(token, 'w') as token:
         token.write(creds.to_json())
@@ -73,11 +73,15 @@ def create_trigger_list(triggers) -> list:
 def create_output(monsters_df) -> dict:
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
-    total_milestones = {"Rare Spotter": [150], "tescior": [151], "Pepega Spotter": [1000], "Pog Spotter": [2000],
-                        "Pogmare Spotter": [3000],
-                        "Legendary Spotter": [4000], "Mythic Spotter": [5000]}
+    total_milestones = {"Sunday Spotter I": [100], "Sunday Spotter II": [200], "Sunday Spotter III": [300],
+                        "Rare Spotter I": [500], "Rare Spotter II": [750], "Rare Spotter III": [1000],
+                        "Pro Spotter I": [1500], "Pro Spotter II": [2000], "Pro Spotter III": [2500],
+                        "Legendary Spotter I": [3500], "Legendary Spotter II": [4500], "Legendary Spotter III": [5500],
+                        "Mythic Spotter I": [7500], "Mythic Spotter II": [9500], "Mythic Spotter III": [11500],
+                        "Pogmare Spotter": [1500]}
     total_milestones_df = pd.DataFrame(data=total_milestones)
-    common_milestones = {"Common Killer": [100], "Common Slayer": [150]}
+    common_milestones = {"Common Spotter": [100], "Common Killer": [500], "Common Slayer": [1000],
+                         "Common Destroyer": [1500], "Common Annihilator": [2500]}
     common_milestones_df = pd.DataFrame(data=common_milestones)
     json_final = {'total_milestones': total_milestones_df, 'common_milestones': common_milestones_df,
                   'types': types_df, 'commands': monsters_df}
