@@ -151,7 +151,7 @@ class DatabaseCog(cogbase.BaseCog):
                                                           rare=stmt.inserted.rare + counter_rare,
                                                           common=stmt.inserted.common + counter_common)
             self.conn.execute(do_update_stmt)
-            
+
         await ctx.send(f"Spot tables updated with old data", delete_after=3.0)
         print(f'[{self.__class__.__name__}]: Spot tables updated with old data')
 

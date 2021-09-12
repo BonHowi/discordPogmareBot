@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
@@ -49,3 +50,11 @@ class BaseCog(commands.Cog):
         else:
             monster_found["role"] = monster_found["role"].id
         return monster_found
+
+    # Create role if not on server
+    async def create_role(self, guild, role):
+        if get(guild.roles, name=role):
+            return
+        else:
+            await guild.create_role(name=role)
+            print(f"[{self.__class__.__name__}]: {role} role created")
