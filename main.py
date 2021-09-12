@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from datetime import datetime
-
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
