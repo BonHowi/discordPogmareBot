@@ -78,7 +78,7 @@ def create_output(monsters_df) -> dict:
                         "Pro Spotter I": [1500], "Pro Spotter II": [2000], "Pro Spotter III": [2500],
                         "Legendary Spotter I": [3500], "Legendary Spotter II": [4500], "Legendary Spotter III": [5500],
                         "Mythic Spotter I": [7500], "Mythic Spotter II": [9500], "Mythic Spotter III": [11500],
-                        "Pogmare Spotter": [1500]}
+                        "Pogmare Spotter": [15000]}
     total_milestones_df = pd.DataFrame(data=total_milestones)
     common_milestones = {"Common Spotter": [100], "Common Killer": [500], "Common Slayer": [1000],
                          "Common Destroyer": [1500], "Common Annihilator": [2500]}
