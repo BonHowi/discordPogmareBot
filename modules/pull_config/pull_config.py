@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import pandas as pd
 import os.path
 from googleapiclient.discovery import build
@@ -8,6 +7,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import json
 from modules import get_settings
+from numpyencoder import NumpyEncoder
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'
@@ -137,7 +137,7 @@ def get_config():
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
-        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False)
+        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     print(f"({dt_string})\t[{get_config.__name__}]: .json saved")
