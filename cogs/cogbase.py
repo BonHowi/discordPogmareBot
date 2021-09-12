@@ -4,6 +4,7 @@ from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
+from datetime import datetime
 
 GUILD_IDS = get_settings("guild")
 MODERATION_IDS = get_settings("MOD_ROLES")
@@ -24,7 +25,9 @@ PERMISSION_ADMINS = {
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print(f"[{self.__class__.__name__}]: Init")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
 
     def get_bot(self):
         return self.bot

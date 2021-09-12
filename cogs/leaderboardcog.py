@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
@@ -69,11 +71,15 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
         await self.update_member_roles()
-        print(f'[{self.__class__.__name__}]: Leaderboards updated')
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
-        print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
     # Get own spotting stats

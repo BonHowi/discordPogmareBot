@@ -87,15 +87,18 @@ class DatabaseCog(cogbase.BaseCog):
     # Add or refresh all guild members and spots to database
     async def db_update(self):
         guild = self.bot.get_guild(self.bot.guild[0])
-
-        print(f"[{self.__class__.__name__}]: Refreshing member and spots tables")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Refreshing member and spots tables")
         for guild_member in guild.members:
             # Member tables
             self.db_add_update_member(guild_member)
             # Spots tables
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
-        print(f"[{self.__class__.__name__}]: Member and spots tables refreshed")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Member and spots tables refreshed")
 
     @tasks.loop(hours=12)
     async def db_update_loop(self):
@@ -103,7 +106,9 @@ class DatabaseCog(cogbase.BaseCog):
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self):
-        print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
     # Add member to database on member join
@@ -127,8 +132,6 @@ class DatabaseCog(cogbase.BaseCog):
                 spots.c.member_id == mem_id)
             result = self.conn.execute(stmt).fetchall()
             result = result[0]
-            print(result)
-            print(result[1])
             counter_lege = result[1]
             counter_rare = result[2]
             counter_common = result[3]
@@ -150,7 +153,9 @@ class DatabaseCog(cogbase.BaseCog):
             self.conn.execute(do_update_stmt)
 
         await ctx.send(f"Spot tables updated with old data", delete_after=3.0)
-        print(f'[{self.__class__.__name__}]: Spot tables updated with old data')
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Spot tables updated with old data')
 
     # ----- SPOTTING OPERATIONS -----
 
