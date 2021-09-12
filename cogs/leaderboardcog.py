@@ -42,7 +42,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
             spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
-            roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, roles_type] >= value]
+            roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type].values[0] >= value]
             if roles_list:
                 await self.create_role(guild, roles_list[-1])
                 role_new = get(guild.roles, name=roles_list[-1])
