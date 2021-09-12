@@ -103,7 +103,7 @@ class MyBot(commands.Bot):
     # Update commons channel name every day at 12:00(?)
     @tasks.loop(minutes=60.0)
     async def update_ch_commons_loop(self):
-        if datetime.now().hour == 16:
+        if datetime.now().hour == 12:
             await self.update_ch_commons()
 
     @update_ch_commons_loop.before_loop
