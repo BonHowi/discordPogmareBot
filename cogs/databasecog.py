@@ -87,8 +87,7 @@ class DatabaseCog(cogbase.BaseCog):
     # Add or refresh all guild members and spots to database
     async def db_update(self):
         guild = self.bot.get_guild(self.bot.guild[0])
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Refreshing member and spots tables")
         for guild_member in guild.members:
             # Member tables
@@ -96,8 +95,7 @@ class DatabaseCog(cogbase.BaseCog):
             # Spots tables
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Member and spots tables refreshed")
 
     @tasks.loop(hours=12)
@@ -106,8 +104,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self):
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
@@ -153,8 +150,7 @@ class DatabaseCog(cogbase.BaseCog):
             self.conn.execute(do_update_stmt)
 
         await ctx.send(f"Spot tables updated with old data", delete_after=3.0)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Spot tables updated with old data')
 
     # ----- SPOTTING OPERATIONS -----

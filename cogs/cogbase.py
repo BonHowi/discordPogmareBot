@@ -61,3 +61,9 @@ class BaseCog(commands.Cog):
         else:
             await guild.create_role(name=role)
             print(f"[{self.__class__.__name__}]: {role} role created")
+
+    @staticmethod
+    def get_current_time():
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        return dt_string
