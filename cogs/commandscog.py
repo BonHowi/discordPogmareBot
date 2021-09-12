@@ -111,7 +111,7 @@ class CommandsCog(cogbase.BaseCog):
                        f"Reason: {reason}", delete_after=10)
         await asyncio.sleep(duration)
         await user.remove_roles(muted)
-        await ctx.send(f"{ctx.author.mention} mute is over", delete_after=10)
+        await ctx.send(f"{user.mention}'s mute is over", delete_after=10)
 
     # CHANNEL NAMES UPDATES
     # Total member channel name
