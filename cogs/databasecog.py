@@ -125,16 +125,13 @@ class DatabaseCog(cogbase.BaseCog):
         for mem_id in old_db:
             stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
                 spots.c.member_id == mem_id)
-            result = self.conn.execute(stmt)
-            counter_lege = []
-            for nr_of_kills in result.columns("legendary"):
-                counter_lege = nr_of_kills[0]
-            counter_rare = []
-            for nr_of_kills in result.columns("rare"):
-                counter_rare = nr_of_kills[0]
-            counter_common = []
-            for nr_of_kills in result.columns("common"):
-                counter_common = nr_of_kills[0]
+            result = self.conn.execute(stmt).fetchall()
+            result = result[0]
+            print(result)
+            print(result[1])
+            counter_lege = result[1]
+            counter_rare = result[2]
+            counter_common = result[3]
 
             stmt = insert(spots).values(
                 member_id=mem_id, legendary=old_db[mem_id]["type_1"],
