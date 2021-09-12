@@ -64,7 +64,7 @@ def create_trigger_list(triggers) -> list:
         help_ser = pd.Series(row)
         help_ser = help_ser[~help_ser.isna()]
         # Drop empty strings
-        help_ser = pd.Series(filter(None, help_ser))
+        help_ser = pd.Series(list(filter(None, help_ser)))
         # Copy strings with spaces without keeping them
         for trigger in help_ser:
             trigger_nospace = trigger.replace(' ', '')
