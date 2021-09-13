@@ -179,8 +179,8 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.execute(stmt)
 
         stmt = select(spots_temp.c.member_id, spots_temp.c.legendary, spots_temp.c.rare, spots_temp.c.common,
-                      spots.c.event1,
-                      spots.c.event2).where(
+                      spots_temp.c.event1,
+                      spots_temp.c.event2).where(
             spots_temp.c.member_id == _id)
         result = cls.conn.execute(stmt)
         for nr_of_kills in result.columns(monster_type):
