@@ -132,13 +132,21 @@ class CommandsCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_commons_ch(self, ctx: SlashContext):
+    async def update_commons_ch_command(self, ctx: SlashContext):
         with open('./server_files/commons.txt') as f:
             try:
                 commons = f.read().splitlines()
             except ValueError:
                 print(ValueError)
 
+        await self.update_commons_ch(ctx, commons)
+
+        commons.append(commons.pop(commons.index(commons[0])))
+        with open('./server_files/commons.txt', 'w') as f:
+            for item in commons:
+                f.write("%s\n" % item)
+
+    async def update_commons_ch(self, ctx: SlashContext, commons):
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
@@ -149,11 +157,6 @@ class CommandsCog(cogbase.BaseCog):
         admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
         await admin_posting.send(f"Common changed: {commons[0]}")
         await ctx.send(f"Common changed: {commons[0]}", hidden=True)
-
-        commons.append(commons.pop(commons.index(commons[0])))
-        with open('./server_files/commons.txt', 'w') as f:
-            for item in commons:
-                f.write("%s\n" % item)
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
