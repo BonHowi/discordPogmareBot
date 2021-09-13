@@ -2,7 +2,6 @@ import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
-from discord_slash import cog_ext
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 
@@ -69,6 +68,7 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards_loop(self):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
+        await self.update_leaderboards(self.bot.ch_leaderboards_event, "event1")
         await self.update_member_roles()
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
