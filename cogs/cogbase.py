@@ -42,13 +42,13 @@ class BaseCog(commands.Cog):
                 monster_found = monster
 
         if not monster_found:
-            dt_string = self.get_current_time()
+            dt_string = self.bot.get_current_time()
             print(f"({dt_string})\t[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
             return
 
         monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
         if not monster_found["role"]:
-            dt_string = self.get_current_time()
+            dt_string = self.bot.get_current_time()
             print(
                 f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
             return
