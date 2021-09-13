@@ -49,7 +49,8 @@ class BaseCog(commands.Cog):
         monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
         if not monster_found["role"]:
             dt_string = self.get_current_time()
-            print(f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
+            print(
+                f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
             return
 
         else:
@@ -64,9 +65,3 @@ class BaseCog(commands.Cog):
             await guild.create_role(name=role)
             dt_string = self.get_current_time()
             print(f"({dt_string})\t[{self.__class__.__name__}]: {role} role created")
-
-    @staticmethod
-    def get_current_time():
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        return dt_string
