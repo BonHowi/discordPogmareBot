@@ -9,7 +9,6 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/BonHowi/discordPogmareBot)](https://codeclimate.com/github/BonHowi/discordPogmareBot/maintainability)
 [![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/BonHowi/discordPogmareBot)](https://scrutinizer-ci.com/g/BonHowi/discordPogmareBot/reports/)
 [![Discord Shield](https://discordapp.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
-[![Discord Nightmare](https://img.shields.io/badge/Nightmare%20killed-no-red)](https://discord.gg/Kt35Jtc5nT)
 
 
 
