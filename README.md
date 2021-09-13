@@ -4,7 +4,7 @@
 [![Wakatime](https://wakatime.com/badge/github/BonHowi/discordPogmareBot.svg)](https://wakatime.com/projects/discordPogmareBot)
 
 [![GitHub top language](https://img.shields.io/github/languages/top/BonHowi/discordPogmareBot)](https://github.com/BonHowi/discordPogmareBot)
-[![Lines of Code](https://tokei.rs/b1/github/BonHowi/discordPogmareBot?category=code)](https://github.com/BonHowi/discordPogmareBot)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=BonHowi_discordPogmareBot&metric=ncloc)](https://sonarcloud.io/dashboard?id=BonHowi_discordPogmareBot)
 [![GitHub repo size](https://img.shields.io/github/repo-size/BonHowi/discordPogmareBot)](https://github.com/BonHowi/discordPogmareBot)
 
 [![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/BonHowi_discordPogmareBot?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/dashboard?id=BonHowi_discordPogmareBot)
