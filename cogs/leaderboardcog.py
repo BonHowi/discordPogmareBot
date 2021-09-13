@@ -70,12 +70,12 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
         await self.update_member_roles()
-        dt_string = self.get_current_time()
+        dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
-        dt_string = self.get_current_time()
+        dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
