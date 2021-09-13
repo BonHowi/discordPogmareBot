@@ -29,6 +29,7 @@ class LeaderboardsCog(cogbase.BaseCog):
             top_print.append(member_stats)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
+        ch_type = ''.join([i for i in ch_type if not i.isdigit()])
         embed_command = discord.Embed(title=f"TOP 15 {ch_type.upper()}", description=top_print,
                                       color=0xf1c232)
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
