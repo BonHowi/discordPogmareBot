@@ -1,4 +1,3 @@
-from datetime import datetime
 import pandas as pd
 import os.path
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -74,7 +73,7 @@ def create_trigger_list(triggers) -> list:
 
 
 def create_output(monsters_df) -> dict:
-    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event0", "Event1", "Legendary", "Rare"]}
+    types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event2", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     total_milestones = {"Sunday Spotter I": [100], "Sunday Spotter II": [200], "Sunday Spotter III": [300],
                         "Rare Spotter I": [500], "Rare Spotter II": [750], "Rare Spotter III": [1000],
