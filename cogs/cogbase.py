@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
+from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
+from datetime import datetime
 
 GUILD_IDS = get_settings("guild")
 MODERATION_IDS = get_settings("MOD_ROLES")
@@ -23,7 +25,9 @@ PERMISSION_ADMINS = {
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print(f"[{self.__class__.__name__}]: Init")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
 
     def get_bot(self):
         return self.bot
@@ -38,14 +42,31 @@ class BaseCog(commands.Cog):
                 monster_found = monster
 
         if not monster_found:
-            print(f"[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
+            dt_string = self.get_current_time()
+            print(f"({dt_string})\t[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
             return
 
         monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
         if not monster_found["role"]:
-            print(f"[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
+            dt_string = self.get_current_time()
+            print(f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
             return
 
         else:
             monster_found["role"] = monster_found["role"].id
         return monster_found
+
+    # Create role if not on server
+    async def create_role(self, guild, role):
+        if get(guild.roles, name=role):
+            return
+        else:
+            await guild.create_role(name=role)
+            dt_string = self.get_current_time()
+            print(f"({dt_string})\t[{self.__class__.__name__}]: {role} role created")
+
+    @staticmethod
+    def get_current_time():
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        return dt_string

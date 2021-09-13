@@ -17,7 +17,6 @@ class LeaderboardsCog(cogbase.BaseCog):
     # Send leaderboards to specified channel
     async def update_leaderboards(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)
-
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df = pd.DataFrame(spots_df)
         spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
@@ -43,24 +42,18 @@ class LeaderboardsCog(cogbase.BaseCog):
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
             spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
-            roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, roles_type] >= value]
+            roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
             if roles_list:
-                await self.create_role(guild, roles_list)
+                await self.create_role(guild, roles_list[-1])
                 role_new = get(guild.roles, name=roles_list[-1])
                 await guild_member.add_roles(role_new)
                 if len(roles_list) > 1:
+                    await self.create_role(guild, roles_list[-2])
                     role_old = get(guild.roles, name=roles_list[-2])
+                    await self.create_role(guild, roles_list[-2])
                     await guild_member.remove_roles(role_old)
         except KeyError as e:
             print(e)
-
-    # Create role if in config and not on server
-    async def create_role(self, guild, roles_list):
-        if get(guild.roles, name=roles_list[-1]):
-            return
-        else:
-            await guild.create_role(name=roles_list[-1])
-            print(f"[{self.__class__.__name__}]: {roles_list[-1]} role created")
 
     # Update members' spotting roles
     async def update_member_roles(self):
@@ -71,16 +64,19 @@ class LeaderboardsCog(cogbase.BaseCog):
             await self.update_role(guild, guild_member, spot_roles_total, False)
             await self.update_role(guild, guild_member, spot_roles_common, True)
 
+    # @tasks.loop(seconds=15)
     @tasks.loop(minutes=15)
     async def update_leaderboards_loop(self):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
         await self.update_member_roles()
-        print(f'[{self.__class__.__name__}]: Leaderboards updated')
+        dt_string = self.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
-        print(f'[{self.__class__.__name__}]: Waiting until Bot is ready')
+        dt_string = self.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
     # Get own spotting stats

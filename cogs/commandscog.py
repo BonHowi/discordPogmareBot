@@ -13,6 +13,8 @@ Current commands:
 """
 import asyncio
 import json
+from datetime import datetime
+
 import discord
 from discord.utils import get
 
@@ -53,7 +55,9 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        print(f"[{self.__class__.__name__}]: Exiting Bot")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
 
@@ -111,7 +115,7 @@ class CommandsCog(cogbase.BaseCog):
                        f"Reason: {reason}", delete_after=10)
         await asyncio.sleep(duration)
         await user.remove_roles(muted)
-        await ctx.send(f"{ctx.author.mention} mute is over", delete_after=10)
+        await ctx.send(f"{user.mention}'s mute is over", delete_after=10)
 
     # CHANNEL NAMES UPDATES
     # Total member channel name
@@ -138,7 +142,9 @@ class CommandsCog(cogbase.BaseCog):
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
         admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
         await admin_posting.send(f"Common changed: {commons[0]}")
@@ -176,7 +182,9 @@ class CommandsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            print(f"[{self.__class__.__name__}]: Finished data pull")
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            print(f"({dt_string})\t[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
     # Create roles if pull_config gets non existent roles
@@ -187,7 +195,9 @@ class CommandsCog(cogbase.BaseCog):
                 continue
             else:
                 await ctx.guild.create_role(name=mon_type)
-                print(f"[{self.__class__.__name__}]: {mon_type} role created")
+                now = datetime.now()
+                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+                print(f"({dt_string})\t[{self.__class__.__name__}]: {mon_type} role created")
 
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
@@ -201,18 +211,20 @@ class CommandsCog(cogbase.BaseCog):
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
         try:
             self.bot.load_extension(f"{module}")
             await ctx.send(f'[{module}] loaded', hidden=True)
-            print(f'[{self.__class__.__name__}]: {module} loaded')
+            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} loaded')
         except commands.ExtensionAlreadyLoaded:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
             await ctx.send(f'[{module}] reloaded', hidden=True)
-            print(f'[{self.__class__.__name__}]: {module} reloaded')
+            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} reloaded')
         except commands.ExtensionNotFound:
             await ctx.send(f'[{module}] not found', hidden=True)
-            print(f'[{self.__class__.__name__}]: {module} not found')
+            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} not found')
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,

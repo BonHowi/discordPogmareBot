@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from datetime import datetime
-
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
@@ -24,8 +23,10 @@ class MyBot(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
-        print(f"[{self.__class__.__name__}]: Init")
-        print(f"[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
@@ -46,7 +47,9 @@ class MyBot(commands.Bot):
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
-        print(f"[{self.__class__.__name__}]: Bot ready")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Bot ready")
 
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -84,7 +87,9 @@ class MyBot(commands.Bot):
         new_name = f"common {commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        print(f"[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
         admin_posting = self.get_channel(self.ch_admin_posting)
         await admin_posting.send(f"Common changed: {commons[0]}")
@@ -94,10 +99,10 @@ class MyBot(commands.Bot):
             for item in commons:
                 f.write("%s\n" % item)
 
-    # Update commons channel name every day at 12:00(?)
+    # Update commons channel name every day at 12:00
     @tasks.loop(minutes=60.0)
     async def update_ch_commons_loop(self):
-        if datetime.now().hour == 16:
+        if datetime.now().hour == 12:
             await self.update_ch_commons()
 
     @update_ch_commons_loop.before_loop
@@ -108,7 +113,9 @@ class MyBot(commands.Bot):
     @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
     async def exit_bot(self, ctx):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        print(f"[{self.__class__.__name__}]: Exiting Bot")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
         await self.close()
 
 

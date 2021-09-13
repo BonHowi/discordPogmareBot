@@ -1,11 +1,12 @@
+from datetime import datetime
 import pandas as pd
 import os.path
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import json
 from modules import get_settings
+from numpyencoder import NumpyEncoder
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'
@@ -50,7 +51,9 @@ def import_from_sheets():
     values_input = result_input.get('values', [])
 
     if not values_input:
-        print(f"[{get_config.__name__}]: No data found.")
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(f"({dt_string})\t[{get_config.__name__}]: No data found.")
     return values_input
 
 
@@ -78,7 +81,7 @@ def create_output(monsters_df) -> dict:
                         "Pro Spotter I": [1500], "Pro Spotter II": [2000], "Pro Spotter III": [2500],
                         "Legendary Spotter I": [3500], "Legendary Spotter II": [4500], "Legendary Spotter III": [5500],
                         "Mythic Spotter I": [7500], "Mythic Spotter II": [9500], "Mythic Spotter III": [11500],
-                        "Pogmare Spotter": [1500]}
+                        "Pogmare Spotter": [15000]}
     total_milestones_df = pd.DataFrame(data=total_milestones)
     common_milestones = {"Common Spotter": [100], "Common Killer": [500], "Common Slayer": [1000],
                          "Common Destroyer": [1500], "Common Annihilator": [2500]}
@@ -103,11 +106,15 @@ def create_trigger_structure(triggers_list):
 
 def get_config():
     pd.set_option('mode.chained_assignment', None)
-    print(f"[{get_config.__name__}]: Loading data")
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"({dt_string})\t[{get_config.__name__}]: Loading data")
     values_input = import_from_sheets()
     df = pd.DataFrame(values_input[1:], columns=values_input[0])
 
-    print(f"[{get_config.__name__}]: Transforming data")
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"({dt_string})\t[{get_config.__name__}]: Transforming data")
     monsters_df = df[["name", "type"]]
     monsters_df["type"] = pd.to_numeric(df["type"])
 
@@ -116,17 +123,23 @@ def get_config():
 
     triggers_list = create_trigger_list(triggers)
 
-    print(f"[{get_config.__name__}]: Creating trigger structure")
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"({dt_string})\t[{get_config.__name__}]: Creating trigger structure")
     triggers_def = create_trigger_structure(triggers_list)
     monsters_df.insert(loc=0, column='triggers', value=triggers_def)
 
-    print(f"[{get_config.__name__}]: Creating output")
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"({dt_string})\t[{get_config.__name__}]: Creating output")
     data_dict = create_output(monsters_df)
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
-        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False)
-    print(f"[{get_config.__name__}]: .json saved")
+        json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"({dt_string})\t[{get_config.__name__}]: .json saved")
 
 
 def main():
