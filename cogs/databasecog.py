@@ -212,7 +212,9 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_get_spots_df(cls):
         cls.conn = cls.engine.connect()
         stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare,
-                      spots.c.common).select_from(member).join(spots, member.c.id == spots.c.member_id)
+                      spots.c.common, spots.c.event1, spots.c.event2
+                      ).select_from(member
+                                    ).join(spots, member.c.id == spots.c.member_id)
         cls.conn.execute(stmt)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
