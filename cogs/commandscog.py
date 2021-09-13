@@ -271,10 +271,10 @@ class CommandsCog(cogbase.BaseCog):
     async def save_coordinates(self, ctx: SlashContext):
         coords_df = await DatabaseCog.db_get_coords()
         coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', expand=True)
-        coords_df.to_excel(r'server_files\coords.xlsx', index=False)
-        await ctx.send(f"Coords saved to .xlsx file", hidden=True)
+        coords_df.to_excel(r'server_files/coords.xlsx', index=False)
+        await ctx.send(f"Coords saved", hidden=True)
         dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files\coords.xlsx')
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files/coords.xlsx')
 
 
 def setup(bot: commands.Bot):
