@@ -275,5 +275,6 @@ class CommandsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files\coords.xlsx')
 
+
 def setup(bot: commands.Bot):
     bot.add_cog(CommandsCog(bot))
