@@ -55,8 +55,7 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
@@ -150,8 +149,7 @@ class CommandsCog(cogbase.BaseCog):
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
         admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
@@ -185,8 +183,7 @@ class CommandsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            dt_string = self.bot.get_current_time()
             print(f"({dt_string})\t[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
@@ -198,8 +195,7 @@ class CommandsCog(cogbase.BaseCog):
                 continue
             else:
                 await ctx.guild.create_role(name=mon_type)
-                now = datetime.now()
-                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+                dt_string = self.bot.get_current_time()
                 print(f"({dt_string})\t[{self.__class__.__name__}]: {mon_type} role created")
 
     # Clear temp spots table in database
@@ -214,8 +210,7 @@ class CommandsCog(cogbase.BaseCog):
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.bot.get_current_time()
         try:
             self.bot.load_extension(f"{module}")
             await ctx.send(f'[{module}] loaded', hidden=True)
