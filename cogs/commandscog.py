@@ -13,15 +13,13 @@ Current commands:
 """
 import asyncio
 import json
-from datetime import datetime
-
 import discord
 from discord.utils import get
-
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from cogs.databasecog import DatabaseCog
+from cogs.leaderboardcog import legend_multiplier
 from modules.pull_config.pull_config import get_config
 
 
@@ -240,6 +238,42 @@ class CommandsCog(cogbase.BaseCog):
             await self.reload_cog(ctx, cog)
         await ctx.send(f'All cogs reloaded', hidden=True)
 
+    # Get own spotting stats
+    @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
+                       description="Get your spot stats",
+                       default_permission=True)
+    async def get_stats(self, ctx):
+        spot_roles = self.bot.config["total_milestones"][0]
+        guild = self.bot.get_guild(self.bot.guild[0])
+        spots_df = await DatabaseCog.db_get_member_stats(ctx.author.id)
+        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+
+        role_new = ""
+        spots_for_new = -1
+        roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
+        values_list = [value for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
+        if roles_list:
+            role_new = get(guild.roles, name=roles_list[0])
+            spots_for_new = values_list[0]
+
+        message = f"**Legends**: {spots_df.at[0, 'legendary']}\n" \
+                  f"**Rares**: {spots_df.at[0, 'rare']}\n" \
+                  f"**Commons**: {spots_df.at[0, 'common']}\n\n" \
+                  f"**Total points**: {spots_df.at[0, 'total']}\n" \
+                  f"**Progress**: {spots_df.at[0, 'total']}/{spots_for_new}\n" \
+                  f"**Next role**: _{role_new}_"
+
+        await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
+
+    @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
+                       description="Get your spot stats",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def save_coordinates(self, ctx: SlashContext):
+        coords_df = await DatabaseCog.db_get_coords()
+        coords_df.to_excel(r'server_files\coords.xlsx', index=False)
+        await ctx.send(f"Coords saved to .xlsx file", hidden=True)
+        dt_string = self.bot.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files\coords.xlsx')
 
 def setup(bot: commands.Bot):
     bot.add_cog(CommandsCog(bot))

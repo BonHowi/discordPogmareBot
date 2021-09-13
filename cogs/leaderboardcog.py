@@ -79,33 +79,6 @@ class LeaderboardsCog(cogbase.BaseCog):
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
-    # Get own spotting stats
-    @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
-                       description="Get your spot stats",
-                       default_permission=True)
-    async def get_stats(self, ctx):
-        spot_roles = self.bot.config["total_milestones"][0]
-        guild = self.bot.get_guild(self.bot.guild[0])
-        spots_df = await DatabaseCog.db_get_member_stats(ctx.author.id)
-        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
-
-        role_new = ""
-        spots_for_new = -1
-        roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
-        values_list = [value for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
-        if roles_list:
-            role_new = get(guild.roles, name=roles_list[0])
-            spots_for_new = values_list[0]
-
-        message = f"**Legends**: {spots_df.at[0, 'legendary']}\n" \
-                  f"**Rares**: {spots_df.at[0, 'rare']}\n" \
-                  f"**Commons**: {spots_df.at[0, 'common']}\n\n" \
-                  f"**Total points**: {spots_df.at[0, 'total']}\n" \
-                  f"**Progress**: {spots_df.at[0, 'total']}/{spots_for_new}\n" \
-                  f"**Next role**: _{role_new}_"
-
-        await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(LeaderboardsCog(bot))

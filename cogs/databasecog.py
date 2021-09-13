@@ -263,6 +263,17 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.close()
         return df
 
+    # ----- COORDS OPERATIONS -----
+
+    # Return coords
+    @classmethod
+    async def db_get_coords(cls):
+        cls.conn = cls.engine.connect()
+        stmt = select(coords.c.id, coords.c.coords, coords.c.monster_type).select_from(coords)
+        df = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        return df
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(DatabaseCog(bot))
