@@ -168,7 +168,8 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_count_spot(cls, _id: int, monster_type: str):
         cls.conn = cls.engine.connect()
         # Get member nr of spots for certain monster type
-        stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
+        stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common, spots.c.event1,
+                      spots.c.event2).where(
             spots.c.member_id == _id)
         result = cls.conn.execute(stmt)
         counter = []
@@ -177,7 +178,9 @@ class DatabaseCog(cogbase.BaseCog):
         stmt = update(spots).where(spots.c.member_id == _id).values({f"{monster_type}": counter + 1})
         cls.conn.execute(stmt)
 
-        stmt = select(spots_temp.c.member_id, spots_temp.c.legendary, spots_temp.c.rare, spots_temp.c.common).where(
+        stmt = select(spots_temp.c.member_id, spots_temp.c.legendary, spots_temp.c.rare, spots_temp.c.common,
+                      spots.c.event1,
+                      spots.c.event2).where(
             spots_temp.c.member_id == _id)
         result = cls.conn.execute(stmt)
         for nr_of_kills in result.columns(monster_type):
