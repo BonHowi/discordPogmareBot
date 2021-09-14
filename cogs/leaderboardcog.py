@@ -64,7 +64,6 @@ class LeaderboardsCog(cogbase.BaseCog):
             await self.update_role(guild, guild_member, spot_roles_total, False)
             await self.update_role(guild, guild_member, spot_roles_common, True)
 
-    # @tasks.loop(seconds=15)
     @tasks.loop(minutes=15)
     async def update_leaderboards_loop(self):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
