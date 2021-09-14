@@ -37,6 +37,8 @@ _Recommended Python3.7.7_
     * Create server_database 
 * Install dependencies
     * `pip install -r requirements.txt`
+* Update certificates
+    * `python modules\install_certifi.py`
 * Create server files in server_files folder
     * bot_settings.json - template .json file in [get_settings.py](https://github.com/BonHowi/discordPogmareBot/blob/main/modules/get_settings.py)
     * config.json - generated in [pull_config.py](https://github.com/BonHowi/discordPogmareBot/blob/main/modules/pull_config/pull_config.py). To use it access to [this google sheet](https://docs.google.com/spreadsheets/d/1tm5l3He3O-KxCYpTtYURtRjz17uhsNFgco_Z4EUbOgM/edit?usp=sharing) is needed. You can create your own sheet or config as well
