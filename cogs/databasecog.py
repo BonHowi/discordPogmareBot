@@ -1,5 +1,4 @@
 from discord.ext import commands, tasks
-from discord_slash import cog_ext
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
