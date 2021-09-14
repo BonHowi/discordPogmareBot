@@ -69,9 +69,11 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.update_leaderboards(self.bot.ch_leaderboards, "total")
         await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
         await self.update_leaderboards(self.bot.ch_leaderboards_event, "event1")
-        await self.update_member_roles()
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
+        await self.update_member_roles()
+        dt_string = self.bot.get_current_time()
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Members' roles updated")
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
