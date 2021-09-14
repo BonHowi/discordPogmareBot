@@ -45,17 +45,20 @@ class LeaderboardsCog(cogbase.BaseCog):
                 spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
             roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
             if roles_list:
-                await self.create_role(guild, roles_list[-1])
-                role_new = get(guild.roles, name=roles_list[-1])
-                if role_new not in guild_member.roles:
-                    await guild_member.add_roles(role_new)
-                if len(roles_list) > 1:
-                    await self.create_role(guild, roles_list[-2])
-                    role_old = get(guild.roles, name=roles_list[-2])
-                    if role_old in guild_member.roles:
-                        await guild_member.remove_roles(role_old)
+                await self.update_role_ext(guild, roles_list, guild_member)
         except KeyError as e:
             print(e)
+
+    async def update_role_ext(self, guild, roles_list, guild_member):
+        await self.create_role(guild, roles_list[-1])
+        role_new = get(guild.roles, name=roles_list[-1])
+        if role_new not in guild_member.roles:
+            await guild_member.add_roles(role_new)
+        if len(roles_list) > 1:
+            await self.create_role(guild, roles_list[-2])
+            role_old = get(guild.roles, name=roles_list[-2])
+            if role_old in guild_member.roles:
+                await guild_member.remove_roles(role_old)
 
     # Update members' spotting roles
     async def update_member_roles(self):
