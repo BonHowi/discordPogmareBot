@@ -63,5 +63,5 @@ class BaseCog(commands.Cog):
             return
         else:
             await guild.create_role(name=role)
-            dt_string = self.get_current_time()
+            dt_string = self.bot.get_current_time()
             print(f"({dt_string})\t[{self.__class__.__name__}]: {role} role created")
