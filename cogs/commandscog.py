@@ -13,8 +13,13 @@ Current commands:
 """
 import asyncio
 import json
+import os
+from datetime import datetime
+
 import discord
 from discord.utils import get
+from modules.get_settings import get_settings
+
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -280,7 +285,7 @@ class CommandsCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
                        description="Get member info",
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def whois(self, ctx: SlashContext, *, user: discord.Member = None):
+    async def memberinfo(self, ctx: SlashContext, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -296,6 +301,18 @@ class CommandsCog(cogbase.BaseCog):
             embed.add_field(name="Roles [{}]".format(len(user.roles) - 1), value=role_string, inline=False)
         embed.set_footer(text='ID: ' + str(user.id))
         return await ctx.send(embed=embed)
+
+    # Backup database to a file
+    @cog_ext.cog_slash(name="backupDatabase", guild_ids=cogbase.GUILD_IDS,
+                       description="Backup database to a file",
+                       permissions=cogbase.PERMISSION_MODS)
+    async def backup_database(self, ctx: SlashContext):
+        now = datetime.now()
+        cmd = f"mysqldump -u {get_settings('DB_U')} " \
+              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
+              f"-p{get_settings('DB_P')} server_database"
+        os.system(cmd)
+        await ctx.send(f"Database backed up", hidden=True)
 
 
 def setup(bot: commands.Bot):
