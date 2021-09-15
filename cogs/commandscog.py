@@ -13,15 +13,18 @@ Current commands:
 """
 import asyncio
 import json
+import os
 from datetime import datetime
 
 import discord
 from discord.utils import get
+from modules.get_settings import get_settings
 
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from cogs.databasecog import DatabaseCog
+from cogs.leaderboardcog import legend_multiplier
 from modules.pull_config.pull_config import get_config
 
 
@@ -55,8 +58,7 @@ class CommandsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
@@ -132,28 +134,30 @@ class CommandsCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_commons_ch(self, ctx: SlashContext):
+    async def update_commons_ch_command(self, ctx: SlashContext):
         with open('./server_files/commons.txt') as f:
             try:
                 commons = f.read().splitlines()
             except ValueError:
                 print(ValueError)
 
-        new_name = f"common {commons[0]}"
-        common_ch = self.bot.get_channel(self.bot.ch_common)
-        await discord.TextChannel.edit(common_ch, name=new_name)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
-
-        admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
-        await admin_posting.send(f"Common changed: {commons[0]}")
-        await ctx.send(f"Common changed: {commons[0]}", hidden=True)
+        await self.update_commons_ch(ctx, commons)
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:
             for item in commons:
                 f.write("%s\n" % item)
+
+    async def update_commons_ch(self, ctx: SlashContext, commons):
+        new_name = f"common {commons[0]}"
+        common_ch = self.bot.get_channel(self.bot.ch_common)
+        await discord.TextChannel.edit(common_ch, name=new_name)
+        dt_string = self.bot.get_current_time()
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
+
+        admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
+        await admin_posting.send(f"Common changed: {commons[0]}")
+        await ctx.send(f"Common changed: {commons[0]}", hidden=True)
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
@@ -182,8 +186,7 @@ class CommandsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            dt_string = self.bot.get_current_time()
             print(f"({dt_string})\t[{self.__class__.__name__}]: Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
@@ -195,8 +198,7 @@ class CommandsCog(cogbase.BaseCog):
                 continue
             else:
                 await ctx.guild.create_role(name=mon_type)
-                now = datetime.now()
-                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+                dt_string = self.bot.get_current_time()
                 print(f"({dt_string})\t[{self.__class__.__name__}]: {mon_type} role created")
 
     # Clear temp spots table in database
@@ -211,8 +213,7 @@ class CommandsCog(cogbase.BaseCog):
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.bot.get_current_time()
         try:
             self.bot.load_extension(f"{module}")
             await ctx.send(f'[{module}] loaded', hidden=True)
@@ -241,6 +242,77 @@ class CommandsCog(cogbase.BaseCog):
         for cog in list(self.bot.extensions.keys()):
             await self.reload_cog(ctx, cog)
         await ctx.send(f'All cogs reloaded', hidden=True)
+
+    # Get own spotting stats
+    @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
+                       description="Get your spot stats",
+                       default_permission=True)
+    async def get_stats(self, ctx):
+        spot_roles = self.bot.config["total_milestones"][0]
+        guild = self.bot.get_guild(self.bot.guild[0])
+        spots_df = await DatabaseCog.db_get_member_stats(ctx.author.id)
+        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+
+        role_new = ""
+        spots_for_new = -1
+        roles_list = [key for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
+        values_list = [value for (key, value) in spot_roles.items() if spots_df.at[0, "total"] < value]
+        if roles_list:
+            role_new = get(guild.roles, name=roles_list[0])
+            spots_for_new = values_list[0]
+
+        message = f"**Legends**: {spots_df.at[0, 'legendary']}\n" \
+                  f"**Rares**: {spots_df.at[0, 'rare']}\n" \
+                  f"**Commons**: {spots_df.at[0, 'common']}\n\n" \
+                  f"**Total points**: {spots_df.at[0, 'total']}\n" \
+                  f"**Progress**: {spots_df.at[0, 'total']}/{spots_for_new}\n" \
+                  f"**Next role**: _{role_new}_"
+
+        await ctx.send(f"{ctx.author.mention} stats:\n{message}", hidden=True)
+
+    @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
+                       description="Get your spot stats",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def save_coordinates(self, ctx: SlashContext):
+        coords_df = await DatabaseCog.db_get_coords()
+        coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', expand=True)
+        coords_df.to_excel(r'server_files/coords.xlsx', index=False)
+        await ctx.send(f"Coords saved", hidden=True)
+        dt_string = self.bot.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files/coords.xlsx')
+
+    # Get member info
+    @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
+                       description="Get member info",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def memberinfo(self, ctx: SlashContext, *, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        date_format = "%a, %d %b %Y %I:%M %p"
+        embed = discord.Embed(color=0xFF0000, description=user.mention)
+        embed.set_author(name=str(user), icon_url=user.avatar_url)
+        embed.set_thumbnail(url=user.avatar_url)
+        embed.add_field(name="Joined Server", value=user.joined_at.strftime(date_format), inline=False)
+        members = sorted(ctx.guild.members, key=lambda m: m.joined_at)
+        embed.add_field(name="Join Position", value=str(members.index(user) + 1), inline=False)
+        embed.add_field(name="Joined Discord", value=user.created_at.strftime(date_format), inline=False)
+        if len(user.roles) > 1:
+            role_string = ' '.join([r.mention for r in user.roles][1:])
+            embed.add_field(name="Roles [{}]".format(len(user.roles) - 1), value=role_string, inline=False)
+        embed.set_footer(text='ID: ' + str(user.id))
+        return await ctx.send(embed=embed)
+
+    # Backup database to a file
+    @cog_ext.cog_slash(name="backupDatabase", guild_ids=cogbase.GUILD_IDS,
+                       description="Backup database to a file",
+                       permissions=cogbase.PERMISSION_MODS)
+    async def backup_database(self, ctx: SlashContext):
+        now = datetime.now()
+        cmd = f"mysqldump -u {get_settings('DB_U')} " \
+              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
+              f"-p{get_settings('DB_P')} server_database"
+        os.system(cmd)
+        await ctx.send(f"Database backed up", hidden=True)
 
 
 def setup(bot: commands.Bot):

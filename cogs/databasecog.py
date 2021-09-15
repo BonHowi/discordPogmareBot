@@ -1,5 +1,6 @@
+import os
+
 from discord.ext import commands, tasks
-from discord_slash import cog_ext
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
@@ -92,7 +93,7 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_update(self):
         self.conn = self.engine.connect()
         guild = self.bot.get_guild(self.bot.guild[0])
-        dt_string = self.get_current_time()
+        dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Refreshing member and spots tables")
         for guild_member in guild.members:
             # Member tables
@@ -100,17 +101,18 @@ class DatabaseCog(cogbase.BaseCog):
             # Spots tables
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
-        dt_string = self.get_current_time()
+        dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Member and spots tables refreshed")
         self.conn.close()
 
     @tasks.loop(hours=12)
     async def db_update_loop(self):
         await self.db_update()
+        await self.db_backup_database()
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self):
-        dt_string = self.get_current_time()
+        dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
 
@@ -121,45 +123,15 @@ class DatabaseCog(cogbase.BaseCog):
         self.db_add_update_spots(spots, _member)
         self.db_add_update_spots(spots_temp, _member)
 
-    # Command for loading data from previous bot
-    @cog_ext.cog_slash(name="updateSpotsWithOld", guild_ids=cogbase.GUILD_IDS,
-                       description="Change N-Word channel name",
-                       permissions=cogbase.PERMISSION_ADMINS)
-    async def db_update_spots_old(self, ctx):
-        self.conn = self.engine.connect()
-        import json
-        with open('server_files/old_base_test.json', 'r', encoding='utf-8-sig') as fp:
-            old_db = json.load(fp)
-
-        for mem_id in old_db:
-            stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
-                spots.c.member_id == mem_id)
-            result = self.conn.execute(stmt).fetchall()
-            result = result[0]
-            counter_lege = result[1]
-            counter_rare = result[2]
-            counter_common = result[3]
-
-            stmt = insert(spots).values(
-                member_id=mem_id, legendary=old_db[mem_id]["type_1"],
-                rare=old_db[mem_id]["type_0"])
-            do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary + counter_lege,
-                                                          rare=stmt.inserted.rare + counter_rare,
-                                                          common=stmt.inserted.common + counter_common)
-            self.conn.execute(do_update_stmt)
-
-            stmt = insert(spots_temp).values(
-                member_id=mem_id, legendary=old_db[mem_id]["type_1"],
-                rare=old_db[mem_id]["type_0"])
-            do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary + counter_lege,
-                                                          rare=stmt.inserted.rare + counter_rare,
-                                                          common=stmt.inserted.common + counter_common)
-            self.conn.execute(do_update_stmt)
-
-        await ctx.send(f"Spot tables updated with old data", delete_after=3.0)
-        dt_string = self.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Spot tables updated with old data')
-        self.conn.close()
+    # Backup database
+    async def db_backup_database(self):
+        now = datetime.now()
+        cmd = f"mysqldump -u {get_settings('DB_U')} " \
+              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
+              f"-p{get_settings('DB_P')} server_database"
+        os.system(cmd)
+        dt_string = self.bot.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Database backed up')
 
     # ----- SPOTTING OPERATIONS -----
 
@@ -167,24 +139,39 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_count_spot(cls, _id: int, monster_type: str):
         cls.conn = cls.engine.connect()
-        # Get member nr of spots for certain monster type
-        stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
-            spots.c.member_id == _id)
+        cls.db_count_spot_table(spots, _id, monster_type)
+        cls.db_count_spot_table(spots_temp, _id, monster_type)
+        cls.conn.close()
+
+    @classmethod
+    def db_count_spot_table(cls, table, _id: int, monster_type: str):
+        stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
+                      table.c.event1,
+                      table.c.event2).where(
+            table.c.member_id == _id)
         result = cls.conn.execute(stmt)
-        counter = []
-        for nr_of_kills in result.columns(monster_type):
+        counter = 0
+        for nr_of_kills in result.columns(monster_type, 'legendary'):
             counter = nr_of_kills[0]
-        stmt = update(spots).where(spots.c.member_id == _id).values({f"{monster_type}": counter + 1})
+        if monster_type == "event1":
+            values = cls.db_count_spot_table_event(table, _id, monster_type, counter)
+        else:
+            values = {f"{monster_type}": counter + 1}
+        stmt = update(table).where(table.c.member_id == _id).values(values)
         cls.conn.execute(stmt)
 
-        stmt = select(spots_temp.c.member_id, spots_temp.c.legendary, spots_temp.c.rare, spots_temp.c.common).where(
-            spots_temp.c.member_id == _id)
+    @classmethod
+    def db_count_spot_table_event(cls, table, _id, monster_type: str, counter: int):
+        stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
+                      table.c.event1,
+                      table.c.event2).where(
+            table.c.member_id == _id)
         result = cls.conn.execute(stmt)
-        for nr_of_kills in result.columns(monster_type):
-            counter = nr_of_kills[0]
-        stmt = update(spots_temp).where(spots_temp.c.member_id == _id).values({f"{monster_type}": counter + 1})
-        cls.conn.execute(stmt)
-        cls.conn.close()
+        counter_leg = 0
+        for nr_of_kills_leg in result.columns('legendary'):
+            counter_leg = nr_of_kills_leg[0]
+        values = {f"{monster_type}": counter + 1, "legendary": counter_leg + 1}
+        return values
 
     # Save coords from spotting channels to database
     @classmethod
@@ -209,7 +196,9 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_get_spots_df(cls):
         cls.conn = cls.engine.connect()
         stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare,
-                      spots.c.common).select_from(member).join(spots, member.c.id == spots.c.member_id)
+                      spots.c.common, spots.c.event1, spots.c.event2
+                      ).select_from(member
+                                    ).join(spots, member.c.id == spots.c.member_id)
         cls.conn.execute(stmt)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
@@ -259,6 +248,17 @@ class DatabaseCog(cogbase.BaseCog):
         stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
             spots,
             member.c.id == spots.c.member_id).where(spots.c.member_id == _member)
+        df = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        return df
+
+    # ----- COORDS OPERATIONS -----
+
+    # Return coords
+    @classmethod
+    async def db_get_coords(cls):
+        cls.conn = cls.engine.connect()
+        stmt = select(coords.c.id, coords.c.coords, coords.c.monster_type).select_from(coords)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
         return df

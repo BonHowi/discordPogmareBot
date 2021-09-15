@@ -29,3 +29,5 @@ credentials/
 data/
 venv/
 database/
+database_backup/
+main_backup/

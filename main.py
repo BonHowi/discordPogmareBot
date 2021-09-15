@@ -23,10 +23,11 @@ class MyBot(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
         print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
+
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
@@ -34,6 +35,7 @@ class MyBot(commands.Bot):
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
         self.ch_leaderboards = get_settings("CH_LEADERBOARDS")
         self.ch_leaderboards_common = get_settings("CH_LEADERBOARDS_COMMON")
+        self.ch_leaderboards_event = get_settings("CH_LEADERBOARDS_EVENT")
         self.ch_common = get_settings("CH_COMMON")
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
@@ -47,8 +49,7 @@ class MyBot(commands.Bot):
     async def on_ready(self):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Bot ready")
 
     async def update_member_count(self, ctx):
@@ -58,9 +59,10 @@ class MyBot(commands.Bot):
         await discord.VoiceChannel.edit(channel, name=new_name)
 
     # On member join
-    async def on_member_join(self, ctx):
+    async def on_member_join(self, ctx, member: discord.Member = None):
         await self.update_member_count(ctx)
-        print(f"Someone joined")
+        dt_string = self.get_current_time()
+        print(f"{dt_string})\t[{self.__class__.__name__}]: {ctx.display_name} joined")
 
     # Manage on message actions
     async def on_message(self, ctx):
@@ -87,8 +89,7 @@ class MyBot(commands.Bot):
         new_name = f"common {commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
         admin_posting = self.get_channel(self.ch_admin_posting)
@@ -113,10 +114,15 @@ class MyBot(commands.Bot):
     @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
     async def exit_bot(self, ctx):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
         await self.close()
+
+    @staticmethod
+    def get_current_time():
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        return dt_string
 
 
 def main():
