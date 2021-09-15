@@ -66,6 +66,9 @@ class DatabaseCog(cogbase.BaseCog):
         self.db_update_loop.start()
         self.conn = DatabaseCog.conn
 
+    def cog_unload(self):
+        self.db_update_loop.cancel()
+
     # ----- BASE DATABASE OPERATIONS -----
 
     # Add or update member in member table
