@@ -155,8 +155,7 @@ class CommandsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
-        admin_posting = self.bot.get_channel(self.bot.ch_admin_posting)
-        await admin_posting.send(f"Common changed: {commons[0]}")
+        await common_ch.send(f"Common changed: {commons[0]}")
         await ctx.send(f"Common changed: {commons[0]}", hidden=True)
 
     # N-Word spotted channel name
