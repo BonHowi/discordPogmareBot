@@ -276,6 +276,27 @@ class CommandsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files/coords.xlsx')
 
+    # Get member info
+    @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
+                       description="Get member info",
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def whois(self, ctx: SlashContext, *, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        date_format = "%a, %d %b %Y %I:%M %p"
+        embed = discord.Embed(color=0xFF0000, description=user.mention)
+        embed.set_author(name=str(user), icon_url=user.avatar_url)
+        embed.set_thumbnail(url=user.avatar_url)
+        embed.add_field(name="Joined Server", value=user.joined_at.strftime(date_format), inline=False)
+        members = sorted(ctx.guild.members, key=lambda m: m.joined_at)
+        embed.add_field(name="Join Position", value=str(members.index(user) + 1), inline=False)
+        embed.add_field(name="Joined Discord", value=user.created_at.strftime(date_format), inline=False)
+        if len(user.roles) > 1:
+            role_string = ' '.join([r.mention for r in user.roles][1:])
+            embed.add_field(name="Roles [{}]".format(len(user.roles) - 1), value=role_string, inline=False)
+        embed.set_footer(text='ID: ' + str(user.id))
+        return await ctx.send(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(CommandsCog(bot))
