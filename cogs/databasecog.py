@@ -1,3 +1,5 @@
+import os
+
 from discord.ext import commands, tasks
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
@@ -106,6 +108,7 @@ class DatabaseCog(cogbase.BaseCog):
     @tasks.loop(hours=12)
     async def db_update_loop(self):
         await self.db_update()
+        await self.db_backup_database()
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self):
@@ -120,53 +123,15 @@ class DatabaseCog(cogbase.BaseCog):
         self.db_add_update_spots(spots, _member)
         self.db_add_update_spots(spots_temp, _member)
 
-    # # Command for loading data from previous bot
-    # @cog_ext.cog_slash(name="updateSpotsWithOld", guild_ids=cogbase.GUILD_IDS,
-    #                    description="Update db with old data",
-    #                    permissions=cogbase.PERMISSION_ADMINS)
-    # async def db_update_spots_old(self, ctx):
-    #     self.conn = self.engine.connect()
-    #     import json
-    #     with open('server_files/old_base.json', 'r', encoding='utf-8-sig') as fp:
-    #         old_db = json.load(fp)
-    #     guild = self.bot.get_guild(self.bot.guild[0])
-    #
-    #     for mem_id in old_db:
-    #         if guild.get_member(int(mem_id)) is None:
-    #             continue
-    #
-    #         stmt = select(spots.c.member_id, spots.c.legendary, spots.c.rare, spots.c.common).where(
-    #             spots.c.member_id == mem_id)
-    #         result = self.conn.execute(stmt).fetchall()
-    #         result = result[0]
-    #         counter_lege = result[1]
-    #         counter_rare = result[2]
-    #         counter_common = result[3]
-    #
-    #         counter_lege_old = old_db[mem_id]["type_1"] if "type_1" in old_db[mem_id] else 0
-    #         counter_rare_old = old_db[mem_id]["type_0"] if "type_0" in old_db[mem_id] else 0
-    #         counter_common_old = old_db[mem_id]["type_4"] if "type_4" in old_db[mem_id] else 0
-    #
-    #         stmt = insert(spots).values(
-    #             member_id=mem_id, legendary=counter_lege_old,
-    #             rare=counter_rare_old, common=counter_common_old)
-    #         do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary + counter_lege,
-    #                                                       rare=stmt.inserted.rare + counter_rare,
-    #                                                       common=stmt.inserted.common + counter_common)
-    #         self.conn.execute(do_update_stmt)
-    #
-    #         stmt = insert(spots_temp).values(
-    #             member_id=mem_id, legendary=counter_lege_old,
-    #             rare=counter_rare_old, common=counter_common_old)
-    #         do_update_stmt = stmt.on_duplicate_key_update(legendary=stmt.inserted.legendary + counter_lege,
-    #                                                       rare=stmt.inserted.rare + counter_rare,
-    #                                                       common=stmt.inserted.common + counter_common)
-    #         self.conn.execute(do_update_stmt)
-    #
-    #     await ctx.send(f"Spot tables updated with old data", delete_after=5.0)
-    #     dt_string = self.bot.get_current_time()
-    #     print(f'({dt_string})\t[{self.__class__.__name__}]: Spot tables updated with old data')
-    #     self.conn.close()
+    # Backup database
+    async def db_backup_database(self):
+        now = datetime.now()
+        cmd = f"mysqldump -u {get_settings('DB_U')} " \
+              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
+              f"-p{get_settings('DB_P')} server_database"
+        os.system(cmd)
+        dt_string = self.bot.get_current_time()
+        print(f'({dt_string})\t[{self.__class__.__name__}]: Database backed up')
 
     # ----- SPOTTING OPERATIONS -----
 
