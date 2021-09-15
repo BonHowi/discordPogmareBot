@@ -28,14 +28,14 @@ Pogmare is a Discord bot made for [W:MS Spotters](https://discord.gg/Kt35Jtc5nT)
 
 _Recommended Python3.7.7_
 
-* Create and virtual env
+* Create virtual env
     * `python -m venv c:\path\to\myenv`
 * Connect to virtual env
     * Windows: `venv\Scripts\activate`
     * Linux: `source venv\bin\activate`
 * Install MySQL
     * Create server_database 
-* Install dependencies
+* Install dependencies _(execute as administrator)_
     * `pip install -r requirements.txt`
 * Update certificates
     * `python modules\install_certifi.py`
@@ -50,8 +50,8 @@ _Recommended Python3.7.7_
 * Displaying leaderboards
 * Requesting roles
 * Updating config file
-* Interacting with server database
+* Interacting with server's MySQL database
 * Slash commands
     * _Will be listed soon™_
-
+* And a lot of more smaller functionalities
 
