@@ -59,9 +59,10 @@ class MyBot(commands.Bot):
         await discord.VoiceChannel.edit(channel, name=new_name)
 
     # On member join
-    async def on_member_join(self, ctx):
+    async def on_member_join(self, ctx, member: discord.Member = None):
         await self.update_member_count(ctx)
-        print(f"Someone joined")
+        dt_string = self.get_current_time()
+        print(f"{dt_string})\t[{self.__class__.__name__}]: {ctx.display_name} joined")
 
     # Manage on message actions
     async def on_message(self, ctx):
