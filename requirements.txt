@@ -10,3 +10,4 @@ google~=3.0.0
 setuptools~=47.2.0
 SQLAlchemy~=1.4.23
 numpyencoder~=0.3.0
+googletrans~=3.0.0
