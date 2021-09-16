@@ -30,7 +30,6 @@ class SpotCog(cogbase.BaseCog):
         # If common spotted
         if ctx.channel.id == self.bot.ch_common:
             await self.handle_spotted_common(ctx)
-
         elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
             await self.handle_spotted_monster(ctx)
 
@@ -60,6 +59,8 @@ class SpotCog(cogbase.BaseCog):
                     f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
+        else:
+            await ctx.add_reaction("<:peepoban:872502800146382898>")
 
 
 def setup(bot: commands.Bot):
