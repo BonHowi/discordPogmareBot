@@ -49,7 +49,6 @@ coords = Table('coords', metadata_obj,
                )
 
 
-# noinspection PyPropertyAccess
 class DatabaseCog(cogbase.BaseCog):
     user = get_settings("DB_U")
     password = get_settings("DB_P")
