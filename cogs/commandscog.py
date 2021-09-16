@@ -64,6 +64,7 @@ class CommandsCog(cogbase.BaseCog):
         await self.bot.close()
 
     # WARN FUNCTIONS
+
     # Warn user
     @cog_ext.cog_slash(name="warn", guild_ids=cogbase.GUILD_IDS,
                        description="Function for warning users",
@@ -118,6 +119,61 @@ class CommandsCog(cogbase.BaseCog):
         await asyncio.sleep(duration)
         await user.remove_roles(muted)
         await ctx.send(f"{user.mention}'s mute is over", delete_after=10)
+
+    # KICK FUNCTIONS
+
+    # Kick
+    @cog_ext.cog_slash(name="kick", guild_ids=cogbase.GUILD_IDS,
+                       description="Kicks member from the server",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def kick(self, ctx, user: discord.Member, *, reason=None):
+        if user == ctx.author:
+            return await ctx.send(
+                f"{user.mention} You can't kick yourself", delete_after=5.0)
+        await user.kick(reason=reason)
+        if not reason:
+            await ctx.send(f"{user} was kicked", delete_after=10.0)
+            await user.send(f"You were kicked from {ctx.guild.name}")
+        else:
+            await ctx.send(f"{user} was kicked\nReason: {reason}", delete_after=10.0)
+            await user.send(f"You were kicked from {ctx.guild.name}\nReason: {reason}")
+
+    # TODO: Remove code repetition?
+    # Ban
+    @cog_ext.cog_slash(name="ban", guild_ids=cogbase.GUILD_IDS,
+                       description="Bans member from the server",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def kick(self, ctx, user: discord.Member, *, reason=None):
+        if user == ctx.author:
+            return await ctx.send(
+                f"{user.mention} You can't ban yourself", delete_after=5.0)
+        await user.ban(reason=reason)
+        if not reason:
+            await ctx.send(f"{user} was banned", delete_after=10.0)
+            await user.send(f"You were banned from {ctx.guild.name}")
+        else:
+            await ctx.send(f"{user} was banned \nReason: {reason}", delete_after=10.0)
+            await user.send(f"You were banned from {ctx.guild.name}\nReason: {reason}")
+
+    # Softban
+    @cog_ext.cog_slash(name="softban", guild_ids=cogbase.GUILD_IDS,
+                       description="Bans and unbans the user, so their messages are deleted",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def kick(self, ctx, user: discord.Member, *, reason=None):
+        if user == ctx.author:
+            return await ctx.send(
+                f"{user.mention} You can't softban yourself", delete_after=5.0)
+        await user.ban(reason=reason)
+        await user.unban(reason=reason)
+        if not reason:
+            await ctx.send(f"{user} was softbanned", delete_after=10.0)
+            await user.send(f"You were softbanned from {ctx.guild.name}")
+        else:
+            await ctx.send(f"{user} was softbanned \nReason: {reason}", delete_after=10.0)
+            await user.send(f"You were softbanned from {ctx.guild.name}\nReason: {reason}")
 
     # CHANNEL NAMES UPDATES
     # Total member channel name
