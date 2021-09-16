@@ -16,7 +16,7 @@ STAT_0o775 = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
               | stat.S_IROTH | stat.S_IXOTH)
 
 
-def main():
+def install_certifi():
     openssl_dir, openssl_cafile = os.path.split(
         ssl.get_default_verify_paths().openssl_cafile)
 
@@ -42,4 +42,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    install_certifi()
