@@ -27,6 +27,8 @@ from cogs.leaderboardcog import legend_multiplier
 from modules.pull_config.pull_config import get_config
 
 
+# TODO: Split this cog into different files/cogs
+
 class CommandsCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
