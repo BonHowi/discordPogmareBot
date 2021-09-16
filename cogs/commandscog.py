@@ -35,7 +35,7 @@ class CommandsCog(cogbase.BaseCog):
     # GENERAL FUNCTIONS
     # Check latency
     @cog_ext.cog_slash(name="ping", guild_ids=cogbase.GUILD_IDS,
-                       description="Test function for checking latency",
+                       description="Function for checking latency",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def _ping(self, ctx: SlashContext):
@@ -312,6 +312,28 @@ class CommandsCog(cogbase.BaseCog):
               f"-p{get_settings('DB_P')} server_database"
         os.system(cmd)
         await ctx.send(f"Database backed up", hidden=True)
+
+    # Slow mode
+    @cog_ext.cog_slash(name="slowmode", guild_ids=cogbase.GUILD_IDS,
+                       description="Enable slowmode on current channel",
+                       permissions=cogbase.PERMISSION_MODS)
+    async def slowmode(self, ctx, seconds: int = 0):
+        if seconds > 120:
+            return await ctx.send(":no_entry: Amount can't be over 120 seconds")
+        if seconds is 0:
+            await ctx.channel.edit(slowmode_delay=seconds)
+            a = await ctx.send("Slowmode is off for this channel")
+            await a.add_reaction("a:redcard:871861842639716472")
+        else:
+            if seconds is 1:
+                numofsecs = "second"
+            else:
+                numofsecs = "seconds"
+            await ctx.channel.edit(slowmode_delay=seconds)
+            confirm = await ctx.send(
+                f"{ctx.author.display_name} set the channel slow mode delay to `{seconds}` {numofsecs}\n"
+                f"To turn this off use /slowmode")
+            await confirm.add_reaction("a:ResidentWitcher:871872130021736519")
 
 
 def setup(bot: commands.Bot):
