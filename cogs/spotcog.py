@@ -60,7 +60,7 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         else:
-            await ctx.add_reaction("<:peepoban:872502800146382898>")
+            await ctx.add_reaction("a:peepoban:872502800146382898")
 
 
 def setup(bot: commands.Bot):
