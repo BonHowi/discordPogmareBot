@@ -15,11 +15,10 @@ import asyncio
 import json
 import os
 from datetime import datetime
-
 import discord
 from discord.utils import get
 from modules.get_settings import get_settings
-
+from googletrans import Translator
 import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -390,6 +389,31 @@ class CommandsCog(cogbase.BaseCog):
                 f"{ctx.author.display_name} set the channel slow mode delay to `{seconds}` {numofsecs}\n"
                 f"To turn this off use /slowmode")
             await confirm.add_reaction("a:ResidentWitcher:871872130021736519")
+
+    # Pool
+    @cog_ext.cog_slash(name="poll", guild_ids=cogbase.GUILD_IDS,
+                       description="Create pool",
+                       permissions=cogbase.PERMISSION_MODS)
+    async def poll(self, ctx, *, poll_info):
+        emb = (discord.Embed(description=poll_info, colour=0x36393e))
+        emb.set_author(name=f"Poll by {ctx.author.display_name}")
+        try:
+            poll_message = await ctx.send(embed=emb)
+            await poll_message.add_reaction("\N{THUMBS UP SIGN}")
+            await poll_message.add_reaction("\N{THUMBS DOWN SIGN}")
+        except Exception as e:
+            await ctx.send(f"Oops, I couldn't react to the poll. Check that I have permission to add reactions! "
+                           f"```py\n{e}```")
+
+    # Translate
+    @cog_ext.cog_slash(name="translate", guild_ids=cogbase.GUILD_IDS,
+                       description="Translate message",
+                       permissions=cogbase.PERMISSION_MODS)
+    async def translate(self, ctx: SlashContext, message: str):
+        # Translates the language and converts it to English
+        translator = Translator()
+        translated_message = translator.translate(message)
+        await ctx.send(f"`{message}` -> `{translated_message.text}`", hidden=True)
 
 
 def setup(bot: commands.Bot):
