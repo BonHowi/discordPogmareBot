@@ -169,7 +169,7 @@ class CommandsCog(cogbase.BaseCog):
         if new_status in channel.name:
             await ctx.send(f"{channel.name} has been changed", hidden=True)
         else:
-            await discord.VoiceChannel.edit(channel, name=f"N-Word spotted: {new_status}")
+            await discord.VoiceChannel.edit(channel, name=f"N-Word fixed: {new_status}")
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
     # OTHER
