@@ -5,6 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
+from time import time
 
 from modules.get_settings import get_settings
 
@@ -27,6 +28,8 @@ class MyBot(commands.Bot):
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
         print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
+        self.start_time = time()
+        self.version = "1.0"
 
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
