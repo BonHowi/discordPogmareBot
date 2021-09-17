@@ -71,12 +71,12 @@ class RequestCog(cogbase.BaseCog):
                 role = get(member.guild.roles, name=monster["name"])
                 if role in member.roles:
                     await member.remove_roles(role)
-                    await ctx.send(f"{role} role removed", delete_after=3.0)
+                    await ctx.send(f"{role} role removed", delete_after=10.0)
                 else:
                     await member.add_roles(role)
-                    await ctx.send(f"{role} role added", delete_after=3.0)
+                    await ctx.send(f"{role} role added", delete_after=10.0)
             else:
-                await ctx.send(f"Monster role not found", delete_after=3.0)
+                await ctx.send(f"Monster role not found", delete_after=10.0)
 
 
 def setup(bot: commands.Bot):
