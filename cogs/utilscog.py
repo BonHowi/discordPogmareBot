@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import re
 from datetime import datetime
 import time
 import discord
@@ -139,8 +140,14 @@ class UtilsCog(cogbase.BaseCog):
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
+        process_uptime = process_uptime.replace(re.search(r'\d+', process_uptime).group(),
+                                                str(int(re.search(r'\d+', process_uptime).group()) - 1),
+                                                1)
         system_uptime = time.time() - psutil.boot_time()
         system_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(system_uptime))
+        system_uptime = system_uptime.replace(re.search(r'\d+', system_uptime).group(),
+                                                str(int(re.search(r'\d+', system_uptime).group()) - 1),
+                                                1)
         mem = psutil.virtual_memory()
         pid = os.getpid()
         memory_use = psutil.Process(pid).memory_info()[0]
