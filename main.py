@@ -60,12 +60,17 @@ class MyBot(commands.Bot):
         new_name = f"Total members: {true_member_count}"
         channel = self.get_channel(self.ch_total_members)
         await discord.VoiceChannel.edit(channel, name=new_name)
+        return true_member_count
 
     # On member join
     async def on_member_join(self, ctx):
-        await self.update_member_count(ctx)
+        member_count = await self.update_member_count(ctx)
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} joined")
+
+        if (member_count % 100) == 0:
+            channel = self.get_channel(self.ch_admin_posting)
+            await channel.send(f"{member_count} members a:POGMARE:872496675434942484")
 
     async def on_member_remove(self, ctx):
         await self.update_member_count(ctx)
