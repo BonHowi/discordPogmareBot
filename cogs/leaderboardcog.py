@@ -13,6 +13,9 @@ class LeaderboardsCog(cogbase.BaseCog):
         super().__init__(base)
         self.update_leaderboards_loop.start()
 
+    def cog_unload(self):
+        self.update_leaderboards_loop.cancel()
+
     # Send leaderboards to specified channel
     async def update_leaderboards(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)

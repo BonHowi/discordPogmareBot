@@ -12,7 +12,7 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
 
-class RoleCog(cogbase.BaseCog):
+class RequestCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
 
@@ -80,4 +80,4 @@ class RoleCog(cogbase.BaseCog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(RoleCog(bot))
+    bot.add_cog(RequestCog(bot))

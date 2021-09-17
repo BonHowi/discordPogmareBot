@@ -5,6 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
+from time import time
 
 from modules.get_settings import get_settings
 
@@ -27,6 +28,8 @@ class MyBot(commands.Bot):
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
         print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
+        self.start_time = time()
+        self.version = "1.0"
 
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
@@ -50,7 +53,7 @@ class MyBot(commands.Bot):
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
         dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Bot ready")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Bot is ready")
 
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -59,10 +62,15 @@ class MyBot(commands.Bot):
         await discord.VoiceChannel.edit(channel, name=new_name)
 
     # On member join
-    async def on_member_join(self, ctx, member: discord.Member = None):
+    async def on_member_join(self, ctx):
         await self.update_member_count(ctx)
         dt_string = self.get_current_time()
-        print(f"{dt_string})\t[{self.__class__.__name__}]: {ctx.display_name} joined")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} joined")
+
+    async def on_member_remove(self, ctx):
+        await self.update_member_count(ctx)
+        dt_string = self.get_current_time()
+        print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} left")
 
     # Manage on message actions
     async def on_message(self, ctx):
@@ -92,8 +100,7 @@ class MyBot(commands.Bot):
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
-        admin_posting = self.get_channel(self.ch_admin_posting)
-        await admin_posting.send(f"Common changed: {commons[0]}")
+        await common_ch.send(f"Common changed: {commons[0]}")
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:

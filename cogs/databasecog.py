@@ -49,7 +49,6 @@ coords = Table('coords', metadata_obj,
                )
 
 
-# noinspection PyPropertyAccess
 class DatabaseCog(cogbase.BaseCog):
     user = get_settings("DB_U")
     password = get_settings("DB_P")
@@ -65,6 +64,9 @@ class DatabaseCog(cogbase.BaseCog):
         metadata_obj.create_all(self.engine)
         self.db_update_loop.start()
         self.conn = DatabaseCog.conn
+
+    def cog_unload(self):
+        self.db_update_loop.cancel()
 
     # ----- BASE DATABASE OPERATIONS -----
 
