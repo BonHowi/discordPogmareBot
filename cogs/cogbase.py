@@ -50,7 +50,8 @@ class BaseCog(commands.Cog):
         if not monster_found["role"]:
             dt_string = self.bot.get_current_time()
             print(
-                f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster {monster_found['name']}")
+                f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster"
+                f" {monster_found['name']}")
             return
 
         monster_found["role"] = monster_found["role"].id
