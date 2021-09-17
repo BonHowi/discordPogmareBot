@@ -24,7 +24,7 @@ class AdminCog(cogbase.BaseCog):
                        description="Function for clearing messages on channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _purge(self, ctx: SlashContext, number):
+    async def _purge(self, ctx: SlashContext, number=1):
         num_messages = int(number)
         await ctx.channel.purge(limit=num_messages)
         await ctx.send(f"Cleared {num_messages} messages!", delete_after=4.0)
