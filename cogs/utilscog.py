@@ -131,30 +131,6 @@ class UtilsCog(cogbase.BaseCog):
         os.system(cmd)
         await ctx.send(f"Database backed up", hidden=True)
 
-    @staticmethod
-    def stringfromtime(t, accuracy=4):
-        """
-        :param accuracy:
-        :type accuracy:
-        :param t : Time in seconds
-        :returns : Formatted string
-        """
-        m, s = divmod(t, 60)
-        h, m = divmod(m, 60)
-        d, h = divmod(h, 24)
-
-        components = []
-        if d > 0:
-            components.append(f"{int(d)} day" + ("s" if d != 1 else ""))
-        if h > 0:
-            components.append(f"{int(h)} hour" + ("s" if h != 1 else ""))
-        if m > 0:
-            components.append(f"{int(m)} minute" + ("s" if m != 1 else ""))
-        if s > 0:
-            components.append(f"{int(s)} second" + ("s" if s != 1 else ""))
-
-        return " ".join(components[:accuracy])
-
     # System stats
     @cog_ext.cog_slash(name="systemStatus", guild_ids=cogbase.GUILD_IDS,
                        description="Get status of the system",
@@ -162,16 +138,18 @@ class UtilsCog(cogbase.BaseCog):
     async def system(self, ctx):
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
+        process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
         system_uptime = time.time() - psutil.boot_time()
+        system_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(system_uptime))
         mem = psutil.virtual_memory()
         pid = os.getpid()
         memory_use = psutil.Process(pid).memory_info()[0]
 
         data = [
             ("Version", self.bot.version),
-            ("Process uptime", self.stringfromtime(process_uptime, 2)),
+            ("Process uptime", process_uptime),
             ("Process memory", f"{memory_use / math.pow(1024, 2):.2f}MB"),
-            ("System uptime", self.stringfromtime(system_uptime, 2)),
+            ("System uptime", system_uptime),
             ("CPU Usage", f"{psutil.cpu_percent()}%"),
             ("RAM Usage", f"{mem.percent}%"),
         ]
