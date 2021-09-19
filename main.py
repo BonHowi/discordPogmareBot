@@ -41,6 +41,7 @@ class MyBot(commands.Bot):
         self.ch_leaderboards_event = get_settings("CH_LEADERBOARDS_EVENT")
         self.ch_common = get_settings("CH_COMMON")
         self.ch_werewolf = get_settings("CH_WEREWOLF")
+        self.ch_nemeton = get_settings("CH_NEMETON")
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
         self.cat_spotting = get_settings("CAT_SPOTTING")
