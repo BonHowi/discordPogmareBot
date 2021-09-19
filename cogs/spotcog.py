@@ -60,9 +60,7 @@ class SpotCog(cogbase.BaseCog):
                     f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
-        elif ctx.channel.id == self.bot.ch_werewolf:
-            return
-        else:
+        elif ctx.channel.id != self.bot.ch_werewolf:
             await ctx.add_reaction("a:peepoban:872502800146382898")
 
 
