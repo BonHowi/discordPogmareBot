@@ -60,6 +60,8 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         else:
+            if ctx.channel.id == self.bot.ch_werewolf:
+                return
             await ctx.add_reaction("a:peepoban:872502800146382898")
 
 
