@@ -41,6 +41,7 @@ class SpotCog(cogbase.BaseCog):
         else:
             await ctx.delete()
 
+    # TODO: spaghetti code
     async def handle_spotted_monster(self, ctx):
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
