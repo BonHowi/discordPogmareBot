@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
@@ -107,6 +109,7 @@ class LeaderboardsCog(cogbase.BaseCog):
                        default_permission=True)
     async def reload_leaderboards(self, ctx):
         await self.update_leaderboards()
+        await asyncio.sleep(10)
         await ctx.send(f"Leaderboards reloaded", hidden=True)
 
 
