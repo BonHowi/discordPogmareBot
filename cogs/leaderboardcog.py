@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 from discord.utils import get
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
+from modules.utils import get_dominant_color
 
 legend_multiplier = 5
 
@@ -33,8 +34,12 @@ class LeaderboardsCog(cogbase.BaseCog):
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
         ch_type = ''.join([i for i in ch_type if not i.isdigit()])
+
+        top_user_id = int(spots_df_top.at[0, 'member_id'])
+        top_user = get(self.bot.get_all_members(), id=top_user_id)
+        top_user_color = get_dominant_color(top_user.avatar_url)
         embed_command = discord.Embed(title=f"TOP 15 {ch_type.upper()}", description=top_print,
-                                      color=0xf1c232)
+                                      color=top_user_color)
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
         await top_ch.send(embed=embed_command)
