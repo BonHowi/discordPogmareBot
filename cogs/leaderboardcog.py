@@ -2,6 +2,8 @@ import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
+from discord_slash import cog_ext
+
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color
@@ -18,7 +20,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.update_leaderboards_loop.cancel()
 
     # Send leaderboards to specified channel
-    async def update_leaderboards(self, channel: int, ch_type: str):
+    async def update_leaderboard(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df = pd.DataFrame(spots_df)
@@ -77,22 +79,32 @@ class LeaderboardsCog(cogbase.BaseCog):
             await self.update_role(guild, guild_member, spot_roles_total, False)
             await self.update_role(guild, guild_member, spot_roles_common, True)
 
-    @tasks.loop(minutes=15)
-    async def update_leaderboards_loop(self):
-        await self.update_leaderboards(self.bot.ch_leaderboards, "total")
-        await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
-        await self.update_leaderboards(self.bot.ch_leaderboards_event, "event1")
+    async def update_leaderboards(self):
+        await self.update_leaderboard(self.bot.ch_leaderboards, "total")
+        await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
+        await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
         await self.update_member_roles()
         dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Members' roles updated")
 
+    @tasks.loop(minutes=15)
+    async def update_leaderboards_loop(self):
+        await self.update_leaderboards()
+
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
+
+    @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
+                       description=" ",
+                       default_permission=True)
+    async def reload_leaderboards(self, ctx):
+        await self.update_leaderboards()
+        await ctx.send(f"Leaderboards reloaded", hidden=True)
 
 
 def setup(bot: commands.Bot):
