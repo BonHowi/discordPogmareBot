@@ -3,6 +3,7 @@ import requests
 from io import BytesIO
 
 
+# Get dominant color from image
 def get_dominant_color(url):
     response = requests.get(url)
     pil_img = Image.open(BytesIO(response.content))
