@@ -7,6 +7,8 @@ import time
 import discord
 import psutil
 from discord.utils import get
+from numpyencoder import NumpyEncoder
+
 from modules.get_settings import get_settings
 import cogs.cogbase as cogbase
 from discord.ext import commands
@@ -148,13 +150,11 @@ class UtilsCog(cogbase.BaseCog):
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
         process_uptime = process_uptime.replace(re.search(r'\d+', process_uptime).group(),
-                                                str(int(re.search(r'\d+', process_uptime).group()) - 1),
-                                                1)
+                                                str(int(re.search(r'\d+', process_uptime).group()) - 1), 1)
         system_uptime = time.time() - psutil.boot_time()
         system_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(system_uptime))
         system_uptime = system_uptime.replace(re.search(r'\d+', system_uptime).group(),
-                                                str(int(re.search(r'\d+', system_uptime).group()) - 1),
-                                                1)
+                                              str(int(re.search(r'\d+', system_uptime).group()) - 1), 1)
         mem = psutil.virtual_memory()
         pid = os.getpid()
         memory_use = psutil.Process(pid).memory_info()[0]
@@ -174,6 +174,26 @@ class UtilsCog(cogbase.BaseCog):
             description="\n".join(f"**{x[0]}** {x[1]}" for x in data),
         )
         await ctx.send(embed=content)
+
+    # Change monster type(for events)
+    @cog_ext.cog_slash(name="changeMonsterType", guild_ids=cogbase.GUILD_IDS,
+                       description="Get status of the system",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_ADMINS)
+    async def change_monster_type(self, ctx, monster: str, new_type: int):
+        config = self.bot.config
+        for mon in config["commands"]:
+            if mon["name"] == monster:
+                mon["type"] = new_type
+                break
+
+        self.bot.config = config
+        with open('server_files/config.json', 'w', encoding='utf8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
+
+        dt_string = self.bot.get_current_time()
+        print(f"({dt_string})\t[{get_config.__name__}]: changed type for {monster}")
+        await ctx.send(f"{monster}'s type changed", hidden=True)
 
 
 def setup(bot: commands.Bot):
