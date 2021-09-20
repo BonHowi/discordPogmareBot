@@ -1,6 +1,9 @@
 import os
 
+import discord
 from discord.ext import commands, tasks
+from discord_slash import cog_ext, SlashContext
+
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
@@ -253,6 +256,18 @@ class DatabaseCog(cogbase.BaseCog):
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
         return df
+
+    @cog_ext.cog_slash(name="changeMemberSpots", guild_ids=cogbase.GUILD_IDS,
+                       description=" ",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def change_member_spots(self, ctx: SlashContext, user: discord.Member, spot_type: str, number: int):
+        self.conn = self.engine.connect()
+        stmt = f"""UPDATE server_database.spots SET {spot_type} = {number} """ \
+               f"""WHERE (member_id = {user.id});"""
+        self.conn.execute(stmt)
+        await ctx.send(f"{user.display_name} spots changed", hidden=True)
+        self.conn.close()
 
     # ----- COORDS OPERATIONS -----
 
