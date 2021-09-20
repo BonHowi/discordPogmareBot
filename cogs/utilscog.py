@@ -185,15 +185,14 @@ class UtilsCog(cogbase.BaseCog):
         for mon in config["commands"]:
             if mon["name"] == monster:
                 mon["type"] = new_type
+                dt_string = self.bot.get_current_time()
+                print(f"({dt_string})\t[{get_config.__name__}]: changed type for {monster}")
+                await ctx.send(f"{monster}'s type changed", hidden=True)
                 break
 
         self.bot.config = config
         with open('server_files/config.json', 'w', encoding='utf8') as f:
             json.dump(config, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
-
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{get_config.__name__}]: changed type for {monster}")
-        await ctx.send(f"{monster}'s type changed", hidden=True)
 
 
 def setup(bot: commands.Bot):
