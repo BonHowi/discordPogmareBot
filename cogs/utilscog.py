@@ -194,6 +194,48 @@ class UtilsCog(cogbase.BaseCog):
         with open('server_files/config.json', 'w', encoding='utf8') as f:
             json.dump(config, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
 
+    @cog_ext.cog_slash(name="updateGuides", guild_ids=cogbase.GUILD_IDS,
+                       description=" ",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def change_monster_type(self, ctx: SlashContext):
+        await ctx.channel.purge(limit=3)
+        embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
+        embed.add_field(name="Recommended Fake GPS App for Android users",
+                        value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
+                        inline=True)
+        embed.add_field(name="Recommended Fake GPS App for iOS users",
+                        value="https://www.thinkskysoft.com/itools/%22%3E%22", inline=False)
+        embed.add_field(name="Recommended android emulator for Windows and Mac",
+                        value="https://www.bignox.com/%22%3E%22", inline=False)
+        embed.add_field(name="YT Guide for Fake GPS Location recommended app (by @ChampattioNonNightMareMare)",
+                        value="https://www.youtube.com/watch?v=wU7qOLEm7qQ", inline=False)
+        embed.add_field(
+            name="Nox guide for creating macro and keyboard mapping; "
+                 "it can help in automatically making potion, fight, blocks signs etc.",
+            value="https://support.bignox.com/en/keyboard/macro1%22%3E%22", inline=False)
+        await ctx.send(embed=embed)
+
+        embed = discord.Embed(title="GAME GUIDES", color=0x8a3c00)
+        embed.add_field(name="Advanced Combat guide", value="https://www.youtube.com/watch?v=-D0wIzwxp0Y&t=4s%22%3E%22",
+                        inline=False)
+        embed.add_field(name="Guide to the game quests",
+                        value="https://docs.google.com/document/d/"
+                              "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit%22%3E%22",
+                        inline=False)
+        embed.add_field(name="Recommended Skill Tree (by @Sagar)",
+                        value="https://pasteboard.co/LYjVo2u1aIDt.jpg%22%3E%22", inline=False)
+        await ctx.send(embed=embed)
+
+        embed = discord.Embed(title="USEFUL TOOLS", color=0x019827)
+        embed.add_field(name="Great sheet for checking monster spawn conditions(credit to @TaraxGoat))",
+                        value="https://docs.google.com/spreadsheets/d/"
+                              "148qPGW9oYOaYAzpk_a06u2FBnw9rZzAmBZ6AxWFrryI/edit#gid=2093943306%22%3E%22",
+                        inline=False)
+        embed.add_field(name="Website for checking timezones/current time",
+                        value="https://www.timeanddate.com/worldclock/?sort=2%22%3E%22", inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(UtilsCog(bot))
