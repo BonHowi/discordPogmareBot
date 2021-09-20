@@ -199,7 +199,6 @@ class UtilsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def change_monster_type(self, ctx: SlashContext):
-        await ctx.channel.purge(limit=3)
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
         embed.add_field(name="Recommended Fake GPS App for Android users",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
