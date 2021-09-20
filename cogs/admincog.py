@@ -52,7 +52,7 @@ class AdminCog(cogbase.BaseCog):
 
         await DatabaseCog.db_add_warn(user.id, reason)
         await ctx.send(
-            f"{user.mention} was warned for:\n*\"{reason}\"*\n")  # f"Number of warns: {len(current_user['reasons'])}")
+            f"{user.mention} was warned for:\n*{reason}*\n")  # f"Number of warns: {len(current_user['reasons'])}")
 
     # Get list of user's warns
     @cog_ext.cog_slash(name="warns", guild_ids=cogbase.GUILD_IDS,
