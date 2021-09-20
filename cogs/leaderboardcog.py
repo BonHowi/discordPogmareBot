@@ -4,7 +4,7 @@ import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
-from discord_slash import cog_ext
+from discord_slash import cog_ext, SlashContext
 
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
@@ -108,10 +108,9 @@ class LeaderboardsCog(cogbase.BaseCog):
                        description=" ",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def reload_leaderboards(self, ctx):
-        await self.update_leaderboards()
-        await asyncio.sleep(10)
+    async def reload_leaderboards(self, ctx: SlashContext):
         await ctx.send(f"Leaderboards reloaded", hidden=True)
+        await self.update_leaderboards()
 
 
 def setup(bot: commands.Bot):
