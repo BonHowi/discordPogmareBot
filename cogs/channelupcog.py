@@ -51,6 +51,7 @@ class ChannelUpCog(cogbase.BaseCog):
     # Doesn't work if used too many times in a short period of time
     @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
                        description="Change N-Word channel name",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def rename_nword_channel(self, ctx, status: str):
         new_status = status

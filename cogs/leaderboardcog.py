@@ -106,7 +106,8 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
                        description=" ",
-                       default_permission=True)
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
     async def reload_leaderboards(self, ctx):
         await self.update_leaderboards()
         await asyncio.sleep(10)

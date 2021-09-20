@@ -49,6 +49,7 @@ class UtilsCog(cogbase.BaseCog):
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
                        description="Clear temp spots table in database",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def clear_temp_spots_table(self, ctx):
         await DatabaseCog.db_clear_spots_temp_table()
@@ -75,6 +76,7 @@ class UtilsCog(cogbase.BaseCog):
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
                        description="Reload cog",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_cog_command(self, ctx: SlashContext, module: str):
         await self.reload_cog(ctx, module)
@@ -82,6 +84,7 @@ class UtilsCog(cogbase.BaseCog):
     # Command for reloading all cogs
     @cog_ext.cog_slash(name="reloadAllCogs", guild_ids=cogbase.GUILD_IDS,
                        description="Reload cog",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
@@ -90,6 +93,7 @@ class UtilsCog(cogbase.BaseCog):
 
     @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
                        description="Get your spot stats",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext):
         coords_df = await DatabaseCog.db_get_coords()
@@ -102,6 +106,7 @@ class UtilsCog(cogbase.BaseCog):
     # Get member info
     @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
                        description="Get member info",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def memberinfo(self, ctx: SlashContext, *, user: discord.Member = None):
         if user is None:
@@ -123,6 +128,7 @@ class UtilsCog(cogbase.BaseCog):
     # Backup database to a file
     @cog_ext.cog_slash(name="backupDatabase", guild_ids=cogbase.GUILD_IDS,
                        description="Backup database to a file",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def backup_database(self, ctx: SlashContext):
         now = datetime.now()
@@ -135,6 +141,7 @@ class UtilsCog(cogbase.BaseCog):
     # System stats
     @cog_ext.cog_slash(name="systemStatus", guild_ids=cogbase.GUILD_IDS,
                        description="Get status of the system",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def system(self, ctx):
         """Get status of the system."""

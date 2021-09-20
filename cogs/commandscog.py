@@ -56,6 +56,7 @@ class CommandsCog(cogbase.BaseCog):
     # Pool
     @cog_ext.cog_slash(name="poll", guild_ids=cogbase.GUILD_IDS,
                        description="Create pool",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def poll(self, ctx, *, poll_info):
         emb = (discord.Embed(description=poll_info, colour=0x36393e))
@@ -71,6 +72,7 @@ class CommandsCog(cogbase.BaseCog):
     # Translate
     @cog_ext.cog_slash(name="translate", guild_ids=cogbase.GUILD_IDS,
                        description="Translate message",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def translate(self, ctx: SlashContext, message: str):
         # Translates the language and converts it to English

@@ -150,6 +150,7 @@ class AdminCog(cogbase.BaseCog):
     # Slow mode
     @cog_ext.cog_slash(name="slowmode", guild_ids=cogbase.GUILD_IDS,
                        description="Enable slowmode on current channel",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def slowmode(self, ctx, seconds: int = 0):
         if seconds > 120:
