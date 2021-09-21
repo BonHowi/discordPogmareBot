@@ -99,7 +99,9 @@ class UtilsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext):
         coords_df = await DatabaseCog.db_get_coords()
-        coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', expand=True)
+        coords_df = coords_df[coords_df.coords.str.contains(",")]
+        print(coords_df)
+        coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
         coords_df.to_excel(r'server_files/coords.xlsx', index=False)
         await ctx.send(f"Coords saved", hidden=True)
         dt_string = self.bot.get_current_time()
