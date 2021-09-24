@@ -31,12 +31,16 @@ class SpotStatssCog(cogbase.BaseCog):
         roles_counter = Counter(roles_joined_list)
         roles_counter = OrderedDict(roles_counter.most_common())
         top_print = []
+        total = 0
         for key, value in roles_counter.items():
-            spotting_stats = [f"**{key}**:  {value}"]
+            spotting_stats = [f"{key}:  **{value}**"]
             top_print.append(spotting_stats)
+            total += value
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
+
         embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
+        embed_command.add_field(name="Total", value=f"{total}", inline=False)
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await spot_stats_ch.send(embed=embed_command)
