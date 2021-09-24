@@ -35,9 +35,10 @@ class SpotStatssCog(cogbase.BaseCog):
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
         embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
+        dt_string = self.bot.get_current_time()
+        embed_command.set_footer(text=f"Last updated: {dt_string}")
         await spot_stats_ch.send(embed=embed_command)
 
-        dt_string = self.bot.get_current_time()
         channel = self.bot.get_channel(channel_id)
         print(f"({dt_string})\t[{self.__class__.__name__}]: Spotting stats updated - {channel.name}")
 
