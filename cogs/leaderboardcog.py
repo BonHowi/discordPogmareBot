@@ -1,11 +1,8 @@
-import asyncio
-
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
 from discord_slash import cog_ext, SlashContext
-
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color

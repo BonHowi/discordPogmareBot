@@ -4,7 +4,6 @@ from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
-from datetime import datetime
 
 GUILD_IDS = get_settings("guild")
 MODERATION_IDS = get_settings("MOD_ROLES")

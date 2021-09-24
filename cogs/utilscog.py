@@ -111,7 +111,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get member info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def memberinfo(self, ctx: SlashContext, *, user: discord.Member = None):
+    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -146,7 +146,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get status of the system",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def system(self, ctx):
+    async def system_status(self, ctx):
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
