@@ -1,3 +1,5 @@
+import timeit
+
 import discord
 from discord.ext import commands, tasks
 from discord.utils import get
@@ -40,7 +42,7 @@ class SpotStatssCog(cogbase.BaseCog):
         top_print = "\n".join(top_print)
 
         embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
-        embed_command.add_field(name="Total", value=f"{total}", inline=False)
+        embed_command.add_field(name="Total", value=f"**{total}**", inline=False)
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await spot_stats_ch.send(embed=embed_command)
