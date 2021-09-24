@@ -112,13 +112,10 @@ class AdminCog(cogbase.BaseCog):
         elif operation_t == "softban":
             await user.ban(reason=reason)
             await user.unban(reason=reason)
+        reason_str = f"\nReason: {reason}" if reason else ""
 
-        if not reason:
-            await ctx.send(f"{user} was {operation_t}ed", delete_after=10.0)
-            await user.send(f"You were {operation_t}ed from {ctx.guild.name}")
-        else:
-            await ctx.send(f"{user} was {operation_t}ed\nReason: {reason}", delete_after=10.0)
-            await user.send(f"You were {operation_t}ed from {ctx.guild.name}\nReason: {reason}")
+        await ctx.send(f"{user} was {operation_t}ed{reason_str}", delete_after=10.0)
+        await user.send(f"You were {operation_t}ed from {ctx.guild.name}{reason_str}")
 
     # Kick
     @cog_ext.cog_slash(name="kick", guild_ids=cogbase.GUILD_IDS,
