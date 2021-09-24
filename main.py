@@ -107,7 +107,7 @@ class MyBot(commands.Bot):
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
-        await common_ch.send(f"Common changed: {commons[0]}")
+        await common_ch.send(f"Common changed: **{commons[0]}**")
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:
@@ -123,14 +123,6 @@ class MyBot(commands.Bot):
     @update_ch_commons_loop.before_loop
     async def before_update_ch_commons(self):
         await self.wait_until_ready()
-
-    # Disconnect Bot using "!" prefix (For safety reasons in case Slash commands are not working
-    @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
-    async def exit_bot(self, ctx):
-        await ctx.send(f"Closing Bot", delete_after=1.0)
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
-        await self.close()
 
     @staticmethod
     def get_current_time():
