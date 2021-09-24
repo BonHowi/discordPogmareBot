@@ -33,8 +33,7 @@ class UtilsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            dt_string = self.bot.get_current_time()
-            print(f"({dt_string})\t[{self.__class__.__name__}]: Finished data pull")
+            self.create_log_msg(f"Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
     # Create roles if pull_config gets non existent roles
@@ -45,8 +44,7 @@ class UtilsCog(cogbase.BaseCog):
                 continue
             else:
                 await ctx.guild.create_role(name=mon_type)
-                dt_string = self.bot.get_current_time()
-                print(f"({dt_string})\t[{self.__class__.__name__}]: {mon_type} role created")
+                self.create_log_msg(f"{mon_type} role created")
 
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
@@ -62,19 +60,18 @@ class UtilsCog(cogbase.BaseCog):
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
         module = f"cogs.{module}"
-        dt_string = self.bot.get_current_time()
         try:
             self.bot.load_extension(f"{module}")
             await ctx.send(f'[{module}] loaded', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} loaded')
+            self.create_log_msg(f"{module} loaded")
         except commands.ExtensionAlreadyLoaded:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
             await ctx.send(f'[{module}] reloaded', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} reloaded')
+            self.create_log_msg(f"{module} reloaded")
         except commands.ExtensionNotFound:
             await ctx.send(f'[{module}] not found', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} not found')
+            self.create_log_msg(f"{module} not found")
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
@@ -104,10 +101,10 @@ class UtilsCog(cogbase.BaseCog):
         coords_df = coords_df[coords_df.coords.str.contains(",")]
         print(coords_df)
         coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
-        coords_df.to_excel(r'server_files/coords.xlsx', index=False)
+        path_coords = r"server_files/coords.xlsx"
+        coords_df.to_excel(path_coords, index=False)
         await ctx.send(f"Coords saved", hidden=True)
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files/coords.xlsx')
+        self.create_log_msg(f"Coords saved to {path_coords}")
 
     # Get member info
     @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
@@ -189,8 +186,7 @@ class UtilsCog(cogbase.BaseCog):
         for mon in config["commands"]:
             if mon["name"] == monster:
                 mon["type"] = new_type
-                dt_string = self.bot.get_current_time()
-                print(f"({dt_string})\t[{get_config.__name__}]: changed type for {monster}")
+                self.create_log_msg(f"Changed type for {monster}")
                 await ctx.send(f"{monster}'s type changed", hidden=True)
                 break
 

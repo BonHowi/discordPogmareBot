@@ -48,7 +48,7 @@ class SpotStatssCog(cogbase.BaseCog):
         await spot_stats_ch.send(embed=embed_command)
 
         channel = self.bot.get_channel(channel_id)
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Spotting stats updated - {channel.name}")
+        self.create_log_msg(f"Spotting stats updated - {channel.name}")
 
     async def get_channel_history(self, channel_id, channel_type) -> list:
         guild = self.bot.get_guild(self.bot.guild[0])
@@ -79,13 +79,11 @@ class SpotStatssCog(cogbase.BaseCog):
         await spot_stats_ch.purge()
         await self.update_spot_stats(self.bot.ch_legendary_spot, 1)
         await self.update_spot_stats(self.bot.ch_rare_spot, 0)
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: All spotting stats updated")
+        self.create_log_msg(f"All spotting stats updated")
 
     @update_spot_stats_loop.before_loop
     async def before_update_spot_stats_loop(self):
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
+        self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
 

@@ -41,9 +41,7 @@ class ChannelUpCog(cogbase.BaseCog):
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
-
+        self.create_log_msg(f"Common channel name updated: {commons[0]}")
         await common_ch.send(f"Common changed: {commons[0]}")
         await ctx.send(f"Common changed: {commons[0]}", hidden=True)
 

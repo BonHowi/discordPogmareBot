@@ -98,16 +98,14 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_update(self):
         self.conn = self.engine.connect()
         guild = self.bot.get_guild(self.bot.guild[0])
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Refreshing member and spots tables")
+        self.create_log_msg(f"Refreshing member and spots tables")
         for guild_member in guild.members:
             # Member tables
             self.db_add_update_member(guild_member)
             # Spots tables
             self.db_add_update_spots(spots, guild_member)
             self.db_add_update_spots(spots_temp, guild_member)
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Member and spots tables refreshed")
+        self.create_log_msg(f"Member and spots tables refreshed")
         self.conn.close()
 
     @tasks.loop(hours=12)
@@ -117,8 +115,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self):
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
+        self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     # Add member to database on member join
@@ -135,8 +132,7 @@ class DatabaseCog(cogbase.BaseCog):
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
               f"-p{get_settings('DB_P')} server_database"
         os.system(cmd)
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Database backed up')
+        self.create_log_msg(f"Database backed up")
 
     # ----- SPOTTING OPERATIONS -----
 

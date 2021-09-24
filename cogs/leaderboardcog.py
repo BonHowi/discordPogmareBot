@@ -90,11 +90,9 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
         await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
+        self.create_log_msg(f"Leaderboards updated")
         await self.update_member_roles()
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Members' roles updated")
+        self.create_log_msg(f"Members' roles updated")
 
     @tasks.loop(minutes=15)
     async def update_leaderboards_loop(self):
@@ -102,8 +100,7 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
+        self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
