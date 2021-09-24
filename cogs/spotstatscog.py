@@ -12,15 +12,17 @@ class SpotStatssCog(cogbase.BaseCog):
 
     async def update_spot_stats(self, channel_id: int, channel_type: int):
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
+        hex_to_int = "%02x%02x%02x"
+        # TODO: ...
         if channel_type == 1:
             embed_title = "LEGENDARY"
-            embed_color = int('%02x%02x%02x' % (163, 140, 21), 16)
+            embed_color = int(hex_to_int % (163, 140, 21), 16)
         elif channel_type == 0:
             embed_title = "RARE"
-            embed_color = int('%02x%02x%02x' % (17, 93, 178), 16)
+            embed_color = int(hex_to_int % (17, 93, 178), 16)
         else:
             embed_title = "???"
-            embed_color = int('%02x%02x%02x' % (1, 1, 1), 16)
+            embed_color = int(hex_to_int % (1, 1, 1), 16)
 
         roles_main_list = await self.get_channel_history(channel_id, channel_type)
         roles_werewolf_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
@@ -65,7 +67,6 @@ class SpotStatssCog(cogbase.BaseCog):
                 break
         if monster_found["type"] == channel_type:
             return role.name
-        return
 
     @tasks.loop(hours=12)
     async def update_spot_stats_loop(self):
