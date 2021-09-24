@@ -35,11 +35,12 @@ class BaseCog(commands.Cog):
     # Find monster in config
     def get_monster(self, ctx, name: str):
         name = name.lower()
-        monster_found = []
+        monster_found = None
 
         for monster in self.bot.config["commands"]:
             if monster["name"].lower() == name or name in monster["triggers"]:
                 monster_found = monster
+                break
 
         if not monster_found:
             dt_string = self.bot.get_current_time()

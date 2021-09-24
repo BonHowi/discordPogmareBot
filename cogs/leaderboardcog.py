@@ -1,9 +1,14 @@
+import asyncio
+
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
+from discord_slash import cog_ext, SlashContext
+
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
+from modules.utils import get_dominant_color
 
 legend_multiplier = 5
 
@@ -17,7 +22,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.update_leaderboards_loop.cancel()
 
     # Send leaderboards to specified channel
-    async def update_leaderboards(self, channel: int, ch_type: str):
+    async def update_leaderboard(self, channel: int, ch_type: str):
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df = pd.DataFrame(spots_df)
@@ -28,15 +33,24 @@ class LeaderboardsCog(cogbase.BaseCog):
 
         top_print = []
         for index, row in spots_df_top.iterrows():
-            member_stats = [f"**[{index + 1}]**  {row['display_name']} - {row[ch_type]}"]
+            if row[ch_type] == 0:
+                member_stats = ""
+            else:
+                member_stats = [f"**[{index + 1}]**  {row['display_name']} - {row[ch_type]}"]
             top_print.append(member_stats)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
         ch_type = ''.join([i for i in ch_type if not i.isdigit()])
+
+        top_user_id = int(spots_df_top.at[0, 'member_id'])
+        top_user = get(self.bot.get_all_members(), id=top_user_id)
+        top_user_color = get_dominant_color(top_user.avatar_url)
         embed_command = discord.Embed(title=f"TOP 15 {ch_type.upper()}", description=top_print,
-                                      color=0xf1c232)
+                                      color=top_user_color)
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
+        dt_string = self.bot.get_current_time()
+        embed_command.set_footer(text=f"Last updated: {dt_string}")
         await top_ch.send(embed=embed_command)
 
     # Update member spotting role(total/common)
@@ -72,22 +86,33 @@ class LeaderboardsCog(cogbase.BaseCog):
             await self.update_role(guild, guild_member, spot_roles_total, False)
             await self.update_role(guild, guild_member, spot_roles_common, True)
 
-    @tasks.loop(minutes=15)
-    async def update_leaderboards_loop(self):
-        await self.update_leaderboards(self.bot.ch_leaderboards, "total")
-        await self.update_leaderboards(self.bot.ch_leaderboards_common, "common")
-        await self.update_leaderboards(self.bot.ch_leaderboards_event, "event1")
+    async def update_leaderboards(self):
+        await self.update_leaderboard(self.bot.ch_leaderboards, "total")
+        await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
+        await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
         await self.update_member_roles()
         dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Members' roles updated")
 
+    @tasks.loop(minutes=15)
+    async def update_leaderboards_loop(self):
+        await self.update_leaderboards()
+
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
         dt_string = self.bot.get_current_time()
         print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
         await self.bot.wait_until_ready()
+
+    @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
+                       description=" ",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def reload_leaderboards(self, ctx: SlashContext):
+        await ctx.send(f"Leaderboards reloaded", hidden=True)
+        await self.update_leaderboards()
 
 
 def setup(bot: commands.Bot):

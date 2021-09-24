@@ -29,7 +29,7 @@ class MyBot(commands.Bot):
         print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
         print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
         self.start_time = time()
-        self.version = "1.0"
+        self.version = "1.1"
 
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
@@ -39,9 +39,15 @@ class MyBot(commands.Bot):
         self.ch_leaderboards = get_settings("CH_LEADERBOARDS")
         self.ch_leaderboards_common = get_settings("CH_LEADERBOARDS_COMMON")
         self.ch_leaderboards_event = get_settings("CH_LEADERBOARDS_EVENT")
+        self.ch_legendary_spot = get_settings("CH_LEGENDARY_SPOT")
+        self.ch_rare_spot = get_settings("CH_RARE_SPOT")
         self.ch_common = get_settings("CH_COMMON")
+        self.ch_werewolf = get_settings("CH_WEREWOLF")
+        self.ch_wraiths = get_settings("CH_WRAITHS")
+        self.ch_nemeton = get_settings("CH_NEMETON")
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
+        self.ch_spotting_stats = get_settings("CH_SPOTTING_STATS")
         self.cat_spotting = get_settings("CAT_SPOTTING")
         self.update_ch_commons_loop.start()
 
@@ -60,12 +66,17 @@ class MyBot(commands.Bot):
         new_name = f"Total members: {true_member_count}"
         channel = self.get_channel(self.ch_total_members)
         await discord.VoiceChannel.edit(channel, name=new_name)
+        return true_member_count
 
     # On member join
     async def on_member_join(self, ctx):
-        await self.update_member_count(ctx)
+        member_count = await self.update_member_count(ctx)
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} joined")
+
+        if (member_count % 100) == 0:
+            channel = self.get_channel(self.ch_admin_posting)
+            await channel.send(f"{member_count} members <:POGMARE:872496675434942484>")
 
     async def on_member_remove(self, ctx):
         await self.update_member_count(ctx)
@@ -100,7 +111,7 @@ class MyBot(commands.Bot):
         dt_string = self.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
 
-        await common_ch.send(f"Common changed: {commons[0]}")
+        await common_ch.send(f"Common changed: **{commons[0]}**")
 
         commons.append(commons.pop(commons.index(commons[0])))
         with open('./server_files/commons.txt', 'w') as f:
@@ -116,14 +127,6 @@ class MyBot(commands.Bot):
     @update_ch_commons_loop.before_loop
     async def before_update_ch_commons(self):
         await self.wait_until_ready()
-
-    # Disconnect Bot using "!" prefix (For safety reasons in case Slash commands are not working
-    @commands.command(name="ex", pass_context=True, aliases=["e", "exit"])
-    async def exit_bot(self, ctx):
-        await ctx.send(f"Closing Bot", delete_after=1.0)
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
-        await self.close()
 
     @staticmethod
     def get_current_time():

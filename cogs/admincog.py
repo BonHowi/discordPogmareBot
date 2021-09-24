@@ -24,10 +24,11 @@ class AdminCog(cogbase.BaseCog):
                        description="Function for clearing messages on channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _purge(self, ctx: SlashContext, number):
+    async def _purge(self, ctx: SlashContext, number=1):
         num_messages = int(number)
         await ctx.channel.purge(limit=num_messages)
-        await ctx.send(f"Cleared {num_messages} messages!", delete_after=4.0)
+        await asyncio.sleep(5)
+        await ctx.send(f"Clearing {num_messages} messages!", delete_after=4.0)
 
     # Disconnect Bot
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.GUILD_IDS,
@@ -52,7 +53,7 @@ class AdminCog(cogbase.BaseCog):
 
         await DatabaseCog.db_add_warn(user.id, reason)
         await ctx.send(
-            f"{user.mention} was warned for:\n*\"{reason}\"*\n")  # f"Number of warns: {len(current_user['reasons'])}")
+            f"{user.mention} was warned for:\n> {reason}\n")
 
     # Get list of user's warns
     @cog_ext.cog_slash(name="warns", guild_ids=cogbase.GUILD_IDS,
@@ -150,16 +151,17 @@ class AdminCog(cogbase.BaseCog):
     # Slow mode
     @cog_ext.cog_slash(name="slowmode", guild_ids=cogbase.GUILD_IDS,
                        description="Enable slowmode on current channel",
+                       default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def slowmode(self, ctx, seconds: int = 0):
         if seconds > 120:
             return await ctx.send(":no_entry: Amount can't be over 120 seconds")
-        if seconds is 0:
+        if seconds == 0:
             await ctx.channel.edit(slowmode_delay=seconds)
             a = await ctx.send("Slowmode is off for this channel")
             await a.add_reaction("a:redcard:871861842639716472")
         else:
-            if seconds is 1:
+            if seconds == 1:
                 numofsecs = "second"
             else:
                 numofsecs = "seconds"
