@@ -40,6 +40,7 @@ class BaseCog(commands.Cog):
         for monster in self.bot.config["commands"]:
             if monster["name"].lower() == name or name in monster["triggers"]:
                 monster_found = monster
+                break
 
         if not monster_found:
             dt_string = self.bot.get_current_time()
