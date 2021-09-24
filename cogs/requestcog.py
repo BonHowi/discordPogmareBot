@@ -35,10 +35,11 @@ class RequestCog(cogbase.BaseCog):
                 if command["type"] == mon_type["id"]:
                     aval_commands.append(command["name"])
 
+            hex_to_int = "%02x%02x%02x"
             if mon_type["id"] == 1:
-                embed_color = int('%02x%02x%02x' % (163, 140, 21), 16)
+                embed_color = int(hex_to_int % (163, 140, 21), 16)
             elif mon_type["id"] == 0:
-                embed_color = int('%02x%02x%02x' % (17, 93, 178), 16)
+                embed_color = int(hex_to_int % (17, 93, 178), 16)
             else:
                 embed_color = bot_color
 
