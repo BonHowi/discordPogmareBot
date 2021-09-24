@@ -200,6 +200,8 @@ class UtilsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def change_monster_type(self, ctx: SlashContext):
+        await ctx.channel.purge(limit=10)
+
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
         embed.add_field(name="Recommended Fake GPS App for Android users",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
@@ -235,6 +237,13 @@ class UtilsCog(cogbase.BaseCog):
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
         await ctx.send(embed=embed)
+
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await ctx.send(bot_guide)
 
 
 def setup(bot: commands.Bot):
