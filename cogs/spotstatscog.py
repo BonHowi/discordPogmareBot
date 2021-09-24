@@ -23,8 +23,9 @@ class SpotStatssCog(cogbase.BaseCog):
             embed_color = int('%02x%02x%02x' % (1, 1, 1), 16)
 
         roles_main_list = await self.get_channel_history(channel_id, channel_type)
-        roles_event_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
-        roles_joined_list = roles_main_list + roles_event_list
+        roles_werewolf_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
+        roles_wraith_list = await self.get_channel_history(self.bot.ch_wraiths, channel_type)
+        roles_joined_list = roles_main_list + roles_werewolf_list + roles_wraith_list
         roles_counter = Counter(roles_joined_list)
         roles_counter = OrderedDict(roles_counter.most_common())
         top_print = []
