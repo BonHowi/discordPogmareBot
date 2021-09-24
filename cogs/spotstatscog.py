@@ -47,19 +47,24 @@ class SpotStatssCog(cogbase.BaseCog):
         roles_list = []
         messages = await channel.history(limit=None, oldest_first=True).flatten()
         for message in messages:
-            if message.content.startswith("<@&8"):
+            if message.content.startswith("<@&8"):  # If message is a ping for a role
                 seq_type = type(message.content)
                 role_id = int(seq_type().join(filter(seq_type.isdigit, message.content)))
                 role = get(guild.roles, id=role_id)
                 if role:
-                    monster_found = None
-                    for monster in self.bot.config["commands"]:
-                        if monster["name"].lower() == role.name.lower() or role.name.lower() in monster["triggers"]:
-                            monster_found = monster
-                            break
-                    if monster_found["type"] == channel_type:
-                        roles_list.append(role.name)
+                    roles_list.append(self.create_spotted_list(role, channel_type))
+        roles_list = list(filter(None, roles_list))
         return roles_list
+
+    def create_spotted_list(self, role, channel_type):
+        monster_found = None
+        for monster in self.bot.config["commands"]:
+            if monster["name"].lower() == role.name.lower() or role.name.lower() in monster["triggers"]:
+                monster_found = monster
+                break
+        if monster_found["type"] == channel_type:
+            return role.name
+        return
 
     @tasks.loop(hours=12)
     async def update_spot_stats_loop(self):
