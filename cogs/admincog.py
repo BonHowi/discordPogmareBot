@@ -37,8 +37,7 @@ class AdminCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def _exit(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Exiting Bot")
+        self.create_log_msg("Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
 
