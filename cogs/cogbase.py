@@ -35,7 +35,7 @@ class BaseCog(commands.Cog):
     # Find monster in config
     def get_monster(self, ctx, name: str):
         name = name.lower()
-        monster_found = []
+        monster_found = None
 
         for monster in self.bot.config["commands"]:
             if monster["name"].lower() == name or name in monster["triggers"]:
