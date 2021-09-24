@@ -196,6 +196,7 @@ class UtilsCog(cogbase.BaseCog):
         with open('server_files/config.json', 'w', encoding='utf8') as f:
             json.dump(config, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
 
+    # Update guides channel
     @cog_ext.cog_slash(name="updateGuides", guild_ids=cogbase.GUILD_IDS,
                        description=" ",
                        default_permission=False,
