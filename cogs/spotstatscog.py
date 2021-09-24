@@ -37,6 +37,10 @@ class SpotStatssCog(cogbase.BaseCog):
         embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
         await spot_stats_ch.send(embed=embed_command)
 
+        dt_string = self.bot.get_current_time()
+        channel = self.bot.get_channel(channel_id)
+        print(f"({dt_string})\t[{self.__class__.__name__}]: Spotting stats updated - {channel.name}")
+
     async def get_channel_history(self, channel_id, channel_type) -> list:
         guild = self.bot.get_guild(self.bot.guild[0])
         channel = self.bot.get_channel(channel_id)
@@ -64,7 +68,7 @@ class SpotStatssCog(cogbase.BaseCog):
         await self.update_spot_stats(self.bot.ch_legendary_spot, 1)
         await self.update_spot_stats(self.bot.ch_rare_spot, 0)
         dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Spotting stats updated")
+        print(f"({dt_string})\t[{self.__class__.__name__}]: All spotting stats updated")
 
     @update_spot_stats_loop.before_loop
     async def before_update_spot_stats_loop(self):
