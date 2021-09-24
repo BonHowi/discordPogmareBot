@@ -199,7 +199,7 @@ class UtilsCog(cogbase.BaseCog):
                        description=" ",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def change_monster_type(self, ctx: SlashContext):
+    async def update_guides(self, ctx: SlashContext):
         await ctx.channel.purge(limit=10)
 
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
