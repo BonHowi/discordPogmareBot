@@ -10,6 +10,7 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from cogs.databasecog import DatabaseCog
 from cogs.leaderboardcog import legend_multiplier
+from modules.utils import get_dominant_color
 
 
 class CommandsCog(cogbase.BaseCog):
@@ -48,9 +49,9 @@ class CommandsCog(cogbase.BaseCog):
                        description="Create pool",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def poll(self, ctx, *, poll_info):
-        emb = (discord.Embed(description=poll_info, colour=0x36393e))
-        emb.set_author(name=f"Poll by {ctx.author.display_name}")
+    async def poll(self, ctx, *, title: str, content=""):
+        author_color = get_dominant_color(ctx.author.avatar_url)
+        emb = (discord.Embed(title=f"{title}", description=content, color=author_color))
         try:
             poll_message = await ctx.send(embed=emb)
             await poll_message.add_reaction("\N{THUMBS UP SIGN}")
