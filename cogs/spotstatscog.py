@@ -54,8 +54,7 @@ class SpotStatssCog(cogbase.BaseCog):
         guild = self.bot.get_guild(self.bot.guild[0])
         channel = self.bot.get_channel(channel_id)
         roles_list = []
-        messages = await channel.history(limit=None, oldest_first=True).flatten()
-        for message in messages:
+        async for message in channel.history(limit=None, oldest_first=True):
             if message.content.startswith("<@&8"):  # If message is a ping for a role
                 seq_type = type(message.content)
                 role_id = int(seq_type().join(filter(seq_type.isdigit, message.content)))
