@@ -50,7 +50,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
         dt_string = self.bot.get_current_time()
-        embed_command.set_footer(text=f"Last updated: {dt_string}")
+        embed_command.set_footer(text=f"{dt_string}")
         await top_ch.send(embed=embed_command)
 
     # Update member spotting role(total/common)
