@@ -1,17 +1,7 @@
 """
 Cog with general commands available in the Bot.
-
-Current commands:
-/ping -     check Bot latency
-/clear -    clear x messages on the channel
-/exit | !exit -     end Bot's runtime and disconnect from the server
-/warn -     warn @user with reason
-/warns -    send @user warns to author's DM
-/nword -    Changes N-Word killed channel name  -   UNSTABLE
-/updatetotmem - Update #TotalMembers channel
-/updatecommon - Update common spotting channel with new monster name
-/tba
 """
+
 import discord
 from discord.utils import get
 from googletrans import Translator

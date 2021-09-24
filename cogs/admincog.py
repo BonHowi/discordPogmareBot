@@ -26,8 +26,9 @@ class AdminCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_MODS)
     async def _purge(self, ctx: SlashContext, number=1):
         num_messages = int(number)
-        await ctx.send(f"Clearing {num_messages} messages!", delete_after=4.0)
         await ctx.channel.purge(limit=num_messages)
+        await asyncio.sleep(5)
+        await ctx.send(f"Clearing {num_messages} messages!", delete_after=4.0)
 
     # Disconnect Bot
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.GUILD_IDS,

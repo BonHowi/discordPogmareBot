@@ -72,7 +72,7 @@ class MyBot(commands.Bot):
 
         if (member_count % 100) == 0:
             channel = self.get_channel(self.ch_admin_posting)
-            await channel.send(f"{member_count} members a:POGMARE:872496675434942484")
+            await channel.send(f"{member_count} members <:POGMARE:872496675434942484>")
 
     async def on_member_remove(self, ctx):
         await self.update_member_count(ctx)
