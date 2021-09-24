@@ -44,6 +44,7 @@ class MyBot(commands.Bot):
         self.ch_nemeton = get_settings("CH_NEMETON")
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
+        self.ch_spotting_stats = get_settings("CH_SPOTTING_STATS")
         self.cat_spotting = get_settings("CAT_SPOTTING")
         self.update_ch_commons_loop.start()
 
