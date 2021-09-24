@@ -11,6 +11,8 @@ from discord.utils import get
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
+from modules.utils import get_dominant_color
+
 
 class RequestCog(cogbase.BaseCog):
     def __init__(self, base):
@@ -21,6 +23,8 @@ class RequestCog(cogbase.BaseCog):
     async def on_ready(self):
         role_ch = self.bot.get_channel(self.bot.ch_role_request)
         await role_ch.purge(limit=10)
+        bot = get(self.bot.get_all_members(), id=self.bot.user.id)
+        bot_color = get_dominant_color(bot.avatar_url)
 
         for mon_type in self.bot.config["types"]:
             if mon_type["id"] in [2, 3, 4]:  # Pass if common/...
@@ -31,14 +35,23 @@ class RequestCog(cogbase.BaseCog):
                 if command["type"] == mon_type["id"]:
                     aval_commands.append(command["name"])
 
-            embed_command = discord.Embed(title=mon_type["label"], description='\n'.join(aval_commands), color=0x674ea7)
+            if mon_type["id"] == 1:
+                embed_color = int('%02x%02x%02x' % (163, 140, 21), 16)
+            elif mon_type["id"] == 0:
+                embed_color = int('%02x%02x%02x' % (17, 93, 178), 16)
+            else:
+                embed_color = bot_color
+
+            embed_command = discord.Embed(title=mon_type["label"],
+                                          description='\n'.join(aval_commands),
+                                          color=embed_color)
             await role_ch.send(embed=embed_command)
 
         guide_content = "**/role monstername** - " \
                         "get role with monster name to be notified when the monster is spotted,\n" \
                         "use again to remove the role\n\n" \
                         "*Check #guides for more info*"
-        embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=0x674ea7)
+        embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=bot_color)
         await role_ch.send(embed=embed_guide)
 
     # Remove normal messages from monster-request channel
