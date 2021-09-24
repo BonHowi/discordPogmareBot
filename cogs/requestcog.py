@@ -49,9 +49,9 @@ class RequestCog(cogbase.BaseCog):
 
         guide_content = "**/role monstername** - " \
                         "get role with monster name to be notified when the monster is spotted,\n" \
-                        "use again to remove the role\n\n" \
-                        "*Check #guides for more info*"
+                        "use again to remove the role"
         embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=bot_color)
+        embed_guide.set_footer(text="Check #guides for more info")
         await role_ch.send(embed=embed_guide)
 
     # Remove normal messages from monster-request channel
