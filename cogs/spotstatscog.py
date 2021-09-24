@@ -11,9 +11,7 @@ class SpotStatssCog(cogbase.BaseCog):
         self.update_spot_stats_loop.start()
 
     async def update_spot_stats(self, channel_id: int, channel_type: int):
-        guild = self.bot.get_guild(self.bot.guild[0])
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
-        channel = self.bot.get_channel(channel_id)
         if channel_type == 1:
             embed_title = "LEGENDARY"
             embed_color = int('%02x%02x%02x' % (163, 140, 21), 16)
@@ -23,6 +21,24 @@ class SpotStatssCog(cogbase.BaseCog):
         else:
             embed_title = "???"
             embed_color = int('%02x%02x%02x' % (1, 1, 1), 16)
+
+        roles_main_list = await self.get_channel_history(channel_id, channel_type)
+        roles_event_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
+        roles_joined_list = roles_main_list + roles_event_list
+        roles_counter = Counter(roles_joined_list)
+        roles_counter = OrderedDict(roles_counter.most_common())
+        top_print = []
+        for key, value in roles_counter.items():
+            spotting_stats = [f"**{key}**:  {value}"]
+            top_print.append(spotting_stats)
+        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+        top_print = "\n".join(top_print)
+        embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
+        await spot_stats_ch.send(embed=embed_command)
+
+    async def get_channel_history(self, channel_id, channel_type) -> list:
+        guild = self.bot.get_guild(self.bot.guild[0])
+        channel = self.bot.get_channel(channel_id)
         roles_list = []
         messages = await channel.history(limit=None, oldest_first=True).flatten()
         for message in messages:
@@ -38,16 +54,7 @@ class SpotStatssCog(cogbase.BaseCog):
                             break
                     if monster_found["type"] == channel_type:
                         roles_list.append(role.name)
-        roles_counter = Counter(roles_list)
-        roles_counter = OrderedDict(roles_counter.most_common())
-        top_print = []
-        for key, value in roles_counter.items():
-            spotting_stats = [f"**{key}**:  {value}"]
-            top_print.append(spotting_stats)
-        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
-        top_print = "\n".join(top_print)
-        embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
-        await spot_stats_ch.send(embed=embed_command)
+        return roles_list
 
     @tasks.loop(hours=12)
     async def update_spot_stats_loop(self):
