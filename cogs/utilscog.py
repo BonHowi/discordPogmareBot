@@ -56,23 +56,24 @@ class UtilsCog(cogbase.BaseCog):
     async def clear_temp_spots_table(self, ctx):
         await DatabaseCog.db_clear_spots_temp_table()
         await ctx.send(f"Temp spots table was cleared", hidden=True)
-        await self.reload_cog(ctx, "cogs.databasecog")
+        await self.reload_cog(ctx, "databasecog")
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
+        module = f"cogs.{module}"
         dt_string = self.bot.get_current_time()
         try:
             self.bot.load_extension(f"{module}")
-            await ctx.send(f'[{module}] loaded', hidden=True)
+            await ctx.send(f'[{module}] loaded', delete_after=4.0)
             print(f'({dt_string})\t[{self.__class__.__name__}]: {module} loaded')
         except commands.ExtensionAlreadyLoaded:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
-            await ctx.send(f'[{module}] reloaded', hidden=True)
+            await ctx.send(f'[{module}] reloaded', delete_after=4.0)
             print(f'({dt_string})\t[{self.__class__.__name__}]: {module} reloaded')
         except commands.ExtensionNotFound:
-            await ctx.send(f'[{module}] not found', hidden=True)
+            await ctx.send(f'[{module}] not found', delete_after=4.0)
             print(f'({dt_string})\t[{self.__class__.__name__}]: {module} not found')
 
     # Command for reloading specific cog
@@ -90,8 +91,9 @@ class UtilsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
+            cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
-        await ctx.send(f'All cogs reloaded', hidden=True)
+        await ctx.send(f'All cogs reloaded', delete_after=5.0)
 
     @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
                        description="Get your spot stats",
