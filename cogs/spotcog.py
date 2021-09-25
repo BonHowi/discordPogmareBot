@@ -54,7 +54,7 @@ class SpotCog(cogbase.BaseCog):
                         correct_channel = channel.id
                         await ctx.delete()
                         await ctx.channel.send(
-                            f"{ctx.author.mention} you posted on wrong channel! "
+                            f"{ctx.author.mention} you posted {spotted_monster['name']} on wrong channel! "
                             f"Use <#{correct_channel}> instead! <{peepo_ban_emote}>",
                             delete_after=8)
                         return
