@@ -5,7 +5,7 @@ Current commands:
 /remove_spot
 
 """
-
+import discord
 from discord.ext import commands
 from discord.utils import get
 import cogs.cogbase as cogbase
@@ -43,14 +43,26 @@ class SpotCog(cogbase.BaseCog):
 
     # TODO: spaghetti code
     async def handle_spotted_monster(self, ctx):
+        peepo_ban_emote = ":peepoban:872502800146382898"
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
             if spotted_monster:
+                monster_type_str = monster_type_dict[spotted_monster["type"]]
+                if ctx.channel.id in [self.bot.ch_legendary_spot, self.bot.ch_rare_spot]:
+                    if ctx.channel.name != monster_type_str:
+                        channel = discord.utils.get(ctx.guild.channels, name=monster_type_str)
+                        correct_channel = channel.id
+                        await ctx.delete()
+                        await ctx.channel.send(
+                            f"{ctx.author.mention} you posted on wrong channel! "
+                            f"Use <#{correct_channel}> instead! <{peepo_ban_emote}>",
+                            delete_after=8)
+                        return
                 role = get(ctx.guild.roles, name=spotted_monster["name"])
                 await ctx.delete()
                 await ctx.channel.send(f"{role.mention}")
                 await DatabaseCog.db_count_spot(ctx.author.id,
-                                                monster_type_dict[spotted_monster["type"]])
+                                                monster_type_str)
                 logs_ch = self.bot.get_channel(self.bot.ch_logs)
                 await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id}) "
                                    f"requested ping for **{spotted_monster['name']}**")
@@ -61,7 +73,7 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         elif ctx.channel.id == self.bot.ch_legendary_spot or ctx.channel.id == self.bot.ch_rare_spot:
-            await ctx.add_reaction("a:peepoban:872502800146382898")
+            await ctx.add_reaction(f"a{peepo_ban_emote}")
 
 
 def setup(bot: commands.Bot):
