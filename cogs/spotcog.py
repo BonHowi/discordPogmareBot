@@ -36,8 +36,8 @@ class SpotCog(cogbase.BaseCog):
     @staticmethod
     async def handle_spotted_common(ctx):
         if ctx.content[0] in cords_beginning:
-            await DatabaseCog.db_count_spot(ctx.author.id, monster_type_dict[4])
-            await DatabaseCog.db_save_coords(ctx.content, monster_type_dict[4])
+            await DatabaseCog.db_count_spot(ctx.author.id, "common")
+            await DatabaseCog.db_save_coords(ctx.content, "common")
         else:
             await ctx.delete()
 
@@ -53,14 +53,14 @@ class SpotCog(cogbase.BaseCog):
                                                 monster_type_dict[spotted_monster["type"]])
                 logs_ch = self.bot.get_channel(self.bot.ch_logs)
                 await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id}) "
-                                   f"requested ping for **{spotted_monster['name']}** role")
+                                   f"requested ping for **{spotted_monster['name']}**")
             else:
                 await ctx.delete()
                 await ctx.channel.send(
                     f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
-        elif ctx.channel.id != self.bot.ch_werewolf and ctx.channel.id != self.bot.ch_nemeton:
+        elif ctx.channel.id == self.bot.ch_legendary_spot or ctx.channel.id == self.bot.ch_rare_spot:
             await ctx.add_reaction("a:peepoban:872502800146382898")
 
 
