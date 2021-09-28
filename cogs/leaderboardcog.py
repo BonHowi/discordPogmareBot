@@ -7,8 +7,6 @@ import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color
 
-legend_multiplier = 5
-
 
 class LeaderboardsCog(cogbase.BaseCog):
     def __init__(self, base):
@@ -23,7 +21,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df = pd.DataFrame(spots_df)
-        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+        spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False).head(15)
         spots_df_top = spots_df_top.reset_index(drop=True)
         await top_ch.purge()
@@ -56,7 +54,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
             if not common:
-                spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+                spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
             roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
             if roles_list:
                 await self.update_role_ext(guild, roles_list, guild_member)
@@ -86,7 +84,8 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards(self):
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
-        await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
+        # Uncomment during the events
+        # await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
         self.create_log_msg(f"Leaderboards updated")
         await self.update_member_roles()
         self.create_log_msg(f"Members' roles updated")

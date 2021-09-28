@@ -25,6 +25,7 @@ class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.create_log_msg("Init")
+        self.legend_multiplier = 5
 
     def get_bot(self):
         return self.bot
