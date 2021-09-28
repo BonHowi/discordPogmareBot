@@ -144,6 +144,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.db_count_spot_table(spots_temp, _id, monster_type)
         cls.conn.close()
 
+    # TODO: make rares in events possible
     @classmethod
     def db_count_spot_table(cls, table, _id: int, monster_type: str):
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,

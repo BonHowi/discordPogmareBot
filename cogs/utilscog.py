@@ -27,7 +27,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Pull config from google sheets",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def pull_config(self, ctx: SlashContext):
+    async def pull_config_command(self, ctx: SlashContext):
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
