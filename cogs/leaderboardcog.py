@@ -24,8 +24,10 @@ class LeaderboardsCog(cogbase.BaseCog):
         spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False).head(15)
         spots_df_top = spots_df_top.reset_index(drop=True)
-        await top_ch.purge()
-
+        try:
+            await top_ch.purge()
+        except discord.errors.NotFound:
+            pass
         top_print = []
         for index, row in spots_df_top.iterrows():
             if row[ch_type] == 0:
