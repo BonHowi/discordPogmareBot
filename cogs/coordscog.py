@@ -25,7 +25,6 @@ class CoordsCog(cogbase.BaseCog):
         # coords_list = [legendary_coords, rare_coords, common_coords]
         # result = pd.concat(coords_list, ignore_index=True)
         coords_df = legendary_coords.append(rare_coords).append(common_coords)
-        coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
         path_coords = r"server_files/coords_history.xlsx"
         coords_df.to_excel(path_coords, index=False)
         self.create_log_msg(f"Coords saved to {path_coords}")
