@@ -212,6 +212,8 @@ class UtilsCog(cogbase.BaseCog):
                         value="https://www.bignox.com", inline=False)
         embed.add_field(name="YT Guide for Fake GPS Location recommended app (by @ChampattioNonNightMareMare)",
                         value="https://www.youtube.com/watch?v=wU7qOLEm7qQ", inline=False)
+        embed.add_field(name="YT Guide for GPS spoofing with iTools (by @Loonasek)",
+                        value="https://www.youtube.com/watch?v=1M8jq3JNAMM", inline=False)
         embed.add_field(
             name="Nox guide for creating macro and keyboard mapping; "
                  "it can help in automatically making potion, fight, blocks signs etc.",
