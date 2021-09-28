@@ -49,7 +49,7 @@ class RequestCog(cogbase.BaseCog):
             await role_ch.send(embed=embed_command)
 
         guide_content = "**/role monstername** - " \
-                        "get role with monster name to be notified when the monster is spotted,\n" \
+                        "get role with monster name to be notified when the monster is spotted, " \
                         "use again to remove the role"
         embed_guide = discord.Embed(title="Channel Guide", description=guide_content, color=bot_color)
         embed_guide.set_footer(text="Check #guides for more info")
@@ -66,9 +66,7 @@ class RequestCog(cogbase.BaseCog):
                 await ctx.channel.send(
                     f"{ctx.author.mention} For adding or removing role use */role monstername* command",
                     delete_after=10.0)
-                await ctx.delete()
-            else:
-                await ctx.delete()
+            await ctx.delete()
 
     # Add or remove monster role to an user
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
