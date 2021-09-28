@@ -19,7 +19,7 @@ class CommandsCog(cogbase.BaseCog):
 
     # Get own spotting stats
     @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
-                       description="Get your spot stats",
+                       description="Get your spotting stats",
                        default_permission=True)
     async def get_stats(self, ctx):
         spot_roles = self.bot.config["total_milestones"][0]

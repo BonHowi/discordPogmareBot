@@ -72,7 +72,7 @@ class RequestCog(cogbase.BaseCog):
 
     # Add or remove monster role to an user
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for adding monster role to user",
+                       description="Get or remove role with monster name to be pinged when the monster is spotted",
                        default_permission=True)
     async def _role(self, ctx: SlashContext, name: str):
         if ctx.channel.id != self.bot.ch_role_request:

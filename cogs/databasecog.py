@@ -254,7 +254,7 @@ class DatabaseCog(cogbase.BaseCog):
         return df
 
     @cog_ext.cog_slash(name="changeMemberSpots", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Change member spotting stats",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def change_member_spots(self, ctx: SlashContext, user: discord.Member, spot_type: str, number: int):

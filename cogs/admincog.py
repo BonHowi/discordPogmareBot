@@ -13,18 +13,18 @@ class AdminCog(cogbase.BaseCog):
     # GENERAL FUNCTIONS
     # Check latency
     @cog_ext.cog_slash(name="ping", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for checking latency",
+                       description="Check bot's latency",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _ping(self, ctx: SlashContext):
+    async def check_ping(self, ctx: SlashContext):
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
     # Clear messages
     @cog_ext.cog_slash(name="clear", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for clearing messages on channel",
+                       description="Clear messages on channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _purge(self, ctx: SlashContext, number_to_delete: int = 1):
+    async def purge_messages(self, ctx: SlashContext, number_to_delete: int = 1):
         messages = []
         async for message in ctx.channel.history(limit=number_to_delete + 1):
             messages.append(message)
@@ -37,7 +37,7 @@ class AdminCog(cogbase.BaseCog):
                        description="Turn off the bot",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def _exit(self, ctx: SlashContext):
+    async def exit_bot(self, ctx: SlashContext):
         await ctx.send(f"Closing Bot", delete_after=1.0)
         self.create_log_msg("Exiting Bot")
         await asyncio.sleep(3)
@@ -47,10 +47,10 @@ class AdminCog(cogbase.BaseCog):
 
     # Warn user
     @cog_ext.cog_slash(name="warn", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for warning users",
+                       description="Warn member",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _warn(self, ctx: SlashContext, user: discord.User, reason: str):
+    async def warn_user(self, ctx: SlashContext, user: discord.User, reason: str):
 
         await DatabaseCog.db_add_warn(user.id, reason)
         await ctx.send(
@@ -58,10 +58,10 @@ class AdminCog(cogbase.BaseCog):
 
     # Get list of user's warns
     @cog_ext.cog_slash(name="warns", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for warning users",
+                       description="Get member warns",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _warns(self, ctx: SlashContext, user: discord.User):
+    async def user_warns(self, ctx: SlashContext, user: discord.User):
         warns, nr_of_warns = await DatabaseCog.db_get_warns(user.id)
         nl = "\n"
         message = f"**{user.name}** has been warned **{nr_of_warns}** times\n\n_Reasons_:\n" \
@@ -71,7 +71,7 @@ class AdminCog(cogbase.BaseCog):
 
     # Remove all member's warns
     @cog_ext.cog_slash(name="removeWarns", guild_ids=cogbase.GUILD_IDS,
-                       description="Function for removing user's all warns",
+                       description="Remove all member's warns",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def remove_warns(self, ctx: SlashContext, user: discord.User):
@@ -83,7 +83,7 @@ class AdminCog(cogbase.BaseCog):
                        description="Mute member for x minutes",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def _mute(self, ctx: SlashContext, user: discord.User, mute_time: int, reason: str):
+    async def mute_user(self, ctx: SlashContext, user: discord.User, mute_time: int, reason: str):
         duration = mute_time * 60
         guild = ctx.guild
         muted = discord.utils.get(guild.roles, name="Muted")
@@ -129,7 +129,7 @@ class AdminCog(cogbase.BaseCog):
 
     # Ban
     @cog_ext.cog_slash(name="ban", guild_ids=cogbase.GUILD_IDS,
-                       description="Bans member from the server",
+                       description="Ban member from the server",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def ban(self, ctx, user: discord.Member, *, reason=None):
@@ -138,7 +138,7 @@ class AdminCog(cogbase.BaseCog):
 
     # Softban
     @cog_ext.cog_slash(name="softban", guild_ids=cogbase.GUILD_IDS,
-                       description="Bans and unbans the user, so their messages are deleted",
+                       description="Ban and unban the user, so their messages are deleted",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def softban(self, ctx, user: discord.Member, *, reason=None):

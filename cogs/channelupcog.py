@@ -23,7 +23,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_commons_ch_command(self, ctx: SlashContext):
+    async def update_common_ch_name(self, ctx: SlashContext):
         with open('./server_files/commons.txt') as f:
             try:
                 commons = f.read().splitlines()
@@ -47,11 +47,11 @@ class ChannelUpCog(cogbase.BaseCog):
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
-    @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
-                       description="Change N-Word channel name",
+    @cog_ext.cog_slash(name="nightmareStatus", guild_ids=cogbase.GUILD_IDS,
+                       description="Change Nightmare status channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def rename_nword_channel(self, ctx, status: str):
+    async def rename_nightmare_channel(self, ctx, status: str):
         new_status = status
         channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
         if new_status in channel.name:

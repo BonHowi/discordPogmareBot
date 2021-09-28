@@ -101,7 +101,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.bot.wait_until_ready()
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Reload leaderboards",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def reload_leaderboards(self, ctx: SlashContext):
