@@ -23,7 +23,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_commons_ch_command(self, ctx: SlashContext):
+    async def update_common_ch_name(self, ctx: SlashContext):
         with open('./server_files/commons.txt') as f:
             try:
                 commons = f.read().splitlines()
@@ -41,19 +41,17 @@ class ChannelUpCog(cogbase.BaseCog):
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
-
+        self.create_log_msg(f"Common channel name updated: {commons[0]}")
         await common_ch.send(f"Common changed: {commons[0]}")
         await ctx.send(f"Common changed: {commons[0]}", hidden=True)
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
-    @cog_ext.cog_slash(name="nword", guild_ids=cogbase.GUILD_IDS,
-                       description="Change N-Word channel name",
+    @cog_ext.cog_slash(name="nightmareStatus", guild_ids=cogbase.GUILD_IDS,
+                       description="Change Nightmare status channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def rename_nword_channel(self, ctx, status: str):
+    async def rename_nightmare_channel(self, ctx, status: str):
         new_status = status
         channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
         if new_status in channel.name:

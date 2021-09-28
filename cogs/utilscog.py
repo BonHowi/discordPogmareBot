@@ -27,14 +27,13 @@ class UtilsCog(cogbase.BaseCog):
                        description="Pull config from google sheets",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def pull_config(self, ctx: SlashContext):
+    async def pull_config_command(self, ctx: SlashContext):
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            dt_string = self.bot.get_current_time()
-            print(f"({dt_string})\t[{self.__class__.__name__}]: Finished data pull")
+            self.create_log_msg(f"Finished data pull")
         await ctx.send(f"Config.json updated", hidden=True)
 
     # Create roles if pull_config gets non existent roles
@@ -45,8 +44,7 @@ class UtilsCog(cogbase.BaseCog):
                 continue
             else:
                 await ctx.guild.create_role(name=mon_type)
-                dt_string = self.bot.get_current_time()
-                print(f"({dt_string})\t[{self.__class__.__name__}]: {mon_type} role created")
+                self.create_log_msg(f"{mon_type} role created")
 
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
@@ -62,19 +60,18 @@ class UtilsCog(cogbase.BaseCog):
     async def reload_cog(self, ctx: SlashContext, module: str):
         """Reloads a module."""
         module = f"cogs.{module}"
-        dt_string = self.bot.get_current_time()
         try:
             self.bot.load_extension(f"{module}")
             await ctx.send(f'[{module}] loaded', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} loaded')
+            self.create_log_msg(f"{module} loaded")
         except commands.ExtensionAlreadyLoaded:
             self.bot.unload_extension(module)
             self.bot.load_extension(module)
             await ctx.send(f'[{module}] reloaded', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} reloaded')
+            self.create_log_msg(f"{module} reloaded")
         except commands.ExtensionNotFound:
-            await ctx.send(f'[{module}] not found', delete_after=4.0)
-            print(f'({dt_string})\t[{self.__class__.__name__}]: {module} not found')
+            await ctx.send(f'[{module}] not found', delete_after=2.0)
+            self.create_log_msg(f"{module} not found")
 
     # Command for reloading specific cog
     @cog_ext.cog_slash(name="reloadCog", guild_ids=cogbase.GUILD_IDS,
@@ -86,17 +83,17 @@ class UtilsCog(cogbase.BaseCog):
 
     # Command for reloading all cogs
     @cog_ext.cog_slash(name="reloadAllCogs", guild_ids=cogbase.GUILD_IDS,
-                       description="Reload cog",
+                       description="Reload all bot cogs",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext = None):
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
-        await ctx.send(f'All cogs reloaded', delete_after=5.0)
+        await ctx.send(f'All cogs reloaded', delete_after=2.0)
 
-    @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
-                       description="Get your spot stats",
+    @cog_ext.cog_slash(name="saveDatabaseCoordinates", guild_ids=cogbase.GUILD_IDS,
+                       description="Save coordinates from database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext):
@@ -104,17 +101,17 @@ class UtilsCog(cogbase.BaseCog):
         coords_df = coords_df[coords_df.coords.str.contains(",")]
         print(coords_df)
         coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
-        coords_df.to_excel(r'server_files/coords.xlsx', index=False)
+        path_coords = r"server_files/coords.xlsx"
+        coords_df.to_excel(path_coords, index=False)
         await ctx.send(f"Coords saved", hidden=True)
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Coords saved to server_files/coords.xlsx')
+        self.create_log_msg(f"Coords saved to {path_coords}")
 
     # Get member info
     @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
-                       description="Get member info",
+                       description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def memberinfo(self, ctx: SlashContext, *, user: discord.Member = None):
+    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -149,7 +146,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get status of the system",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def system(self, ctx):
+    async def system_status(self, ctx):
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
@@ -181,7 +178,7 @@ class UtilsCog(cogbase.BaseCog):
 
     # Change monster type(for events)
     @cog_ext.cog_slash(name="changeMonsterType", guild_ids=cogbase.GUILD_IDS,
-                       description="Get status of the system",
+                       description="Change type of a monster",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def change_monster_type(self, ctx, monster: str, new_type: int):
@@ -189,8 +186,7 @@ class UtilsCog(cogbase.BaseCog):
         for mon in config["commands"]:
             if mon["name"] == monster:
                 mon["type"] = new_type
-                dt_string = self.bot.get_current_time()
-                print(f"({dt_string})\t[{get_config.__name__}]: changed type for {monster}")
+                self.create_log_msg(f"Changed type for {monster}")
                 await ctx.send(f"{monster}'s type changed", hidden=True)
                 break
 
@@ -200,10 +196,12 @@ class UtilsCog(cogbase.BaseCog):
 
     # Update guides channel
     @cog_ext.cog_slash(name="updateGuides", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Update #guides channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def change_monster_type(self, ctx: SlashContext):
+    async def update_guides(self, ctx: SlashContext):
+        await ctx.channel.purge(limit=10)
+
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
         embed.add_field(name="Recommended Fake GPS App for Android users",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
@@ -214,6 +212,8 @@ class UtilsCog(cogbase.BaseCog):
                         value="https://www.bignox.com", inline=False)
         embed.add_field(name="YT Guide for Fake GPS Location recommended app (by @ChampattioNonNightMareMare)",
                         value="https://www.youtube.com/watch?v=wU7qOLEm7qQ", inline=False)
+        embed.add_field(name="YT Guide for GPS spoofing with iTools (by @Loonasek)",
+                        value="https://www.youtube.com/watch?v=1M8jq3JNAMM", inline=False)
         embed.add_field(
             name="Nox guide for creating macro and keyboard mapping; "
                  "it can help in automatically making potion, fight, blocks signs etc.",
@@ -239,6 +239,13 @@ class UtilsCog(cogbase.BaseCog):
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
         await ctx.send(embed=embed)
+
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await ctx.send(bot_guide)
 
 
 def setup(bot: commands.Bot):

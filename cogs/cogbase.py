@@ -4,7 +4,6 @@ from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
 from modules.get_settings import get_settings
-from datetime import datetime
 
 GUILD_IDS = get_settings("guild")
 MODERATION_IDS = get_settings("MOD_ROLES")
@@ -25,9 +24,8 @@ PERMISSION_ADMINS = {
 class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
+        self.create_log_msg("Init")
+        self.legend_multiplier = 5
 
     def get_bot(self):
         return self.bot
@@ -43,16 +41,12 @@ class BaseCog(commands.Cog):
                 break
 
         if not monster_found:
-            dt_string = self.bot.get_current_time()
-            print(f"({dt_string})\t[{self.__class__.__name__}]: Monster not found ({ctx.author}: {name})")
+            self.create_log_msg(f"Monster not found ({ctx.author}: {name})")
             return
 
         monster_found["role"] = discord.utils.get(ctx.guild.roles, name=monster_found["name"])
         if not monster_found["role"]:
-            dt_string = self.bot.get_current_time()
-            print(
-                f"({dt_string})\t[{self.__class__.__name__}]: Failed to fetch roleID for monster"
-                f" {monster_found['name']}")
+            self.create_log_msg(f"Failed to fetch roleID for monster {monster_found['name']}")
             return
 
         monster_found["role"] = monster_found["role"].id
@@ -64,5 +58,9 @@ class BaseCog(commands.Cog):
             return
         else:
             await guild.create_role(name=role)
-            dt_string = self.bot.get_current_time()
-            print(f"({dt_string})\t[{self.__class__.__name__}]: {role} role created")
+            self.create_log_msg(f"{role} role created")
+
+    # Print message from cog
+    def create_log_msg(self, message: str):
+        dt_string = self.bot.get_current_time()
+        print(f"({dt_string})\t[{self.__class__.__name__}]: {message}")

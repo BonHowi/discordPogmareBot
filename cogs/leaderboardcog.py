@@ -1,16 +1,12 @@
 import asyncio
-
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
 from discord_slash import cog_ext, SlashContext
-
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color
-
-legend_multiplier = 5
 
 
 class LeaderboardsCog(cogbase.BaseCog):
@@ -26,11 +22,13 @@ class LeaderboardsCog(cogbase.BaseCog):
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_spots_df()
         spots_df = pd.DataFrame(spots_df)
-        spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+        spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
         spots_df_top = spots_df.sort_values(ch_type, ascending=False).head(15)
         spots_df_top = spots_df_top.reset_index(drop=True)
-        await top_ch.purge()
-
+        try:
+            await top_ch.purge()
+        except discord.errors.NotFound:
+            pass
         top_print = []
         for index, row in spots_df_top.iterrows():
             if row[ch_type] == 0:
@@ -50,7 +48,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         member = self.bot.get_user(spots_df_top['member_id'].iloc[0])
         embed_command.set_thumbnail(url=f'{member.avatar_url}')
         dt_string = self.bot.get_current_time()
-        embed_command.set_footer(text=f"Last updated: {dt_string}")
+        embed_command.set_footer(text=f"{dt_string}")
         await top_ch.send(embed=embed_command)
 
     # Update member spotting role(total/common)
@@ -59,7 +57,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
             if not common:
-                spots_df["total"] = spots_df["legendary"] * legend_multiplier + spots_df["rare"]
+                spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
             roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
             if roles_list:
                 await self.update_role_ext(guild, roles_list, guild_member)
@@ -89,12 +87,15 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards(self):
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
-        await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Leaderboards updated')
+        # Uncomment during the events
+        # await self.update_leaderboard(self.bot.ch_leaderboards_event, "event1")
+        self.create_log_msg(f"Leaderboards updated")
         await self.update_member_roles()
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Members' roles updated")
+        self.create_log_msg(f"Members' roles updated")
+
+    @tasks.loop(minutes=15)
+    async def update_leaderboards_loop(self):
+        await self.update_leaderboards()
 
     @tasks.loop(minutes=15)
     async def update_leaderboards_loop(self):
@@ -102,12 +103,11 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
-        dt_string = self.bot.get_current_time()
-        print(f'({dt_string})\t[{self.__class__.__name__}]: Waiting until Bot is ready')
+        self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Reload leaderboards",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def reload_leaderboards(self, ctx: SlashContext):

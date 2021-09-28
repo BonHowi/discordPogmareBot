@@ -64,8 +64,8 @@ class MyBot(commands.Bot):
     async def update_member_count(self, ctx):
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
         new_name = f"Total members: {true_member_count}"
-        channel = self.get_channel(self.ch_total_members)
-        await discord.VoiceChannel.edit(channel, name=new_name)
+        channel_tm = self.get_channel(self.ch_total_members)
+        await discord.VoiceChannel.edit(channel_tm, name=new_name)
         return true_member_count
 
     # On member join
@@ -131,7 +131,7 @@ class MyBot(commands.Bot):
     @staticmethod
     def get_current_time():
         now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
         return dt_string
 
 
