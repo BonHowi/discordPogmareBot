@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import pandas as pd
 from discord.ext import commands, tasks
@@ -91,6 +92,10 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.create_log_msg(f"Leaderboards updated")
         await self.update_member_roles()
         self.create_log_msg(f"Members' roles updated")
+
+    @tasks.loop(minutes=15)
+    async def update_leaderboards_loop(self):
+        await self.update_leaderboards()
 
     @tasks.loop(minutes=15)
     async def update_leaderboards_loop(self):

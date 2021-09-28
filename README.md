@@ -11,6 +11,7 @@
 [![Discord Shield](https://discordapp.com/api/guilds/871434324023599155/widget.png?style=shield)](https://discord.gg/Kt35Jtc5nT)
 
 
+_Note: The overall files and function structure is not yet polished and will change in the following updates_
 
 
 ## Table of contents

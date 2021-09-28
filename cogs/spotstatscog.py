@@ -13,7 +13,6 @@ class SpotStatssCog(cogbase.BaseCog):
     async def update_spot_stats(self, channel_id: int, channel_type: int):
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
         hex_to_int = "%02x%02x%02x"
-
         if channel_type == 1:
             embed_title = "LEGENDARY"
             embed_color = int(hex_to_int % (163, 140, 21), 16)
