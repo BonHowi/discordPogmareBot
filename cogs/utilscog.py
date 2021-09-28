@@ -83,7 +83,7 @@ class UtilsCog(cogbase.BaseCog):
 
     # Command for reloading all cogs
     @cog_ext.cog_slash(name="reloadAllCogs", guild_ids=cogbase.GUILD_IDS,
-                       description="Reload cog",
+                       description="Reload all bot cogs",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def reload_all_cogs(self, ctx: SlashContext = None):
@@ -93,7 +93,7 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(f'All cogs reloaded', delete_after=5.0)
 
     @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
-                       description="Get your spot stats",
+                       description="Save coordinates to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext):
@@ -108,7 +108,7 @@ class UtilsCog(cogbase.BaseCog):
 
     # Get member info
     @cog_ext.cog_slash(name="memberinfo", guild_ids=cogbase.GUILD_IDS,
-                       description="Get member info",
+                       description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def member_info(self, ctx: SlashContext, *, user: discord.Member = None):
@@ -178,7 +178,7 @@ class UtilsCog(cogbase.BaseCog):
 
     # Change monster type(for events)
     @cog_ext.cog_slash(name="changeMonsterType", guild_ids=cogbase.GUILD_IDS,
-                       description="Get status of the system",
+                       description="Change type of a monster",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def change_monster_type(self, ctx, monster: str, new_type: int):
@@ -196,7 +196,7 @@ class UtilsCog(cogbase.BaseCog):
 
     # Update guides channel
     @cog_ext.cog_slash(name="updateGuides", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Update #guides channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def update_guides(self, ctx: SlashContext):
