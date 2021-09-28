@@ -131,7 +131,7 @@ class MyBot(commands.Bot):
     @staticmethod
     def get_current_time():
         now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
         return dt_string
 
 

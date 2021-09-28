@@ -115,7 +115,7 @@ class AdminCog(cogbase.BaseCog):
             await user.unban(reason=reason)
         reason_str = f"\nReason: {reason}" if reason else ""
 
-        await ctx.send(f"{user} was {operation_t}ed{reason_str}", delete_after=10.0)
+        await ctx.send(f"{user} was {operation_t}ed{reason_str}")
         await user.send(f"You were {operation_t}ed from {ctx.guild.name}{reason_str}")
 
     # Kick
