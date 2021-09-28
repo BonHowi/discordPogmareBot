@@ -70,7 +70,7 @@ class UtilsCog(cogbase.BaseCog):
             await ctx.send(f'[{module}] reloaded', delete_after=4.0)
             self.create_log_msg(f"{module} reloaded")
         except commands.ExtensionNotFound:
-            await ctx.send(f'[{module}] not found', delete_after=4.0)
+            await ctx.send(f'[{module}] not found', delete_after=2.0)
             self.create_log_msg(f"{module} not found")
 
     # Command for reloading specific cog
@@ -90,10 +90,10 @@ class UtilsCog(cogbase.BaseCog):
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
-        await ctx.send(f'All cogs reloaded', delete_after=5.0)
+        await ctx.send(f'All cogs reloaded', delete_after=2.0)
 
-    @cog_ext.cog_slash(name="saveCoordinates", guild_ids=cogbase.GUILD_IDS,
-                       description="Save coordinates to a file",
+    @cog_ext.cog_slash(name="saveDatabaseCoordinates", guild_ids=cogbase.GUILD_IDS,
+                       description="Save coordinates from database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext):
