@@ -20,6 +20,7 @@ cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 class SpotCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
+        self.peepo_ban_emote = ":peepoban:872502800146382898"
 
     # Ping monster role
     @commands.Cog.listener()
@@ -41,23 +42,13 @@ class SpotCog(cogbase.BaseCog):
         else:
             await ctx.delete()
 
-    # TODO: spaghetti code
     async def handle_spotted_monster(self, ctx):
-        peepo_ban_emote = ":peepoban:872502800146382898"
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
             if spotted_monster:
                 monster_type_str = monster_type_dict[spotted_monster["type"]]
-                if ctx.channel.id in [self.bot.ch_legendary_spot, self.bot.ch_rare_spot]:
-                    if ctx.channel.name != monster_type_str:
-                        channel = discord.utils.get(ctx.guild.channels, name=monster_type_str)
-                        correct_channel = channel.id
-                        await ctx.delete()
-                        await ctx.channel.send(
-                            f"{ctx.author.mention} you posted {spotted_monster['name']} on wrong channel! "
-                            f"Use <#{correct_channel}> instead! <{peepo_ban_emote}>",
-                            delete_after=8)
-                        return
+                if await self.wrong_channel(ctx, spotted_monster, monster_type_str):
+                    return
                 role = get(ctx.guild.roles, name=spotted_monster["name"])
                 await ctx.delete()
                 await ctx.channel.send(f"{role.mention}")
@@ -73,7 +64,19 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         elif ctx.channel.id == self.bot.ch_legendary_spot or ctx.channel.id == self.bot.ch_rare_spot:
-            await ctx.add_reaction(f"a{peepo_ban_emote}")
+            await ctx.add_reaction(f"a{self.peepo_ban_emote}")
+
+    async def wrong_channel(self, ctx, spotted_monster, monster_type_str):
+        if ctx.channel.id in [self.bot.ch_legendary_spot, self.bot.ch_rare_spot]:
+            if ctx.channel.name != monster_type_str:
+                channel = discord.utils.get(ctx.guild.channels, name=monster_type_str)
+                correct_channel = channel.id
+                await ctx.delete()
+                await ctx.channel.send(
+                    f"{ctx.author.mention} you posted {spotted_monster['name']} on wrong channel! "
+                    f"Use <#{correct_channel}> instead! <{self.peepo_ban_emote}>", delete_after=8)
+                return True
+            return False
 
 
 def setup(bot: commands.Bot):
