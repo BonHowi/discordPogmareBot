@@ -22,16 +22,13 @@ class SpotStatsCog(cogbase.BaseCog):
                        )
     async def get_old_stats(self, ctx):
         await ctx.send("Generating spots stats", delete_after=5)
+
         guild = self.bot.get_guild(self.bot.guild[0])
-        channel = self.bot.get_channel(self.bot.ch_logs)
+        channel = self.bot.get_channel(self.bot.ch_common)
         async for message in channel.history(limit=None, oldest_first=True):
             for member in guild.members:
-                if message.content.startswith("[PingLog]") and str(member.id) in message.content:
-                    for monster in self.bot.config["commands"]:
-                        if monster["name"] in message.content:
-                            monster_type = "legendary" if monster["type"] == 1 else "rare"
-                            DatabaseCog.db_count_monster_spot(member.id, monster_type, monster["name"])
-                            break
+                if member == message.author:
+                    await DatabaseCog.db_count_spot(member.id, "common", "")
         self.create_log_msg("Finished updating database")
 
     async def get_channel_history(self, channel_id, channel_type) -> list:
@@ -57,8 +54,8 @@ class SpotStatsCog(cogbase.BaseCog):
         if monster_found["type"] == channel_type:
             return role.name
 
-    async def create_spots_list(self, channel_type: int):
-        spots_df = await DatabaseCog.db_get_total_spots_df(self.bot.user.id, channel_type)
+    async def create_spots_list(self, member_id: int, channel_type: int):
+        spots_df = await DatabaseCog.db_get_total_spots_df(member_id, channel_type)
         spots_df = spots_df.to_dict(orient='records')
         spots_df = spots_df[0]
         del spots_df['member_id']
@@ -72,7 +69,7 @@ class SpotStatsCog(cogbase.BaseCog):
 
     async def update_spot_stats(self, channel_id: int, channel_type: int):
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
-        top_print, total = await self.create_spots_list(channel_type)
+        top_print, total = await self.create_spots_list(self.bot.user.id, channel_type)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
         top_print = "\n".join(top_print)
 
@@ -113,7 +110,7 @@ class SpotStatsCog(cogbase.BaseCog):
     # TODO: code refactoring
     # Member own stats
     @cog_ext.cog_slash(name="mySpottingStats", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
+                       description="Get detailed spotting stats to your dm",
                        default_permission=True,
                        permissions=cogbase.PERMISSION_MODS
                        )
@@ -121,7 +118,7 @@ class SpotStatsCog(cogbase.BaseCog):
         await ctx.send("Generating spots stats", delete_after=5)
 
         # Legendary
-        leges_list, leges_total = await self.create_spots_list(1)
+        leges_list, leges_total = await self.create_spots_list(ctx.author.id, 1)
         leges_print = ['\n'.join([elem for elem in sublist]) for sublist in leges_list]
         leges_print = "\n".join(leges_print)
 
@@ -136,7 +133,7 @@ class SpotStatsCog(cogbase.BaseCog):
         await ctx.author.send(embed=embed_command)
 
         # Rare
-        rares_list, rares_total = await self.create_spots_list(0)
+        rares_list, rares_total = await self.create_spots_list(ctx.author.id, 0)
         rares_print = ['\n'.join([elem for elem in sublist]) for sublist in rares_list]
         rares_print = "\n".join(rares_print)
 
