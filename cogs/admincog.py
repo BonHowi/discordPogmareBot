@@ -32,6 +32,7 @@ class AdminCog(cogbase.BaseCog):
         await asyncio.sleep(5)
         await ctx.send(f"Cleared {number_to_delete} messages!", delete_after=3)
 
+
     # Disconnect Bot
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.GUILD_IDS,
                        description="Turn off the bot",
