@@ -12,6 +12,8 @@ from modules.utils import get_dominant_color
 class LeaderboardsCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
+
+        self.common_total = 0
         self.update_leaderboards_loop.start()
 
     def cog_unload(self):
@@ -104,6 +106,9 @@ class LeaderboardsCog(cogbase.BaseCog):
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self):
         self.create_log_msg(f"Waiting until Bot is ready")
+        common_ch = self.bot.get_channel(self.bot.ch_common)
+        async for _ in common_ch.history(limit=None, oldest_first=True):
+            self.common_total += 1
         await self.bot.wait_until_ready()
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,

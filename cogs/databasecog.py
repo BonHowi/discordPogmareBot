@@ -3,11 +3,11 @@ import os
 import discord
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
-
 from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
 from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.sql import func
 import cogs.cogbase as cogbase
 from datetime import datetime
 import pandas as pd
@@ -347,6 +347,17 @@ class DatabaseCog(cogbase.BaseCog):
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
         return df
+
+    @classmethod
+    async def db_get_common_sum(cls):
+        cls.conn = cls.engine.connect()
+        stmt = select(func.sum(spots.c.common).label("sum"))
+        result = cls.conn.execute(stmt)
+        for nr_of_kills_leg in result.columns("sum"):
+            sum_common = nr_of_kills_leg[0]
+        cls.conn.close()
+        return sum_common
+
 
     # ----- WARN OPERATIONS -----
 

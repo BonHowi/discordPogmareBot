@@ -15,22 +15,6 @@ class SpotStatsCog(cogbase.BaseCog):
         self.common_total = 0
         self.update_spot_stats_loop.start()
 
-    @cog_ext.cog_slash(name="updatedbwitholdstats", guild_ids=cogbase.GUILD_IDS,
-                       description=" ",
-                       default_permission=True,
-                       permissions=cogbase.PERMISSION_MODS
-                       )
-    async def get_old_stats(self, ctx):
-        await ctx.send("Generating spots stats", delete_after=5)
-
-        guild = self.bot.get_guild(self.bot.guild[0])
-        channel = self.bot.get_channel(self.bot.ch_common)
-        async for message in channel.history(limit=None, oldest_first=True):
-            for member in guild.members:
-                if member == message.author:
-                    await DatabaseCog.db_count_spot(member.id, "common", "")
-        self.create_log_msg("Finished updating database")
-
     async def get_channel_history(self, channel_id, channel_type) -> list:
         guild = self.bot.get_guild(self.bot.guild[0])
         channel = self.bot.get_channel(channel_id)
@@ -54,7 +38,8 @@ class SpotStatsCog(cogbase.BaseCog):
         if monster_found["type"] == channel_type:
             return role.name
 
-    async def create_spots_list(self, member_id: int, channel_type: int):
+    @staticmethod
+    async def create_spots_list(member_id: int, channel_type: int):
         spots_df = await DatabaseCog.db_get_total_spots_df(member_id, channel_type)
         spots_df = spots_df.to_dict(orient='records')
         spots_df = spots_df[0]
@@ -62,7 +47,12 @@ class SpotStatsCog(cogbase.BaseCog):
         top_print = []
         total = 0
         for key, value in spots_df.items():
-            spotting_stats = [f"{key}:  **{value}**"]
+            if key == min(spots_df, key=spots_df.get):
+                spotting_stats = [f"*{key}*:  **{value}**"]
+            elif key == max(spots_df, key=spots_df.get):
+                spotting_stats = [f"**{key}**:  **{value}**"]
+            else:
+                spotting_stats = [f"{key}:  **{value}**"]
             top_print.append(spotting_stats)
             total += value
         return top_print, total
@@ -100,6 +90,16 @@ class SpotStatsCog(cogbase.BaseCog):
         await spot_stats_ch.purge()
         await self.update_spot_stats(self.bot.ch_legendary_spot, 1)
         await self.update_spot_stats(self.bot.ch_rare_spot, 0)
+
+        common_sum = await DatabaseCog.db_get_common_sum()
+        embed_color = int(self.hex_to_int % (1, 1, 1), 16)
+        spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
+        embed_command = discord.Embed(title="COMMONS", color=embed_color)
+        embed_command.add_field(name="Total", value=f"**{common_sum}**", inline=False)
+        dt_string = self.bot.get_current_time()
+        embed_command.set_footer(text=f"{dt_string}")
+        await spot_stats_ch.send(embed=embed_command)
+
         self.create_log_msg(f"All spotting stats updated")
 
     @update_spot_stats_loop.before_loop
