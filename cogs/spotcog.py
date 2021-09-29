@@ -29,10 +29,13 @@ class SpotCog(cogbase.BaseCog):
             return
 
         # If common spotted
-        if ctx.channel.id == self.bot.ch_common:
-            await self.handle_spotted_common(ctx)
-        elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
-            await self.handle_spotted_monster(ctx)
+        try:
+            if ctx.channel.id == self.bot.ch_common:
+                await self.handle_spotted_common(ctx)
+            elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
+                await self.handle_spotted_monster(ctx)
+        except AttributeError:
+            pass
 
     @staticmethod
     async def handle_spotted_common(ctx):
