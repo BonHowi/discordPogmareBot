@@ -20,10 +20,31 @@ class CommandsCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="myStats", guild_ids=cogbase.GUILD_IDS,
                        description="Get your spotting stats",
                        default_permission=True)
-    async def get_stats(self, ctx):
+    async def get_stats_own(self, ctx):
+        embed = await self.get_stats(ctx.author)
+        await ctx.send(embed=embed, hidden=True)
+
+    # Get and show own spotting stats
+    @cog_ext.cog_slash(name="myStatsShow", guild_ids=cogbase.GUILD_IDS,
+                       description="Get your spotting stats and show it to other members",
+                       default_permission=True)
+    async def show_stats_own(self, ctx):
+        embed = await self.get_stats(ctx.author)
+        await ctx.send(embed=embed)
+
+    # Get member's spotting stats
+    @cog_ext.cog_slash(name="memberStats", guild_ids=cogbase.GUILD_IDS,
+                       description="Get member's spotting stats",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def get_stats_member(self, ctx, member: discord.Member):
+        embed = await self.get_stats(member)
+        await ctx.send(embed=embed, hidden=True)
+
+    async def get_stats(self, member: discord.Member):
         spot_roles = self.bot.config["total_milestones"][0]
         guild = self.bot.get_guild(self.bot.guild[0])
-        spots_df = await DatabaseCog.db_get_member_stats(ctx.author.id)
+        spots_df = await DatabaseCog.db_get_member_stats(member.id)
         spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
 
         role_next = ""
@@ -41,12 +62,11 @@ class CommandsCog(cogbase.BaseCog):
                   f"**Progress**: {spots_df.at[0, 'total']}/{spots_for_new}\n" \
                   f"**Next role**: {role_next.name}"
 
-        member_color = get_dominant_color(ctx.author.avatar_url)
-        embed_command = discord.Embed(title=f"{ctx.author} spotting stats", description=message,
-                                      color=member_color)
-        embed_command.set_thumbnail(url=f'{ctx.author.avatar_url}')
-
-        await ctx.send(embed=embed_command, hidden=True)
+        member_color = get_dominant_color(member.avatar_url)
+        embed = discord.Embed(title=f"{member} spotting stats", description=message,
+                              color=member_color)
+        embed.set_thumbnail(url=f'{member.avatar_url}')
+        return embed
 
     # Pool
     @cog_ext.cog_slash(name="poll", guild_ids=cogbase.GUILD_IDS,
