@@ -11,4 +11,8 @@ def get_dominant_color(url):
     img.convert("RGB")
     img.resize((1, 1), resample=0)
     dominant_color = img.getpixel((0, 0))
-    return int('%02x%02x%02x' % (dominant_color[0], dominant_color[1], dominant_color[2]), 16)
+    try:
+        return_color = int('%02x%02x%02x' % (dominant_color[0], dominant_color[1], dominant_color[2]), 16)
+    except TypeError:
+        return_color = 0
+    return return_color
