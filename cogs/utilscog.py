@@ -174,7 +174,7 @@ class UtilsCog(cogbase.BaseCog):
             colour=int("5dadec", 16),
             description="\n".join(f"**{x[0]}** {x[1]}" for x in data),
         )
-        await ctx.send(embed=content)
+        await ctx.send(embed=content, hidden=True)
 
     # Change monster type(for events)
     @cog_ext.cog_slash(name="changeMonsterType", guild_ids=cogbase.GUILD_IDS,

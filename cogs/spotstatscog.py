@@ -1,10 +1,10 @@
 import discord
+from cogs.databasecog import DatabaseCog
 from discord.ext import commands, tasks
 from discord.utils import get
 from cogs import cogbase
 from collections import Counter, OrderedDict
-from discord_slash import cog_ext, SlashContext
-from functools import reduce
+from discord_slash import cog_ext
 
 
 class SpotStatsCog(cogbase.BaseCog):
@@ -16,46 +16,46 @@ class SpotStatsCog(cogbase.BaseCog):
         self.common_total = 0
         self.update_spot_stats_loop.start()
 
-    async def update_spot_stats(self, channel_id: int, channel_type: int):
-        spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
-
-        roles_main_list = await self.get_channel_history(channel_id, channel_type)
-        roles_werewolf_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
-        roles_wraith_list = await self.get_channel_history(self.bot.ch_wraiths, channel_type)
-        roles_joined_list = roles_main_list + roles_werewolf_list + roles_wraith_list
-
-        roles_counter = Counter(roles_joined_list)
-        roles_counter = OrderedDict(roles_counter.most_common())
-        top_print = []
-        total = 0
-        for key, value in roles_counter.items():
-            spotting_stats = [f"{key}:  **{value}**"]
-            top_print.append(spotting_stats)
-            total += value
-
-        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
-        top_print = "\n".join(top_print)
-
-        if channel_type == 1:
-            embed_title = "LEGENDARY"
-            embed_color = int(self.hex_to_int % (163, 140, 21), 16)
-            self.lege_total = total
-        elif channel_type == 0:
-            embed_title = "RARE"
-            embed_color = int(self.hex_to_int % (17, 93, 178), 16)
-            self.rare_total = total
-        else:
-            embed_title = "OTHER"
-            embed_color = int(self.hex_to_int % (1, 1, 1), 16)
-
-        embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
-        embed_command.add_field(name="Total", value=f"**{total}**", inline=False)
-        dt_string = self.bot.get_current_time()
-        embed_command.set_footer(text=f"{dt_string}")
-        await spot_stats_ch.send(embed=embed_command)
-
-        channel = self.bot.get_channel(channel_id)
-        self.create_log_msg(f"Spotting stats updated - {channel.name}")
+    # async def update_spot_stats(self, channel_id: int, channel_type: int):
+    #     spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
+    #
+    #     roles_main_list = await self.get_channel_history(channel_id, channel_type)
+    #     roles_werewolf_list = await self.get_channel_history(self.bot.ch_werewolf, channel_type)
+    #     roles_wraith_list = await self.get_channel_history(self.bot.ch_wraiths, channel_type)
+    #     roles_joined_list = roles_main_list + roles_werewolf_list + roles_wraith_list
+    #
+    #     roles_counter = Counter(roles_joined_list)
+    #     roles_counter = OrderedDict(roles_counter.most_common())
+    #     top_print = []
+    #     total = 0
+    #     for key, value in roles_counter.items():
+    #         spotting_stats = [f"{key}:  **{value}**"]
+    #         top_print.append(spotting_stats)
+    #         total += value
+    #
+    #     top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+    #     top_print = "\n".join(top_print)
+    #
+    #     if channel_type == 1:
+    #         embed_title = "LEGENDARY"
+    #         embed_color = int(self.hex_to_int % (163, 140, 21), 16)
+    #         self.lege_total = total
+    #     elif channel_type == 0:
+    #         embed_title = "RARE"
+    #         embed_color = int(self.hex_to_int % (17, 93, 178), 16)
+    #         self.rare_total = total
+    #     else:
+    #         embed_title = "OTHER"
+    #         embed_color = int(self.hex_to_int % (1, 1, 1), 16)
+    #
+    #     embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
+    #     embed_command.add_field(name="Total", value=f"**{total}**", inline=False)
+    #     dt_string = self.bot.get_current_time()
+    #     embed_command.set_footer(text=f"{dt_string}")
+    #     await spot_stats_ch.send(embed=embed_command)
+    #
+    #     channel = self.bot.get_channel(channel_id)
+    #     self.create_log_msg(f"Spotting stats updated - {channel.name}")
 
     async def get_channel_history(self, channel_id, channel_type) -> list:
         guild = self.bot.get_guild(self.bot.guild[0])
@@ -80,6 +80,46 @@ class SpotStatsCog(cogbase.BaseCog):
         if monster_found["type"] == channel_type:
             return role.name
 
+    async def create_spots_list(self, channel_type: int):
+        spots_df = await DatabaseCog.db_get_total_spots_df(self.bot.user.id, channel_type)
+        spots_df = spots_df.to_dict(orient='records')
+        spots_df = spots_df[0]
+        del spots_df['member_id']
+        top_print = []
+        total = 0
+        for key, value in spots_df.items():
+            spotting_stats = [f"{key}:  **{value}**"]
+            top_print.append(spotting_stats)
+            total += value
+        return top_print, total
+
+    async def update_spot_stats(self, channel_id: int, channel_type: int):
+        spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
+        top_print, total = await self.create_spots_list(channel_type)
+        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+        top_print = "\n".join(top_print)
+
+        if channel_type == 1:
+            embed_title = "LEGENDARY"
+            embed_color = int(self.hex_to_int % (163, 140, 21), 16)
+            self.lege_total = total
+        elif channel_type == 0:
+            embed_title = "RARE"
+            embed_color = int(self.hex_to_int % (17, 93, 178), 16)
+            self.rare_total = total
+        else:
+            embed_title = "OTHER"
+            embed_color = int(self.hex_to_int % (1, 1, 1), 16)
+
+        embed_command = discord.Embed(title=f"{embed_title}", description=top_print, color=embed_color)
+        embed_command.add_field(name="Total", value=f"**{total}**", inline=False)
+        dt_string = self.bot.get_current_time()
+        embed_command.set_footer(text=f"{dt_string}")
+        await spot_stats_ch.send(embed=embed_command)
+
+        channel = self.bot.get_channel(channel_id)
+        self.create_log_msg(f"Spotting stats updated - {channel.name}")
+
     @tasks.loop(hours=12)
     async def update_spot_stats_loop(self):
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
@@ -93,42 +133,21 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
-    # TODO: make this database function
     # TODO: code refactoring
     # Member own stats
     @cog_ext.cog_slash(name="mySpottingStats", guild_ids=cogbase.GUILD_IDS,
                        description=" ",
-                       default_permission=True
-                        # , permissions=cogbase.PERMISSION_MODS
+                       default_permission=True,
+                       permissions=cogbase.PERMISSION_MODS
                        )
     async def get_spotting_stats(self, ctx):
         await ctx.send("Generating spots stats", delete_after=5)
-        guild = self.bot.get_guild(self.bot.guild[0])
-        channel = self.bot.get_channel(self.bot.ch_logs)
-        leges_list = []
-        rares_list = []
-        async for message in channel.history(limit=None, oldest_first=True):
-            if message.content.startswith("[PingLog]") and str(ctx.author.id) in message.content:
-                for monster in self.bot.config["commands"]:
-                    if monster["name"] in message.content:
-                        monster_name = monster["name"]
-                print(monster_name)
-                role = get(guild.roles, name=monster_name)
-                if role:
-                    leges_list.append(self.create_spotted_list(role, 1))
-                    rares_list.append(self.create_spotted_list(role, 0))
 
-        leges_list = list(filter(None, leges_list))
-        leges_counter = Counter(leges_list)
-        leges_counter = OrderedDict(leges_counter.most_common())
-        leges_print = []
-        leges_total = 0
-        for key, value in leges_counter.items():
-            spotting_stats = [f"{key}:  **{value}**"]
-            leges_print.append(spotting_stats)
-            leges_total += value
-        leges_print = ['\n'.join([elem for elem in sublist]) for sublist in leges_print]
+        # Legendary
+        leges_list, leges_total = await self.create_spots_list(1)
+        leges_print = ['\n'.join([elem for elem in sublist]) for sublist in leges_list]
         leges_print = "\n".join(leges_print)
+
         leges_color = int(self.hex_to_int % (163, 140, 21), 16)
         embed_command = discord.Embed(title=f"Legendary", description=leges_print, color=leges_color)
         embed_command.add_field(name="Total", value=f"**{leges_total}**", inline=False)
@@ -139,17 +158,11 @@ class SpotStatsCog(cogbase.BaseCog):
         embed_command.set_footer(text=f"{dt_string}")
         await ctx.author.send(embed=embed_command)
 
-        rares_list = list(filter(None, rares_list))
-        rares_counter = Counter(rares_list)
-        rares_counter = OrderedDict(rares_counter.most_common())
-        rares_print = []
-        rares_total = 0
-        for key, value in rares_counter.items():
-            spotting_stats = [f"{key}:  **{value}**"]
-            rares_print.append(spotting_stats)
-            rares_total += value
-        rares_print = ['\n'.join([elem for elem in sublist]) for sublist in rares_print]
+        # Rare
+        rares_list, rares_total = await self.create_spots_list(0)
+        rares_print = ['\n'.join([elem for elem in sublist]) for sublist in rares_list]
         rares_print = "\n".join(rares_print)
+
         rares_color = int(self.hex_to_int % (17, 93, 178), 16)
         embed_command = discord.Embed(title=f"Rare", description=rares_print, color=rares_color)
         embed_command.add_field(name="Total", value=f"**{rares_total}**", inline=False)
@@ -160,6 +173,7 @@ class SpotStatsCog(cogbase.BaseCog):
         embed_command.set_footer(text=f"{dt_string}")
         await ctx.author.send(embed=embed_command)
 
+        # Common
         common_ch = self.bot.get_channel(self.bot.ch_common)
         common_total = 0
         async for message in common_ch.history(limit=None, oldest_first=True):

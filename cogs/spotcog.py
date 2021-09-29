@@ -40,7 +40,7 @@ class SpotCog(cogbase.BaseCog):
     @staticmethod
     async def handle_spotted_common(ctx):
         if ctx.content[0] in cords_beginning:
-            await DatabaseCog.db_count_spot(ctx.author.id, "common")
+            await DatabaseCog.db_count_spot(ctx.author.id, "common", "")
             await DatabaseCog.db_save_coords(ctx.content, "common")
         else:
             await ctx.delete()
@@ -56,7 +56,7 @@ class SpotCog(cogbase.BaseCog):
                 await ctx.delete()
                 await ctx.channel.send(f"{role.mention}")
                 await DatabaseCog.db_count_spot(ctx.author.id,
-                                                monster_type_str)
+                                                monster_type_str, spotted_monster["name"])
                 logs_ch = self.bot.get_channel(self.bot.ch_logs)
                 await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id}) "
                                    f"requested ping for **{spotted_monster['name']}**")
