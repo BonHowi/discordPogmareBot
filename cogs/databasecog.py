@@ -76,9 +76,11 @@ spots_lege = Table('spots_lege', metadata_obj,
                    Column('SwampHag', Integer, default=0),
                    Column('TarryChort', Integer, default=0),
                    Column('Tormented', Integer, default=0),
+                   Column('Ulfhedinn', Integer, default=0),
                    Column('UnseenElder', Integer, default=0),
                    Column('WaterDevil', Integer, default=0),
-                   Column('WhiteStriga', Integer, default=0))
+                   Column('WhiteStriga', Integer, default=0)
+                   )
 
 spots_rare = Table('spots_rare', metadata_obj,
                    Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
@@ -226,12 +228,13 @@ class DatabaseCog(cogbase.BaseCog):
     # TODO: make rares in events possible
     @classmethod
     def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str):
-        bot_id = 881167775635234877
+        cls.conn = cls.engine.connect()
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
                       table.c.event1,
                       table.c.event2).where(
             table.c.member_id == _id)
         result = cls.conn.execute(stmt)
+        cls.conn.close()
         counter = 0
         for nr_of_kills in result.columns(monster_type, 'legendary'):
             counter = nr_of_kills[0]
@@ -240,25 +243,41 @@ class DatabaseCog(cogbase.BaseCog):
         else:
             values = {f"{monster_type}": counter + 1}
         stmt = update(table).where(table.c.member_id == _id).values(values)
+        cls.conn = cls.engine.connect()
         cls.conn.execute(stmt)
+        cls.conn.close()
 
+        cls.db_count_monster_spot(_id, monster_type, monster_name)
+
+    @classmethod
+    def db_count_monster_spot(cls, _id: int, monster_type: str, monster_name: str):
+        bot_id = 881167775635234877
         if monster_type == "legendary":
             values_lege_member = cls.db_count_spot_table_monster(spots_lege, _id, monster_name)
             stmt = update(spots_lege).where(spots_lege.c.member_id == _id).values(values_lege_member)
+            cls.conn = cls.engine.connect()
             cls.conn.execute(stmt)
+            cls.conn.close()
             values_lege_total = cls.db_count_spot_table_monster(spots_lege, bot_id, monster_name)
             stmt = update(spots_lege).where(spots_lege.c.member_id == bot_id).values(values_lege_total)
+            cls.conn = cls.engine.connect()
             cls.conn.execute(stmt)
+            cls.conn.close()
         elif monster_type == "rare":
             values_rare_member = cls.db_count_spot_table_monster(spots_rare, _id, monster_name)
             stmt = update(spots_rare).where(spots_rare.c.member_id == _id).values(values_rare_member)
+            cls.conn = cls.engine.connect()
             cls.conn.execute(stmt)
+            cls.conn.close()
             values_rare_total = cls.db_count_spot_table_monster(spots_rare, bot_id, monster_name)
             stmt = update(spots_rare).where(spots_rare.c.member_id == bot_id).values(values_rare_total)
+            cls.conn = cls.engine.connect()
             cls.conn.execute(stmt)
+            cls.conn.close()
 
     @classmethod
     def db_count_spot_table_event(cls, table, _id, monster_type: str, counter: int):
+        cls.conn = cls.engine.connect()
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
                       table.c.event1,
                       table.c.event2).where(
@@ -268,16 +287,19 @@ class DatabaseCog(cogbase.BaseCog):
         for nr_of_kills_leg in result.columns('legendary'):
             counter_leg = nr_of_kills_leg[0]
         values = {f"{monster_type}": counter + 1, "legendary": counter_leg + 1}
+        cls.conn.close()
         return values
 
     @classmethod
     def db_count_spot_table_monster(cls, table, _id, monster_name: str):
+        cls.conn = cls.engine.connect()
         stmt = select(table).where(table.c.member_id == _id)
         result = cls.conn.execute(stmt)
         counter = 0
         for nr_of_kills_leg in result.columns(f"{monster_name}"):
             counter = nr_of_kills_leg[0]
         values = {f"{monster_name}": counter + 1}
+        cls.conn.close()
         return values
 
     # Save coords from spotting channels to database
