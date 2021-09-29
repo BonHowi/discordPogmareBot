@@ -29,7 +29,7 @@ class MyBot(commands.Bot):
         print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
         print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
         self.start_time = time()
-        self.version = "1.1"
+        self.version = "1.2"
 
         self.guild = get_settings("guild")
         self.ch_admin_posting = get_settings("CH_ADMIN_POSTING")
