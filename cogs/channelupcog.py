@@ -42,8 +42,7 @@ class ChannelUpCog(cogbase.BaseCog):
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
         self.create_log_msg(f"Common channel name updated: {commons[0]}")
-        await common_ch.send(f"Common changed: {commons[0]}")
-        await ctx.send(f"Common changed: {commons[0]}", hidden=True)
+        await common_ch.send(f"Common changed: **{commons[0]}**")
 
     # N-Word spotted channel name
     # Doesn't work if used too many times in a short period of time
