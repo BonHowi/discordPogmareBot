@@ -107,8 +107,11 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def before_update_leaderboards_loop(self):
         self.create_log_msg(f"Waiting until Bot is ready")
         common_ch = self.bot.get_channel(self.bot.ch_common)
-        async for _ in common_ch.history(limit=None, oldest_first=True):
-            self.common_total += 1
+        try:
+            async for _ in common_ch.history(limit=None, oldest_first=True):
+                self.common_total += 1
+        except AttributeError:
+            pass
         await self.bot.wait_until_ready()
 
     @cog_ext.cog_slash(name="reloadLeaderboards", guild_ids=cogbase.GUILD_IDS,

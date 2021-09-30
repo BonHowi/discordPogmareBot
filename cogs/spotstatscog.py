@@ -94,11 +94,12 @@ class SpotStatsCog(cogbase.BaseCog):
         common_sum = await DatabaseCog.db_get_common_sum()
         embed_color = int(self.hex_to_int % (1, 1, 1), 16)
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
-        embed_command = discord.Embed(title="COMMONS", color=embed_color)
+        embed_command = discord.Embed(title="COMMON", color=embed_color)
         embed_command.add_field(name="Total", value=f"**{common_sum}**", inline=False)
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await spot_stats_ch.send(embed=embed_command)
+        self.create_log_msg(f"Spotting stats updated - Common")
 
         self.create_log_msg(f"All spotting stats updated")
 

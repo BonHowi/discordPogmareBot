@@ -353,6 +353,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn = cls.engine.connect()
         stmt = select(func.sum(spots.c.common).label("sum"))
         result = cls.conn.execute(stmt)
+        sum_common = 0
         for nr_of_kills_leg in result.columns("sum"):
             sum_common = nr_of_kills_leg[0]
         cls.conn.close()
