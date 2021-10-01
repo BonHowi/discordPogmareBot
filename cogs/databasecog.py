@@ -221,7 +221,7 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_count_spot(cls, _id: int, monster_type: str, monster_name: str):
         cls.conn = cls.engine.connect()
         cls.db_count_spot_table(spots, _id, monster_type, monster_name)
-        # TODO: ...
+        # TODO: count spot in spot_temps
         # cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name)
         cls.conn.close()
 
@@ -359,6 +359,30 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.close()
         return sum_common
 
+    @classmethod
+    async def db_get_monster_spots_df(cls):
+        # TODO: Why does join not work?
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_lege)
+        cls.conn.execute(stmt)
+        df_lege = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_rare)
+        cls.conn.execute(stmt)
+        df_rare = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        df_monsters_merged = pd.merge(df_lege, df_rare, on=["member_id"])
+        return df_monsters_merged
+
+    @classmethod
+    async def db_get_member_names(cls):
+        cls.conn = cls.engine.connect()
+        stmt = select(member.c.id.label("member_id"), member.c.display_name)
+        cls.conn.execute(stmt)
+        df_member_names = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        return df_member_names
 
     # ----- WARN OPERATIONS -----
 
