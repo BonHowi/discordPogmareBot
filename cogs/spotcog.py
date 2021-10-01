@@ -21,6 +21,8 @@ class SpotCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
         self.peepo_ban_emote = ":peepoban:872502800146382898"
+        self.spotting_channels = [self.bot.ch_legendary_spot, self.bot.ch_rare_spot,
+                                  self.bot.ch_legendary_nemeton, self.bot.ch_rare_nemeton]
 
     # Ping monster role
     @commands.Cog.listener()
@@ -66,18 +68,21 @@ class SpotCog(cogbase.BaseCog):
                     f"{ctx.author.mention} monster not found - are you sure that the name is correct?", delete_after=5)
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
-        elif ctx.channel.id == self.bot.ch_legendary_spot or ctx.channel.id == self.bot.ch_rare_spot:
+        elif ctx.channel.id in self.spotting_channels:
             await ctx.add_reaction(f"a{self.peepo_ban_emote}")
 
     async def wrong_channel(self, ctx, spotted_monster, monster_type_str):
-        if ctx.channel.id in [self.bot.ch_legendary_spot, self.bot.ch_rare_spot]:
-            if ctx.channel.name != monster_type_str:
-                channel = discord.utils.get(ctx.guild.channels, name=monster_type_str)
-                correct_channel = channel.id
+        if ctx.channel.id in self.spotting_channels:
+            if monster_type_str not in ctx.channel.name:
+                channel_wild = discord.utils.get(ctx.guild.channels, name=monster_type_str)
+                correct_channel_wild = channel_wild.id
+                channel_nemeton = discord.utils.get(ctx.guild.channels, name=f"{monster_type_str}-nemeton")
+                correct_channel_nemeton = channel_nemeton.id
                 await ctx.delete()
                 await ctx.channel.send(
                     f"{ctx.author.mention} you posted {spotted_monster['name']} on wrong channel! "
-                    f"Use <#{correct_channel}> instead! <{self.peepo_ban_emote}>", delete_after=8)
+                    f"Use <#{correct_channel_wild}> or <#{correct_channel_nemeton}> instead! <{self.peepo_ban_emote}>",
+                    delete_after=8)
                 return True
             return False
 
