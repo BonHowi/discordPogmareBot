@@ -26,12 +26,12 @@ class AdminCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_MODS)
     async def purge_messages(self, ctx: SlashContext, number_to_delete: int = 1):
         messages = []
+        await ctx.send(f"Clearing {number_to_delete} messages!", delete_after=3)
         async for message in ctx.channel.history(limit=number_to_delete + 1):
             messages.append(message)
         await ctx.channel.delete_messages(messages)
-        await asyncio.sleep(5)
-        await ctx.send(f"Cleared {number_to_delete} messages!", delete_after=3)
 
+        await asyncio.sleep(5)
 
     # Disconnect Bot
     @cog_ext.cog_slash(name="exit", guild_ids=cogbase.GUILD_IDS,
@@ -96,10 +96,11 @@ class AdminCog(cogbase.BaseCog):
                                               read_messages=False)
         await user.add_roles(muted, reason=reason)
         await ctx.send(f"{user.mention} Was muted by {ctx.author.name} for {mute_time} min\n"
-                       f"Reason: {reason}", delete_after=10)
+                       f"Reason: {reason}")
         await asyncio.sleep(duration)
         await user.remove_roles(muted)
-        await ctx.send(f"{user.mention}'s mute is over", delete_after=10)
+        await ctx.send(f"{user.mention}'s mute is over", delete_after=30)
+        await self.bot.send_message(user, "Your mute is over")
 
     # KICK FUNCTIONS
     @staticmethod

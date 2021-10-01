@@ -84,7 +84,7 @@ class SpotStatsCog(cogbase.BaseCog):
         channel = self.bot.get_channel(channel_id)
         self.create_log_msg(f"Spotting stats updated - {channel.name}")
 
-    @tasks.loop(hours=12)
+    @tasks.loop(hours=1)
     async def update_spot_stats_loop(self):
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
         await spot_stats_ch.purge()
@@ -99,7 +99,7 @@ class SpotStatsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await spot_stats_ch.send(embed=embed_command)
-        self.create_log_msg(f"Spotting stats updated - Common")
+        self.create_log_msg(f"Spotting stats updated - common")
 
         self.create_log_msg(f"All spotting stats updated")
 
@@ -108,7 +108,7 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
-    # TODO: code refactoring
+    # TODO: code refactoring/code duplication
     # Member own stats
     @cog_ext.cog_slash(name="mySpottingStats", guild_ids=cogbase.GUILD_IDS,
                        description="Get detailed spotting stats to your dm",

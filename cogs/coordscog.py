@@ -21,7 +21,6 @@ class CoordsCog(cogbase.BaseCog):
         # wraith_coords = await self.get_channel_history(self.bot.ch_wraiths)
         common_coords = await self.get_channel_history(self.bot.ch_common)
         # TODO: why does concat create list instead of df???
-
         # coords_list = [legendary_coords, rare_coords, common_coords]
         # result = pd.concat(coords_list, ignore_index=True)
         coords_df = legendary_coords.append(rare_coords).append(common_coords)
