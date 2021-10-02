@@ -25,9 +25,9 @@ class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
 
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Init")
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Rate limited: {self.is_ws_ratelimited()}")
+        self.create_main_log_msg(f"\n --------------- STARTING BOT ---------------")
+        self.create_main_log_msg(f"Init")
+        self.create_main_log_msg(f"Rate limited: {self.is_ws_ratelimited()}")
         self.start_time = time()
         self.version = "1.2"
 
@@ -56,12 +56,20 @@ class MyBot(commands.Bot):
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.config = json.load(fp)
 
+    def create_main_log_msg(self, message: str) -> None:
+        dt_string = self.get_current_time()
+        log: str = f"({dt_string})\t[{self.__class__.__name__}]: {message}"
+        print(log)
+        logs_txt_dir: str = "logs/logs.txt"
+        file_object = open(logs_txt_dir, "a+")
+        file_object.write(f"{log}\n")
+        file_object.close()
+
     # On bot ready
     async def on_ready(self) -> None:
         await MyBot.change_presence(self, activity=discord.Activity(type=discord.ActivityType.playing,
                                                                     name="The Witcher: Monster Slayer"))
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Bot is ready")
+        self.create_main_log_msg("Bot is ready")
 
     async def update_member_count(self, ctx) -> int:
         true_member_count = len([m for m in ctx.guild.members if not m.bot])
@@ -73,8 +81,7 @@ class MyBot(commands.Bot):
     # On member join
     async def on_member_join(self, ctx) -> None:
         member_count = await self.update_member_count(ctx)
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} joined")
+        self.create_main_log_msg(f"{ctx} joined")
 
         if (member_count % 100) == 0:
             channel = self.get_channel(self.ch_admin_posting)
@@ -82,8 +89,7 @@ class MyBot(commands.Bot):
 
     async def on_member_remove(self, ctx):
         await self.update_member_count(ctx)
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: {ctx} left")
+        self.create_main_log_msg(f"{ctx} left")
 
     # Manage on message actions
     async def on_message(self, ctx) -> None:
@@ -112,9 +118,7 @@ class MyBot(commands.Bot):
         new_name = f"common {commons[0]}"
         common_ch = self.get_channel(self.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
-        dt_string = self.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: Common channel name updated: {commons[0]}")
-
+        self.create_main_log_msg(f"Common channel name updated: {commons[0]}")
         await common_ch.send(f"Common changed: **{commons[0]}**")
 
         commons.append(commons.pop(commons.index(commons[0])))

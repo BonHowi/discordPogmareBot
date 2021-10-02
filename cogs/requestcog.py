@@ -69,7 +69,7 @@ class RequestCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
                        description="Get or remove role with monster name to be pinged when the monster is spotted",
                        default_permission=True)
-    async def _role(self, ctx: SlashContext, name: str) -> None:
+    async def _role(self, ctx: SlashContext, name) -> None:
         if ctx.channel.id != self.bot.ch_role_request:
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
 
