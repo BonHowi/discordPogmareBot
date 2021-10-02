@@ -5,8 +5,10 @@ Current commands:
 /remove_spot
 
 """
+from datetime import datetime, timedelta
+
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.utils import get
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
@@ -23,6 +25,8 @@ class SpotCog(cogbase.BaseCog):
         self.peepo_ban_emote = ":peepoban:872502800146382898"
         self.spotting_channels = [self.bot.ch_legendary_spot, self.bot.ch_rare_spot,
                                   self.bot.ch_legendary_nemeton, self.bot.ch_rare_nemeton]
+
+        self.clear_nemeton_channels_loop.start()
 
     # Ping monster role
     @commands.Cog.listener()
@@ -85,6 +89,28 @@ class SpotCog(cogbase.BaseCog):
                     delete_after=8)
                 return True
             return False
+
+    @staticmethod
+    async def clear_channel_messages(channel):
+        messages = []
+        today = datetime.utcnow()
+        today = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        async for message in channel.history(before=today):
+            messages.append(message)
+        await channel.delete_messages(messages)
+
+    @tasks.loop(hours=3)
+    async def clear_nemeton_channels_loop(self):
+        lege_nemeton = self.bot.get_channel(self.bot.ch_legendary_nemeton)
+        rare_nemeton = self.bot.get_channel(self.bot.ch_rare_nemeton)
+        await self.clear_channel_messages(lege_nemeton)
+        await self.clear_channel_messages(rare_nemeton)
+        self.create_log_msg("Wiped Nemeton channels")
+
+    @clear_nemeton_channels_loop.before_loop
+    async def before_update_leaderboards_loop(self):
+        self.create_log_msg(f"Waiting until Bot is ready")
+        await self.bot.wait_until_ready()
 
 
 def setup(bot: commands.Bot):

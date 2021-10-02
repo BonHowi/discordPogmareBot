@@ -57,6 +57,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await top_ch.send(embed=embed_command)
+        self.create_log_msg(f"Leaderboards updated - {ch_type}")
 
     # Update member spotting role(total/common)
     async def update_role(self, guild, guild_member, spot_roles, common: bool):
@@ -128,13 +129,13 @@ class LeaderboardsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await top_ch.send(embed=embed_command)
-        pass
+        self.create_log_msg(f"Leaderboards updated - event")
 
     async def update_leaderboards(self):
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
         await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
-        self.create_log_msg(f"Leaderboards updated")
+        self.create_log_msg(f"All leaderboards updated")
         await self.update_member_roles()
         self.create_log_msg(f"Members' roles updated")
 

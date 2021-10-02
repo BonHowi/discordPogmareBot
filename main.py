@@ -90,6 +90,8 @@ class MyBot(commands.Bot):
         # If bot is the message author
         if ctx.author.id == self.user.id:
             return
+        if isinstance(ctx.channel, discord.channel.DMChannel) and ctx.author != self.user:
+            await ctx.channel.send("If you have any questions go ask my creator - BonJowi#0119")
 
         # If there is a message with "!" prefix
         if ctx.content.startswith("!") and ctx.channel.id != self.ch_role_request:
@@ -123,7 +125,7 @@ class MyBot(commands.Bot):
     # Update commons channel name every day at 12:00
     @tasks.loop(minutes=60.0)
     async def update_ch_commons_loop(self):
-        if datetime.now().hour == 12:
+        if datetime.utcnow().hour == 14:
             await self.update_ch_commons()
 
     @update_ch_commons_loop.before_loop
@@ -132,7 +134,7 @@ class MyBot(commands.Bot):
 
     @staticmethod
     def get_current_time():
-        now = datetime.now()
+        now = datetime.utcnow()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
         return dt_string
 
