@@ -58,6 +58,8 @@ class RequestCog(cogbase.BaseCog):
     # Remove normal messages from monster-request channel
     @commands.Cog.listener()
     async def on_message(self, ctx) -> None:
+        if ctx.author.id == self.bot.user.id:
+            return
         if ctx.channel.id == self.bot.ch_role_request:
             if ctx.content.startswith("/"):
                 await ctx.channel.send(
