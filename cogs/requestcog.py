@@ -20,7 +20,7 @@ class RequestCog(cogbase.BaseCog):
 
     # Print available roles/commands on monster-request channel
     @commands.Cog.listener()
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         role_ch = self.bot.get_channel(self.bot.ch_role_request)
         await role_ch.purge(limit=10)
         bot = get(self.bot.get_all_members(), id=self.bot.user.id)
@@ -57,10 +57,7 @@ class RequestCog(cogbase.BaseCog):
 
     # Remove normal messages from monster-request channel
     @commands.Cog.listener()
-    async def on_message(self, ctx):
-        if ctx.author.id == self.bot.user.id:
-            return
-
+    async def on_message(self, ctx) -> None:
         if ctx.channel.id == self.bot.ch_role_request:
             if ctx.content.startswith("/"):
                 await ctx.channel.send(
@@ -72,7 +69,7 @@ class RequestCog(cogbase.BaseCog):
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
                        description="Get or remove role with monster name to be pinged when the monster is spotted",
                        default_permission=True)
-    async def _role(self, ctx: SlashContext, name: str):
+    async def _role(self, ctx: SlashContext, name: str) -> None:
         if ctx.channel.id != self.bot.ch_role_request:
             await ctx.send(f"Use <#{self.bot.ch_role_request}> to request a role!", hidden=True)
 
@@ -91,5 +88,5 @@ class RequestCog(cogbase.BaseCog):
                 await ctx.send(f"Monster role not found", delete_after=10.0)
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(RequestCog(bot))

@@ -14,7 +14,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        description="Update total number of members",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_member_count_command(self, ctx: SlashContext):
+    async def update_member_count_command(self, ctx: SlashContext) -> None:
         await self.bot.update_member_count(ctx)
         await ctx.send(f"Total Members count updated", hidden=True)
 
@@ -23,7 +23,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        description="Update common channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_common_ch_name(self, ctx: SlashContext):
+    async def update_common_ch_name(self, ctx: SlashContext) -> None:
         with open('./server_files/commons.txt') as f:
             try:
                 commons = f.read().splitlines()
@@ -37,7 +37,7 @@ class ChannelUpCog(cogbase.BaseCog):
             for item in commons:
                 f.write("%s\n" % item)
 
-    async def update_commons_ch(self, ctx: SlashContext, commons):
+    async def update_commons_ch(self, ctx: SlashContext, commons) -> None:
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)
@@ -50,7 +50,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        description="Change Nightmare status channel name",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def rename_nightmare_channel(self, ctx, status: str):
+    async def rename_nightmare_channel(self, ctx: SlashContext, status: str) -> None:
         new_status = status
         channel = self.bot.get_channel(self.bot.ch_nightmare_killed)
         if new_status in channel.name:
@@ -60,5 +60,5 @@ class ChannelUpCog(cogbase.BaseCog):
             await ctx.send(f"{channel.name} channel name has been changed", hidden=True)
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(ChannelUpCog(bot))

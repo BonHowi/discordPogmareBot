@@ -29,8 +29,8 @@ def get_settings(key: str):
     """Get the selected key from the settings file"""
     try:
         with open("server_files/bot_settings.json", "r", encoding="UTF-8") as f:
-            _json = json.load(f)
-        return _json[key]
+            settings_json = json.load(f)
+        return settings_json[key]
     except FileNotFoundError:
         with open("server_files/bot_settings.json", "w", encoding="UTF-8") as f:
             json.dump(template_json, f, indent=2)

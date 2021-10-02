@@ -3,7 +3,7 @@ from cogs.databasecog import DatabaseCog
 from discord.ext import commands, tasks
 from discord.utils import get
 from cogs import cogbase
-from discord_slash import cog_ext
+from discord_slash import cog_ext, SlashContext
 
 
 class SpotStatsCog(cogbase.BaseCog):
@@ -29,7 +29,7 @@ class SpotStatsCog(cogbase.BaseCog):
         roles_list = list(filter(None, roles_list))
         return roles_list
 
-    def get_monster_name(self, role, channel_type):
+    def get_monster_name(self, role, channel_type) -> str:
         monster_found = None
         for monster in self.bot.config["commands"]:
             if monster["name"].lower() == role.name.lower() or role.name.lower() in monster["triggers"]:
@@ -39,7 +39,7 @@ class SpotStatsCog(cogbase.BaseCog):
             return role.name
 
     @staticmethod
-    async def create_spots_list(member_id: int, channel_type: int):
+    async def create_spots_list(member_id: int, channel_type: int) -> tuple:
         spots_df = await DatabaseCog.db_get_total_spots_df(member_id, channel_type)
         spots_df = spots_df.to_dict(orient='records')
         spots_df = spots_df[0]
@@ -57,7 +57,7 @@ class SpotStatsCog(cogbase.BaseCog):
             total += value
         return top_print, total
 
-    async def update_spot_stats(self, channel_id: int, channel_type: int):
+    async def update_spot_stats(self, channel_id: int, channel_type: int) -> None:
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
         top_print, total = await self.create_spots_list(self.bot.user.id, channel_type)
         top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
@@ -85,7 +85,7 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"Spotting stats updated - {channel.name}")
 
     @tasks.loop(hours=1)
-    async def update_spot_stats_loop(self):
+    async def update_spot_stats_loop(self) -> None:
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
         await spot_stats_ch.purge()
         await self.update_spot_stats(self.bot.ch_legendary_spot, 1)
@@ -104,7 +104,7 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"All spotting stats updated")
 
     @update_spot_stats_loop.before_loop
-    async def before_update_spot_stats_loop(self):
+    async def before_update_spot_stats_loop(self) -> None:
         self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
@@ -115,7 +115,7 @@ class SpotStatsCog(cogbase.BaseCog):
                        default_permission=True,
                        permissions=cogbase.PERMISSION_MODS
                        )
-    async def get_spotting_stats(self, ctx):
+    async def get_spotting_stats(self, ctx: SlashContext) -> None:
         await ctx.send("Generating spots stats", delete_after=5)
 
         # Legendary
@@ -166,5 +166,5 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"Spotting stats created for {ctx.author}")
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(SpotStatsCog(bot))

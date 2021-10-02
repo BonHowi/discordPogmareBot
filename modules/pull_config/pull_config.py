@@ -15,7 +15,7 @@ SAMPLE_RANGE_NAME = 'A1:AA68'
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
 
-def handle_creds(creds, token):
+def handle_creds(creds, token: str) -> None:
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
@@ -28,12 +28,7 @@ def handle_creds(creds, token):
 
 
 def import_from_sheets():
-    """
-
-    :return:
-    :rtype:
-    """
-    token = "token.json"
+    token: str = "token.json"
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
@@ -72,7 +67,7 @@ def create_trigger_list(triggers) -> list:
     return triggers_list
 
 
-def create_output(monsters_df) -> dict:
+def create_output(monsters_df: pd.DataFrame) -> dict:
     types = {'id': [4, 3, 2, 1, 0], 'label': ["Common", "Event2", "Event1", "Legendary", "Rare"]}
     types_df = pd.DataFrame(data=types)
     total_milestones = {"Sunday Spotter I": [100], "Sunday Spotter II": [200], "Sunday Spotter III": [300],
@@ -95,7 +90,7 @@ def create_output(monsters_df) -> dict:
     return data_dict
 
 
-def create_trigger_structure(triggers_list):
+def create_trigger_structure(triggers_list: list) -> pd.Series:
     triggers_def = []
     for i in triggers_list:
         triggers_def.append(list(i))
@@ -103,7 +98,7 @@ def create_trigger_structure(triggers_list):
     return triggers_def_series
 
 
-def get_config():
+def get_config() -> None:
     pd.set_option('mode.chained_assignment', None)
     dt_string = MyBot.get_current_time()
     print(f"({dt_string})\t[{get_config.__name__}]: Loading data")
@@ -136,7 +131,7 @@ def get_config():
     print(f"({dt_string})\t[{get_config.__name__}]: .json saved")
 
 
-def main():
+def main() -> None:
     get_config()
 
 

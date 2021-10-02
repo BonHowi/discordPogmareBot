@@ -5,7 +5,7 @@ Current commands:
 /remove_spot
 
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import discord
 from discord.ext import commands, tasks
@@ -22,15 +22,15 @@ cords_beginning = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 class SpotCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)
-        self.peepo_ban_emote = ":peepoban:872502800146382898"
-        self.spotting_channels = [self.bot.ch_legendary_spot, self.bot.ch_rare_spot,
-                                  self.bot.ch_legendary_nemeton, self.bot.ch_rare_nemeton]
+        self.peepo_ban_emote: str = ":peepoban:872502800146382898"
+        self.spotting_channels: list = [self.bot.ch_legendary_spot, self.bot.ch_rare_spot,
+                                        self.bot.ch_legendary_nemeton, self.bot.ch_rare_nemeton]
 
         self.clear_nemeton_channels_loop.start()
 
     # Ping monster role
     @commands.Cog.listener()
-    async def on_message(self, ctx):
+    async def on_message(self, ctx) -> None:
         if ctx.author.id == self.bot.user.id:
             return
 
@@ -44,14 +44,14 @@ class SpotCog(cogbase.BaseCog):
             pass
 
     @staticmethod
-    async def handle_spotted_common(ctx):
+    async def handle_spotted_common(ctx) -> None:
         if ctx.content[0] in cords_beginning:
             await DatabaseCog.db_count_spot(ctx.author.id, "common", "")
             await DatabaseCog.db_save_coords(ctx.content, "common")
         else:
             await ctx.delete()
 
-    async def handle_spotted_monster(self, ctx):
+    async def handle_spotted_monster(self, ctx) -> None:
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
             if spotted_monster:
@@ -75,7 +75,7 @@ class SpotCog(cogbase.BaseCog):
         elif ctx.channel.id in self.spotting_channels:
             await ctx.add_reaction(f"a{self.peepo_ban_emote}")
 
-    async def wrong_channel(self, ctx, spotted_monster, monster_type_str):
+    async def wrong_channel(self, ctx, spotted_monster, monster_type_str: str) -> bool:
         if ctx.channel.id in self.spotting_channels:
             if monster_type_str not in ctx.channel.name:
                 channel_wild = discord.utils.get(ctx.guild.channels, name=monster_type_str)
@@ -91,8 +91,9 @@ class SpotCog(cogbase.BaseCog):
             return False
 
     @staticmethod
-    async def clear_channel_messages(channel):
+    async def clear_channel_messages(channel) -> None:
         messages = []
+        # Can't use datetime.utcnow().date() beacuse discord
         today = datetime.utcnow()
         today = today.replace(hour=0, minute=0, second=0, microsecond=0)
         async for message in channel.history(before=today):
@@ -100,7 +101,7 @@ class SpotCog(cogbase.BaseCog):
         await channel.delete_messages(messages)
 
     @tasks.loop(hours=3)
-    async def clear_nemeton_channels_loop(self):
+    async def clear_nemeton_channels_loop(self) -> None:
         lege_nemeton = self.bot.get_channel(self.bot.ch_legendary_nemeton)
         rare_nemeton = self.bot.get_channel(self.bot.ch_rare_nemeton)
         await self.clear_channel_messages(lege_nemeton)
@@ -108,10 +109,10 @@ class SpotCog(cogbase.BaseCog):
         self.create_log_msg("Wiped Nemeton channels")
 
     @clear_nemeton_channels_loop.before_loop
-    async def before_update_leaderboards_loop(self):
+    async def before_update_leaderboards_loop(self) -> None:
         self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(SpotCog(bot))

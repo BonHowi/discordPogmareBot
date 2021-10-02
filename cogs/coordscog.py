@@ -1,5 +1,5 @@
 from discord.ext import commands
-from discord_slash import cog_ext
+from discord_slash import cog_ext, SlashContext
 import pandas as pd
 
 from cogs import cogbase
@@ -13,7 +13,7 @@ class CoordsCog(cogbase.BaseCog):
                        description="Save spotting coordinates from channels history",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def save_coordinates(self, ctx):
+    async def save_coordinates(self, ctx: SlashContext) -> None:
         await ctx.send(f"Coords are being saved", hidden=True)
         legendary_coords = await self.get_channel_history(self.bot.ch_legendary_spot)
         rare_coords = await self.get_channel_history(self.bot.ch_rare_spot)
@@ -28,7 +28,7 @@ class CoordsCog(cogbase.BaseCog):
         coords_df.to_excel(path_coords, index=False)
         self.create_log_msg(f"Coords saved to {path_coords}")
 
-    async def get_channel_history(self, channel_id):
+    async def get_channel_history(self, channel_id: int) -> pd.DataFrame:
         channel = self.bot.get_channel(channel_id)
         coords_list = []
         async for message in channel.history(limit=None, oldest_first=True):

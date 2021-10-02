@@ -27,7 +27,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Pull config from google sheets",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def pull_config_command(self, ctx: SlashContext):
+    async def pull_config_command(self, ctx: SlashContext) -> None:
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
@@ -37,7 +37,7 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(f"Config.json updated", hidden=True)
 
     # Create roles if pull_config gets non existent roles
-    async def create_roles(self, ctx: SlashContext, common: bool):
+    async def create_roles(self, ctx: SlashContext, common: bool) -> None:
         milestones = "common_milestones" if common else "total_milestones"
         for mon_type in self.bot.config[milestones][0]:
             if get(ctx.guild.roles, name=mon_type):
@@ -51,7 +51,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Clear temp spots table in database",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def clear_temp_spots_table(self, ctx):
+    async def clear_temp_spots_table(self, ctx: SlashContext) -> None:
         await DatabaseCog.db_clear_spots_temp_table()
         await ctx.send(f"Temp spots table was cleared", hidden=True)
         await self.reload_cog(ctx, "databasecog")
@@ -78,7 +78,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Reload cog",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_cog_command(self, ctx: SlashContext, module: str):
+    async def reload_cog_command(self, ctx: SlashContext, module: str) -> None:
         await self.reload_cog(ctx, module)
 
     # Command for reloading all cogs
@@ -86,7 +86,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Reload all bot cogs",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_all_cogs(self, ctx: SlashContext = None):
+    async def reload_all_cogs(self, ctx: SlashContext = None) -> None:
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
@@ -96,7 +96,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Save coordinates from database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def save_coordinates(self, ctx: SlashContext):
+    async def save_coordinates(self, ctx: SlashContext) -> None:
         coords_df = await DatabaseCog.db_get_coords()
         coords_df = coords_df[coords_df.coords.str.contains(",")]
         print(coords_df)
@@ -111,7 +111,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None):
+    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None) -> None:
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -126,14 +126,14 @@ class UtilsCog(cogbase.BaseCog):
             role_string = ' '.join([r.mention for r in user.roles][1:])
             embed.add_field(name="Roles [{}]".format(len(user.roles) - 1), value=role_string, inline=False)
         embed.set_footer(text='ID: ' + str(user.id))
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
     # Backup database to a file
     @cog_ext.cog_slash(name="backupDatabase", guild_ids=cogbase.GUILD_IDS,
                        description="Backup database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def backup_database(self, ctx: SlashContext):
+    async def backup_database(self, ctx: SlashContext) -> None:
         now = datetime.now()
         cmd = f"mysqldump -u {get_settings('DB_U')} " \
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
@@ -146,7 +146,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get status of the system",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def system_status(self, ctx):
+    async def system_status(self, ctx: SlashContext) -> None:
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
@@ -181,7 +181,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Change type of a monster",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def change_monster_type(self, ctx, monster: str, new_type: int):
+    async def change_monster_type(self, ctx: SlashContext, monster: str, new_type: int) -> None:
         config = self.bot.config
         for mon in config["commands"]:
             if mon["name"] == monster:
@@ -199,7 +199,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Update #guides channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_guides(self, ctx: SlashContext):
+    async def update_guides(self, ctx: SlashContext) -> None:
         await ctx.channel.purge(limit=10)
 
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
@@ -248,5 +248,5 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(bot_guide)
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(UtilsCog(bot))

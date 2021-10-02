@@ -53,7 +53,7 @@ class BaseCog(commands.Cog):
         return monster_found
 
     # Create role if not on server
-    async def create_role(self, guild, role):
+    async def create_new_role(self, guild, role) -> None:
         if get(guild.roles, name=role):
             return
         else:
@@ -61,6 +61,6 @@ class BaseCog(commands.Cog):
             self.create_log_msg(f"{role} role created")
 
     # Print message from cog
-    def create_log_msg(self, message: str):
+    def create_log_msg(self, message: str) -> None:
         dt_string = self.bot.get_current_time()
         print(f"({dt_string})\t[{self.__class__.__name__}]: {message}")

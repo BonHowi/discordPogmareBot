@@ -19,7 +19,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.update_leaderboards_loop.cancel()
 
     # Send leaderboards to specified channel
-    async def update_leaderboard(self, channel: int, ch_type: str):
+    async def update_leaderboard(self, channel: int, ch_type: str) -> None:
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_spots_df()
         monsters_df = await DatabaseCog.db_get_monster_spots_df()
@@ -60,7 +60,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.create_log_msg(f"Leaderboards updated - {ch_type}")
 
     # Update member spotting role(total/common)
-    async def update_role(self, guild, guild_member, spot_roles, common: bool):
+    async def update_role(self, guild, guild_member, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"
         try:
             spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
@@ -72,19 +72,19 @@ class LeaderboardsCog(cogbase.BaseCog):
         except KeyError as e:
             print(e)
 
-    async def update_role_ext(self, guild, roles_list, guild_member):
-        await self.create_role(guild, roles_list[-1])
+    async def update_role_ext(self, guild, roles_list: list, guild_member) -> None:
+        await self.create_new_role(guild, roles_list[-1])
         role_new = get(guild.roles, name=roles_list[-1])
         if role_new not in guild_member.roles:
             await guild_member.add_roles(role_new)
         if len(roles_list) > 1:
-            await self.create_role(guild, roles_list[-2])
+            await self.create_new_role(guild, roles_list[-2])
             role_old = get(guild.roles, name=roles_list[-2])
             if role_old in guild_member.roles:
                 await guild_member.remove_roles(role_old)
 
     # Update members' spotting roles
-    async def update_member_roles(self):
+    async def update_member_roles(self) -> None:
         guild = self.bot.get_guild(self.bot.guild[0])
         spot_roles_total = self.bot.config["total_milestones"][0]
         spot_roles_common = self.bot.config["common_milestones"][0]
@@ -92,7 +92,7 @@ class LeaderboardsCog(cogbase.BaseCog):
             await self.update_role(guild, guild_member, spot_roles_total, False)
             await self.update_role(guild, guild_member, spot_roles_common, True)
 
-    async def update_event_leaderboards(self, channel: int, event_monster: str):
+    async def update_event_leaderboards(self, channel: int, event_monster: str) -> None:
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_monster_spots_df()
         event_monster_df = spots_df.filter(["member_id", event_monster], axis=1)
@@ -131,7 +131,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         await top_ch.send(embed=embed_command)
         self.create_log_msg(f"Leaderboards updated - event")
 
-    async def update_leaderboards(self):
+    async def update_leaderboards(self) -> None:
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
         await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
@@ -140,15 +140,15 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.create_log_msg(f"Members' roles updated")
 
     @tasks.loop(minutes=15)
-    async def update_leaderboards_loop(self):
+    async def update_leaderboards_loop(self) -> None:
         await self.update_leaderboards()
 
     @tasks.loop(minutes=15)
-    async def update_leaderboards_loop(self):
+    async def update_leaderboards_loop(self) -> None:
         await self.update_leaderboards()
 
     @update_leaderboards_loop.before_loop
-    async def before_update_leaderboards_loop(self):
+    async def before_update_leaderboards_loop(self) -> None:
         self.create_log_msg(f"Waiting until Bot is ready")
         common_ch = self.bot.get_channel(self.bot.ch_common)
         try:
@@ -162,10 +162,10 @@ class LeaderboardsCog(cogbase.BaseCog):
                        description="Reload leaderboards",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def reload_leaderboards(self, ctx: SlashContext):
+    async def reload_leaderboards(self, ctx: SlashContext) -> None:
         await ctx.send(f"Leaderboards reloaded", hidden=True)
         await self.update_leaderboards()
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(LeaderboardsCog(bot))
