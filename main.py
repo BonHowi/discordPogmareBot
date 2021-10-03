@@ -92,7 +92,7 @@ class MyBot(commands.Bot):
             channel = self.get_channel(self.ch_admin_posting)
             await channel.send(f"{member_count} members <:POGMARE:872496675434942484>")
 
-    async def on_member_remove(self, ctx):
+    async def on_member_remove(self, ctx) -> None:
         await self.update_member_count(ctx)
         self.create_main_log_msg(f"{ctx} left")
 
