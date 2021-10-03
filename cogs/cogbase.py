@@ -70,8 +70,3 @@ class BaseCog(commands.Cog):
         else:
             await guild.create_role(name=role)
             self.create_log_msg(f"{role} role created")
-
-    # Print message from cog
-    def create_log_msg(self, message: str):
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: {message}")

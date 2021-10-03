@@ -16,7 +16,6 @@ class AdminCog(cogbase.BaseCog):
                        description="Check bot's latency",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-
     async def check_ping(self, ctx: SlashContext) -> None:
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
