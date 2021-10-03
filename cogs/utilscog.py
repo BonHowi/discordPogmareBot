@@ -256,6 +256,13 @@ class UtilsCog(cogbase.BaseCog):
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
         await guides_channel.send(embed=embed)
 
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await ctx.send(bot_guide)
+
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(UtilsCog(bot))
