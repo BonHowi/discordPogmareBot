@@ -16,6 +16,7 @@ class AdminCog(cogbase.BaseCog):
                        description="Check bot's latency",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
+
     async def check_ping(self, ctx: SlashContext) -> None:
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
@@ -52,7 +53,6 @@ class AdminCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def warn_user(self, ctx: SlashContext, user: discord.User, reason: str) -> None:
-
         await DatabaseCog.db_add_warn(user.id, reason)
         await ctx.send(
             f"{user.mention} was warned for:\n> {reason}\n")
@@ -115,7 +115,6 @@ class AdminCog(cogbase.BaseCog):
             await user.ban(reason=reason)
             await user.unban(reason=reason)
         reason_str: str = f"\nReason: {reason}" if reason else ""
-
         await ctx.send(f"{user} was {operation_t}ed{reason_str}")
         await user.send(f"You were {operation_t}ed from {ctx.guild.name}{reason_str}")
 
