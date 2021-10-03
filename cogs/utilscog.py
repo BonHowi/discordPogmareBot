@@ -203,10 +203,10 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.channel.purge(limit=10)
 
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
-        embed.add_field(name="Recommended Fake GPS App for Android users",
+        embed.add_field(name="__Recommended Fake GPS App for Android users__",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
-                        inline=True)
-        embed.add_field(name="Recommended Fake GPS App for iOS users",
+                        inline=False)
+        embed.add_field(name="__Recommended Fake GPS App for iOS users__",
                         value="https://www.thinkskysoft.com/itools", inline=False)
         embed.add_field(name="Recommended android emulator for Windows and Mac",
                         value="https://www.bignox.com", inline=False)
@@ -221,24 +221,24 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(embed=embed)
 
         embed = discord.Embed(title="GAME GUIDES", color=0x8a3c00)
-        embed.add_field(name="Advanced Combat guide", value="https://www.youtube.com/watch?v=-D0wIzwxp0Y",
-                        inline=False)
+        embed.add_field(name="__Game Wiki__",
+                        value="https://witcher.fandom.com/wiki/The_Witcher_Monster_Slayer_bestiary", inline=False)
+        embed.add_field(name="Great sheet for checking monster spawn conditions(credit to @TaraxGoat))",
+                        value="https://docs.google.com/spreadsheets/d/"
+                              "148qPGW9oYOaYAzpk_a06u2FBnw9rZzAmBZ6AxWFrryI/edit#gid=2093943306", inline=False)
+        embed.add_field(name="Advanced Combat guide", value="https://www.youtube.com/watch?v=-D0wIzwxp0Y", inline=False)
         embed.add_field(name="Guide to the game quests",
                         value="https://docs.google.com/document/d/"
-                              "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit",
-                        inline=False)
+                              "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit", inline=False)
         embed.add_field(name="Recommended Skill Tree (by @Sagar)",
-                        value="https://pasteboard.co/LYjVo2u1aIDt.jpg%", inline=False)
+                        value="https://pasteboard.co/LYjVo2u1aIDt.jpg", inline=False)
         await ctx.send(embed=embed)
 
         embed = discord.Embed(title="USEFUL TOOLS", color=0x019827)
-        embed.add_field(name="Great sheet for checking monster spawn conditions(credit to @TaraxGoat))",
-                        value="https://docs.google.com/spreadsheets/d/"
-                              "148qPGW9oYOaYAzpk_a06u2FBnw9rZzAmBZ6AxWFrryI/edit#gid=2093943306",
-                        inline=False)
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
         await ctx.send(embed=embed)
+        self.create_log_msg("Guides updated")
 
         with open('./server_files/bot_guide.txt') as f:
             try:

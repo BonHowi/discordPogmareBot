@@ -51,6 +51,7 @@ class MyBot(commands.Bot):
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
         self.ch_spotting_stats = get_settings("CH_SPOTTING_STATS")
         self.cat_spotting = get_settings("CAT_SPOTTING")
+
         self.update_ch_commons_loop.start()
 
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
@@ -98,6 +99,7 @@ class MyBot(commands.Bot):
             return
         if isinstance(ctx.channel, discord.channel.DMChannel) and ctx.author != self.user:
             await ctx.channel.send("If you have any questions please ask my creator - BonJowi#0119")
+            return
 
         # If there is a message with "!" prefix
         if ctx.content.startswith("!"):
