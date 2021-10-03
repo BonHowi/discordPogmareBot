@@ -27,7 +27,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Pull config from google sheets",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def pull_config_command(self, ctx: SlashContext):
+    async def pull_config_command(self, ctx: SlashContext) -> None:
         get_config()
         with open('server_files/config.json', 'r', encoding='utf-8-sig') as fp:
             self.bot.config = json.load(fp)
@@ -37,7 +37,7 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(f"Config.json updated", hidden=True)
 
     # Create roles if pull_config gets non existent roles
-    async def create_roles(self, ctx: SlashContext, common: bool):
+    async def create_roles(self, ctx: SlashContext, common: bool) -> None:
         milestones = "common_milestones" if common else "total_milestones"
         for mon_type in self.bot.config[milestones][0]:
             if get(ctx.guild.roles, name=mon_type):
@@ -51,7 +51,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Clear temp spots table in database",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def clear_temp_spots_table(self, ctx):
+    async def clear_temp_spots_table(self, ctx: SlashContext) -> None:
         await DatabaseCog.db_clear_spots_temp_table()
         await ctx.send(f"Temp spots table was cleared", hidden=True)
         await self.reload_cog(ctx, "databasecog")
@@ -78,7 +78,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Reload cog",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_cog_command(self, ctx: SlashContext, module: str):
+    async def reload_cog_command(self, ctx: SlashContext, module: str) -> None:
         await self.reload_cog(ctx, module)
 
     # Command for reloading all cogs
@@ -86,7 +86,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Reload all bot cogs",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def reload_all_cogs(self, ctx: SlashContext = None):
+    async def reload_all_cogs(self, ctx: SlashContext = None) -> None:
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
@@ -96,7 +96,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Save coordinates from database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def save_coordinates(self, ctx: SlashContext):
+    async def save_coordinates(self, ctx: SlashContext) -> None:
         coords_df = await DatabaseCog.db_get_coords()
         coords_df = coords_df[coords_df.coords.str.contains(",")]
         print(coords_df)
@@ -111,7 +111,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None):
+    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None) -> None:
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -126,14 +126,14 @@ class UtilsCog(cogbase.BaseCog):
             role_string = ' '.join([r.mention for r in user.roles][1:])
             embed.add_field(name="Roles [{}]".format(len(user.roles) - 1), value=role_string, inline=False)
         embed.set_footer(text='ID: ' + str(user.id))
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
     # Backup database to a file
     @cog_ext.cog_slash(name="backupDatabase", guild_ids=cogbase.GUILD_IDS,
                        description="Backup database to a file",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def backup_database(self, ctx: SlashContext):
+    async def backup_database(self, ctx: SlashContext) -> None:
         now = datetime.now()
         cmd = f"mysqldump -u {get_settings('DB_U')} " \
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
@@ -146,7 +146,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get status of the system",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def system_status(self, ctx):
+    async def system_status(self, ctx: SlashContext) -> None:
         """Get status of the system."""
         process_uptime = time.time() - self.bot.start_time
         process_uptime = time.strftime("%ed %Hh %Mm %Ss", time.gmtime(process_uptime))
@@ -174,14 +174,14 @@ class UtilsCog(cogbase.BaseCog):
             colour=int("5dadec", 16),
             description="\n".join(f"**{x[0]}** {x[1]}" for x in data),
         )
-        await ctx.send(embed=content)
+        await ctx.send(embed=content, hidden=True)
 
     # Change monster type(for events)
     @cog_ext.cog_slash(name="changeMonsterType", guild_ids=cogbase.GUILD_IDS,
                        description="Change type of a monster",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def change_monster_type(self, ctx, monster: str, new_type: int):
+    async def change_monster_type(self, ctx: SlashContext, monster: str, new_type: int) -> None:
         config = self.bot.config
         for mon in config["commands"]:
             if mon["name"] == monster:
@@ -199,14 +199,14 @@ class UtilsCog(cogbase.BaseCog):
                        description="Update #guides channel",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-    async def update_guides(self, ctx: SlashContext):
+    async def update_guides(self, ctx: SlashContext) -> None:
         await ctx.channel.purge(limit=10)
 
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
-        embed.add_field(name="Recommended Fake GPS App for Android users",
+        embed.add_field(name="__Recommended Fake GPS App for Android users__",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
-                        inline=True)
-        embed.add_field(name="Recommended Fake GPS App for iOS users",
+                        inline=False)
+        embed.add_field(name="__Recommended Fake GPS App for iOS users__",
                         value="https://www.thinkskysoft.com/itools", inline=False)
         embed.add_field(name="Recommended android emulator for Windows and Mac",
                         value="https://www.bignox.com", inline=False)
@@ -221,24 +221,31 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(embed=embed)
 
         embed = discord.Embed(title="GAME GUIDES", color=0x8a3c00)
-        embed.add_field(name="Advanced Combat guide", value="https://www.youtube.com/watch?v=-D0wIzwxp0Y",
-                        inline=False)
+        embed.add_field(name="__Game Wiki__",
+                        value="https://witcher.fandom.com/wiki/The_Witcher_Monster_Slayer_bestiary", inline=False)
+        embed.add_field(name="Great sheet for checking monster spawn conditions(credit to @TaraxGoat))",
+                        value="https://docs.google.com/spreadsheets/d/"
+                              "148qPGW9oYOaYAzpk_a06u2FBnw9rZzAmBZ6AxWFrryI/edit#gid=2093943306", inline=False)
+        embed.add_field(name="Advanced Combat guide", value="https://www.youtube.com/watch?v=-D0wIzwxp0Y", inline=False)
         embed.add_field(name="Guide to the game quests",
                         value="https://docs.google.com/document/d/"
-                              "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit",
-                        inline=False)
+                              "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit", inline=False)
         embed.add_field(name="Recommended Skill Tree (by @Sagar)",
-                        value="https://pasteboard.co/LYjVo2u1aIDt.jpg%", inline=False)
+                        value="https://pasteboard.co/LYjVo2u1aIDt.jpg", inline=False)
         await ctx.send(embed=embed)
 
         embed = discord.Embed(title="USEFUL TOOLS", color=0x019827)
-        embed.add_field(name="Great sheet for checking monster spawn conditions(credit to @TaraxGoat))",
-                        value="https://docs.google.com/spreadsheets/d/"
-                              "148qPGW9oYOaYAzpk_a06u2FBnw9rZzAmBZ6AxWFrryI/edit#gid=2093943306",
-                        inline=False)
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
         await ctx.send(embed=embed)
+        self.create_log_msg("Guides updated")
+
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await ctx.send(bot_guide)
 
         with open('./server_files/bot_guide.txt') as f:
             try:
@@ -248,5 +255,5 @@ class UtilsCog(cogbase.BaseCog):
         await ctx.send(bot_guide)
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(UtilsCog(bot))
