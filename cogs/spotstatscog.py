@@ -108,7 +108,28 @@ class SpotStatsCog(cogbase.BaseCog):
         self.create_log_msg(f"Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
-    # TODO: code refactoring/code duplication
+    async def get_stats_type(self, ctx: SlashContext, monster_type: int):
+        monsters_list, monsters_total = await self.create_spots_list(ctx.author.id, monster_type)
+        monsters_print = ['\n'.join([elem for elem in sublist]) for sublist in monsters_list]
+        monsters_print = "\n".join(monsters_print)
+
+        if monster_type == 1:
+            leges_color = int(self.hex_to_int % (163, 140, 21), 16)
+            embed_command = discord.Embed(title=f"Legendary", description=monsters_print, color=leges_color)
+        elif monster_type == 0:
+            rares_color = int(self.hex_to_int % (17, 93, 178), 16)
+            embed_command = discord.Embed(title=f"Rare", description=monsters_print, color=rares_color)
+        else:
+            embed_command = discord.Embed(title=f"Other", description=monsters_print)
+
+        embed_command.add_field(name="Total", value=f"**{monsters_total}**", inline=False)
+        if self.lege_total != 0:
+            percentage_leges = round(monsters_total / self.lege_total * 100, 2)
+            embed_command.add_field(name="Server %", value=f"**{percentage_leges}%**", inline=False)
+        dt_string = self.bot.get_current_time()
+        embed_command.set_footer(text=f"{dt_string}")
+        await ctx.author.send(embed=embed_command)
+
     # Member own stats
     @cog_ext.cog_slash(name="mySpottingStats", guild_ids=cogbase.GUILD_IDS,
                        description="Get detailed spotting stats to your dm",
@@ -117,40 +138,16 @@ class SpotStatsCog(cogbase.BaseCog):
                        )
     async def get_spotting_stats(self, ctx: SlashContext) -> None:
         await ctx.send("Generating spots stats", delete_after=5)
-
         # Legendary
-        leges_list, leges_total = await self.create_spots_list(ctx.author.id, 1)
-        leges_print = ['\n'.join([elem for elem in sublist]) for sublist in leges_list]
-        leges_print = "\n".join(leges_print)
-
-        leges_color = int(self.hex_to_int % (163, 140, 21), 16)
-        embed_command = discord.Embed(title=f"Legendary", description=leges_print, color=leges_color)
-        embed_command.add_field(name="Total", value=f"**{leges_total}**", inline=False)
-        if self.lege_total != 0:
-            percentage_leges = round(leges_total / self.lege_total * 100, 2)
-            embed_command.add_field(name="Server %", value=f"**{percentage_leges}%**", inline=False)
-        dt_string = self.bot.get_current_time()
-        embed_command.set_footer(text=f"{dt_string}")
-        await ctx.author.send(embed=embed_command)
+        await self.get_stats_type(ctx, 1)
 
         # Rare
-        rares_list, rares_total = await self.create_spots_list(ctx.author.id, 0)
-        rares_print = ['\n'.join([elem for elem in sublist]) for sublist in rares_list]
-        rares_print = "\n".join(rares_print)
-
-        rares_color = int(self.hex_to_int % (17, 93, 178), 16)
-        embed_command = discord.Embed(title=f"Rare", description=rares_print, color=rares_color)
-        embed_command.add_field(name="Total", value=f"**{rares_total}**", inline=False)
-        if self.rare_total != 0:
-            percentage_rares = round(rares_total / self.rare_total * 100, 2)
-            embed_command.add_field(name="Server %", value=f"**{percentage_rares}%**", inline=False)
-        dt_string = self.bot.get_current_time()
-        embed_command.set_footer(text=f"{dt_string}")
-        await ctx.author.send(embed=embed_command)
+        await self.get_stats_type(ctx, 0)
 
         # Common
         common_ch = self.bot.get_channel(self.bot.ch_common)
         common_total = 0
+        # TODO: maybe count common spots in leaderboard?
         async for message in common_ch.history(limit=None, oldest_first=True):
             self.common_total += 1
             if ctx.author == message.author:

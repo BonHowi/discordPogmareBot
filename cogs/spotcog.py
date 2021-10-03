@@ -31,7 +31,7 @@ class SpotCog(cogbase.BaseCog):
     # Ping monster role
     @commands.Cog.listener()
     async def on_message(self, ctx) -> None:
-        if ctx.author.id == self.bot.user.id:
+        if ctx.author.id == self.bot.user.id or isinstance(ctx.channel, discord.channel.DMChannel):
             return
         # If common spotted
         try:
@@ -47,9 +47,9 @@ class SpotCog(cogbase.BaseCog):
             pass
 
         # If monster pinged by member without using bot
-        channels_not_check = [self.bot.ch_role_request, self.bot.ch_leaderboards, self.bot.ch_leaderboards_common,
-                              self.bot.ch_leaderboards_event, self.bot.ch_logs, self.bot.ch_spotting_stats]
-        if ctx.channel.id not in channels_not_check:
+        channels_dont_check = [self.bot.ch_role_request, self.bot.ch_leaderboards, self.bot.ch_leaderboards_common,
+                               self.bot.ch_leaderboards_event, self.bot.ch_logs, self.bot.ch_spotting_stats]
+        if ctx.channel.id not in channels_dont_check:
             await self.handle_wrong_ping(ctx)
 
     async def handle_wrong_ping(self, ctx):
@@ -112,8 +112,7 @@ class SpotCog(cogbase.BaseCog):
                 return True
             return False
 
-    @staticmethod
-    async def clear_channel_messages(channel) -> None:
+    async def clear_channel_messages(self, channel) -> None:
         messages = []
         # Can't use datetime.utcnow().date() beacuse discord
         today = datetime.utcnow()
@@ -121,6 +120,7 @@ class SpotCog(cogbase.BaseCog):
         async for message in channel.history(before=today):
             messages.append(message)
         await channel.delete_messages(messages)
+        self.create_log_msg(f"Wiped - {channel.name} history")
 
     @tasks.loop(hours=3)
     async def clear_nemeton_channels_loop(self) -> None:
@@ -128,7 +128,6 @@ class SpotCog(cogbase.BaseCog):
         rare_nemeton = self.bot.get_channel(self.bot.ch_rare_nemeton)
         await self.clear_channel_messages(lege_nemeton)
         await self.clear_channel_messages(rare_nemeton)
-        self.create_log_msg("Wiped Nemeton channels")
 
     @clear_nemeton_channels_loop.before_loop
     async def before_update_leaderboards_loop(self) -> None:

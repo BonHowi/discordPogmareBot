@@ -200,8 +200,22 @@ class UtilsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def update_guides(self, ctx: SlashContext) -> None:
-        await ctx.channel.purge(limit=10)
+        guides_channel = self.bot.get_channel(self.bot.ch_guides)
+        await guides_channel.purge(limit=10)
+        await self.update_spoofing_guides(guides_channel)
+        await self.update_game_guides(guides_channel)
+        await self.update_useful_guides(guides_channel)
 
+        self.create_log_msg("Guides updated")
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await guides_channel.send(bot_guide)
+
+    @staticmethod
+    async def update_spoofing_guides(guides_channel):
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
         embed.add_field(name="__Recommended Fake GPS App for Android users__",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
@@ -214,12 +228,13 @@ class UtilsCog(cogbase.BaseCog):
                         value="https://www.youtube.com/watch?v=wU7qOLEm7qQ", inline=False)
         embed.add_field(name="YT Guide for GPS spoofing with iTools (by @Loonasek)",
                         value="https://www.youtube.com/watch?v=1M8jq3JNAMM", inline=False)
-        embed.add_field(
-            name="Nox guide for creating macro and keyboard mapping; "
-                 "it can help in automatically making potion, fight, blocks signs etc.",
-            value="https://support.bignox.com/en/keyboard/macro1", inline=False)
-        await ctx.send(embed=embed)
+        embed.add_field(name="Nox guide for creating macro and keyboard mapping; "
+                             "it can help in automatically making potion, fight, blocks signs etc.",
+                        value="https://support.bignox.com/en/keyboard/macro1", inline=False)
+        await guides_channel.send(embed=embed)
 
+    @staticmethod
+    async def update_game_guides(guides_channel):
         embed = discord.Embed(title="GAME GUIDES", color=0x8a3c00)
         embed.add_field(name="__Game Wiki__",
                         value="https://witcher.fandom.com/wiki/The_Witcher_Monster_Slayer_bestiary", inline=False)
@@ -232,20 +247,14 @@ class UtilsCog(cogbase.BaseCog):
                               "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit", inline=False)
         embed.add_field(name="Recommended Skill Tree (by @Sagar)",
                         value="https://pasteboard.co/LYjVo2u1aIDt.jpg", inline=False)
-        await ctx.send(embed=embed)
+        await guides_channel.send(embed=embed)
 
+    @staticmethod
+    async def update_useful_guides(guides_channel):
         embed = discord.Embed(title="USEFUL TOOLS", color=0x019827)
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
-        await ctx.send(embed=embed)
-        self.create_log_msg("Guides updated")
-
-        with open('./server_files/bot_guide.txt') as f:
-            try:
-                bot_guide = f.read()
-            except ValueError:
-                print(ValueError)
-        await ctx.send(bot_guide)
+        await guides_channel.send(embed=embed)
 
 
 def setup(bot: commands.Bot) -> None:

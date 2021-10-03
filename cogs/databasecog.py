@@ -225,7 +225,6 @@ class DatabaseCog(cogbase.BaseCog):
         # cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name)
         cls.conn.close()
 
-    # TODO: make rares in events possible
     @classmethod
     def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str) -> None:
         cls.conn = cls.engine.connect()
@@ -361,7 +360,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     @classmethod
     async def db_get_monster_spots_df(cls) -> pd.DataFrame:
-        # TODO: Why does join not work?
+        # TODO: Why does tables join not work?
         cls.conn = cls.engine.connect()
         stmt = select(spots_lege)
         cls.conn.execute(stmt)

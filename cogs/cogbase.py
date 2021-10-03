@@ -54,7 +54,9 @@ class BaseCog(commands.Cog):
 
     def create_log_msg(self, message: str) -> None:
         dt_string = self.bot.get_current_time()
-        log: str = f"({dt_string})\t[{self.__class__.__name__}]: {message}"
+        # That's just my pedantic way to approach string aligning as .format did not work here as if I wanted to
+        log: str = f"({dt_string}) [{self.__class__.__name__}]:"
+        log = f"{log}\t{message}" if len(log) >= 40 else f"{log}\t\t{message}"
         print(log)
         logs_txt_dir: str = "logs/logs.txt"
         file_object = open(logs_txt_dir, "a+")
