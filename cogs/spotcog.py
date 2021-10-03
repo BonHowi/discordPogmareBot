@@ -60,7 +60,8 @@ class SpotCog(cogbase.BaseCog):
         for monster in self.bot.config["commands"]:
             if monster["name"] in tagged_roles_names:
                 await ctx.channel.send(f"{ctx.author.mention} you have tagged monster without using a bot! "
-                                       f"Please read #guides and consider it a warning! <{self.peepo_ban_emote}>\n"
+                                       f"Please read <#876116496651280424> and consider it a warning! "
+                                       f"<{self.peepo_ban_emote}>\n"
                                        f"*If you think this message was sent incorrectly please let "
                                        f"<@&872189602281193522> know*")
 
@@ -85,8 +86,8 @@ class SpotCog(cogbase.BaseCog):
                 await DatabaseCog.db_count_spot(ctx.author.id,
                                                 monster_type_str, spotted_monster["name"])
                 logs_ch = self.bot.get_channel(self.bot.ch_logs)
-                await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id}) "
-                                   f"requested ping for **{spotted_monster['name']}**")
+                await logs_ch.send(f"[PingLog] {ctx.author} ({ctx.author.id})"
+                                   f" ping for **{spotted_monster['name']}** on {ctx.channel}")
             else:
                 await ctx.delete()
                 await ctx.channel.send(
