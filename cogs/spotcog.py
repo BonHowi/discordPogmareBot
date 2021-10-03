@@ -33,15 +33,36 @@ class SpotCog(cogbase.BaseCog):
     async def on_message(self, ctx) -> None:
         if ctx.author.id == self.bot.user.id:
             return
-
         # If common spotted
         try:
             if ctx.channel.id == self.bot.ch_common:
                 await self.handle_spotted_common(ctx)
+                return
             elif ctx.channel.category and ctx.channel.category.id == self.bot.cat_spotting:
                 await self.handle_spotted_monster(ctx)
+                return
+            # elif ctx.channel.id != self.bot.ch_role_request:
+            #     await self.handle_wrong_ping(ctx)
         except AttributeError:
             pass
+
+        # If monster pinged by member without using bot
+        channels_not_check = [self.bot.ch_role_request, self.bot.ch_leaderboards, self.bot.ch_leaderboards_common,
+                              self.bot.ch_leaderboards_event, self.bot.ch_logs, self.bot.ch_spotting_stats]
+        if ctx.channel.id not in channels_not_check:
+            await self.handle_wrong_ping(ctx)
+
+    async def handle_wrong_ping(self, ctx):
+        guild = self.bot.get_guild(self.bot.guild[0])
+        guild_roles: list = [role.id for role in ctx.guild.roles]
+        tagged_roles: list = ([role for role in guild_roles if (str(role) in ctx.content)])
+        tagged_roles_names = [get(guild.roles, id=role).name for role in tagged_roles]
+        for monster in self.bot.config["commands"]:
+            if monster["name"] in tagged_roles_names:
+                await ctx.channel.send(f"{ctx.author.mention} you have tagged monster without using a bot! "
+                                       f"Please read #guides and consider it a warning! <{self.peepo_ban_emote}>\n"
+                                       f"*If you think this message was sent incorrectly please let "
+                                       f"<@&872189602281193522> know*")
 
     @staticmethod
     async def handle_spotted_common(ctx) -> None:
