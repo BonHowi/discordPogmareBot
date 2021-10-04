@@ -55,4 +55,5 @@ _Recommended Python3.7.7_
 * Slash commands
     * _Will be listed soon™_
 * And a lot of more smaller functionalities
+* TBA
 
