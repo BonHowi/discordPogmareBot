@@ -34,7 +34,10 @@ class UtilsCog(cogbase.BaseCog):
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
             self.create_log_msg(f"Finished data pull")
-        await ctx.send(f"Config.json updated", hidden=True)
+        try:
+            await ctx.send(f"Config.json updated", hidden=True)
+        except discord.errors.NotFound:
+            self.create_log_msg(f"Error with printing data pull confirmation")
 
     # Create roles if pull_config gets non existent roles
     async def create_roles(self, ctx: SlashContext, common: bool) -> None:
