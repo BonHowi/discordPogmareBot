@@ -220,13 +220,12 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_count_spot(cls, _id: int, monster_type: str, monster_name: str) -> None:
         cls.conn = cls.engine.connect()
-        cls.db_count_spot_table(spots, _id, monster_type, monster_name)
-        # TODO: count spot in spot_temps
-        # cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name)
+        cls.db_count_spot_table(spots, _id, monster_type, monster_name, False)
+        cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name, True)
         cls.conn.close()
 
     @classmethod
-    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str) -> None:
+    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str, temp_table: bool = True) -> None:
         cls.conn = cls.engine.connect()
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
                       table.c.event1,
@@ -245,8 +244,8 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn = cls.engine.connect()
         cls.conn.execute(stmt)
         cls.conn.close()
-
-        cls.db_count_monster_spot(_id, monster_type, monster_name)
+        if not temp_table:
+            cls.db_count_monster_spot(_id, monster_type, monster_name)
 
     @classmethod
     def db_count_monster_spot(cls, _id: int, monster_type: str, monster_name: str) -> None:
