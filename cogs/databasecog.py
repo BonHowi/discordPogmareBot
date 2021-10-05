@@ -225,7 +225,8 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.close()
 
     @classmethod
-    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str, temp_table: bool = True) -> None:
+    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str,
+                            temp_table: bool = True) -> None:
         cls.conn = cls.engine.connect()
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
                       table.c.event1,
@@ -423,9 +424,10 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_get_member_stats(cls, guild_member: int) -> pd.DataFrame:
         cls.conn = cls.engine.connect()
-        stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
-            spots,
-            member.c.id == spots.c.member_id).where(spots.c.member_id == guild_member)
+        stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common
+                      ).select_from(member).join(spots,
+                                                 member.c.id == spots.c.member_id)\
+            .where(spots.c.member_id == guild_member)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
         return df

@@ -80,15 +80,20 @@ class LeaderboardsCog(cogbase.BaseCog):
     # Update member spotting role(total/common)
     async def update_role(self, guild, guild_member, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"
-        try:
-            spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
-            if not common:
-                spots_df["total"] = spots_df["legendary"] * self.legend_multiplier + spots_df["rare"]
-            roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
-            if roles_list:
-                await self.update_role_ext(guild, roles_list, guild_member)
-        except KeyError as e:
-            print(e)
+        # try:
+        spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
+        monsters_df = await DatabaseCog.db_get_monster_spots_df()
+        # Hard coded because there is only one interesting monster
+        event_monster_df = monsters_df.filter(["member_id", "Nightmare"], axis=1)
+        spots_df = pd.merge(spots_df, event_monster_df, on=["member_id"])
+        if not common:
+            spots_df["total"] = spots_df["legendary"] * self.legend_multiplier \
+                                + spots_df["rare"] + (spots_df["Nightmare"])
+        roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
+        if roles_list:
+            await self.update_role_ext(guild, roles_list, guild_member)
+        # except KeyError as e:
+        #     print(e)
 
     async def update_role_ext(self, guild, roles_list: list, guild_member) -> None:
         await self.create_new_role(guild, roles_list[-1])
