@@ -77,12 +77,13 @@ class LeaderboardsCog(cogbase.BaseCog):
         embed_command.set_footer(text=f"{dt_string}")
         await leaderboard_ch.send(embed=embed_command)
 
+    # TODO: something wrong is going on here
     # Update member spotting role(total/common)
     async def update_role(self, guild, guild_member, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"
         # try:
         spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
-        monsters_df = await DatabaseCog.db_get_monster_spots_df()
+        monsters_df = await DatabaseCog.db_get_member_monsters(guild_member.id)
         # Hard coded because there is only one interesting monster
         event_monster_df = monsters_df.filter(["member_id", "Nightmare"], axis=1)
         spots_df = pd.merge(spots_df, event_monster_df, on=["member_id"])
@@ -120,14 +121,10 @@ class LeaderboardsCog(cogbase.BaseCog):
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
         await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
         self.create_log_msg(f"All leaderboards updated")
-        await self.update_member_roles()
-        self.create_log_msg(f"Members' roles updated")
+        # await self.update_member_roles()
+        # self.create_log_msg(f"Members' roles updated")
 
-    @tasks.loop(minutes=15)
-    async def update_leaderboards_loop(self) -> None:
-        await self.update_leaderboards()
-
-    @tasks.loop(minutes=15)
+    @tasks.loop(minutes=30)
     async def update_leaderboards_loop(self) -> None:
         await self.update_leaderboards()
 

@@ -3,6 +3,7 @@ import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
+
 class ChannelUpCog(cogbase.BaseCog):
     def __init__(self, base):
         super().__init__(base)

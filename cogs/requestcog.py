@@ -65,7 +65,10 @@ class RequestCog(cogbase.BaseCog):
                 await ctx.channel.send(
                     f"{ctx.author.mention} For adding or removing role use */role monstername* command",
                     delete_after=10.0)
-            await ctx.delete()
+            try:
+                await ctx.delete()
+            except discord.errors.NotFound:
+                pass
 
     # Add or remove monster role to an user
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
@@ -82,12 +85,12 @@ class RequestCog(cogbase.BaseCog):
                 role = get(member.guild.roles, name=monster["name"])
                 if role in member.roles:
                     await member.remove_roles(role)
-                    await ctx.send(f"{role} role removed", delete_after=10.0)
+                    await ctx.send(f"{role} role removed", hidden=True)
                 else:
                     await member.add_roles(role)
-                    await ctx.send(f"{role} role added", delete_after=10.0)
+                    await ctx.send(f"{role} role added", hidden=True)
             else:
-                await ctx.send(f"Monster role not found", delete_after=10.0)
+                await ctx.send(f"Monster role not found", hidden=True)
 
 
 def setup(bot: commands.Bot) -> None:

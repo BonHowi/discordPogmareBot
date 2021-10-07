@@ -147,7 +147,7 @@ class SpotStatsCog(cogbase.BaseCog):
         # Common
         common_ch = self.bot.get_channel(self.bot.ch_common)
         common_total = 0
-        # TODO: maybe count common spots in leaderboard?
+        # TODO: count common spots in leaderboard
         async for message in common_ch.history(limit=None, oldest_first=True):
             self.common_total += 1
             if ctx.author == message.author:

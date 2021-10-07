@@ -432,6 +432,21 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.close()
         return df
 
+    @classmethod
+    async def db_get_member_monsters(cls, guild_member: int) -> pd.DataFrame:
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_lege).where(spots_lege.c.member_id == guild_member)
+        cls.conn.execute(stmt)
+        df_lege = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_rare).where(spots_rare.c.member_id == guild_member)
+        cls.conn.execute(stmt)
+        df_rare = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        df_monsters_merged = pd.merge(df_lege, df_rare, on=["member_id"])
+        return df_monsters_merged
+
     @cog_ext.cog_slash(name="changeMemberSpots", guild_ids=cogbase.GUILD_IDS,
                        description="Change member spotting stats",
                        default_permission=False,

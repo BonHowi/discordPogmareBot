@@ -80,7 +80,10 @@ class SpotCog(cogbase.BaseCog):
                 if await self.wrong_channel(ctx, spotted_monster, monster_type_str):
                     return
                 role = get(ctx.guild.roles, name=spotted_monster["name"])
-                await ctx.delete()
+                try:
+                    await ctx.delete()
+                except discord.errors.NotFound:
+                    pass
                 await ctx.channel.send(f"{role.mention}")
                 await DatabaseCog.db_count_spot(ctx.author.id,
                                                 monster_type_str, spotted_monster["name"])
@@ -94,7 +97,10 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         elif ctx.channel.id in self.spotting_channels:
-            await ctx.add_reaction(f"a{self.peepo_ban_emote}")
+            try:
+                await ctx.add_reaction(f"a{self.peepo_ban_emote}")
+            except discord.errors.NotFound:
+                pass
 
     async def wrong_channel(self, ctx, spotted_monster, monster_type_str: str) -> bool:
         if ctx.channel.id in self.spotting_channels:

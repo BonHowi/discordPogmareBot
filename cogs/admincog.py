@@ -1,4 +1,7 @@
 import asyncio
+import os
+import sys
+
 import discord
 import cogs.cogbase as cogbase
 from discord.ext import commands
@@ -167,6 +170,16 @@ class AdminCog(cogbase.BaseCog):
                 f"{ctx.author.display_name} set the channel slow mode delay to `{seconds}` {numofsecs}\n"
                 f"To turn this off use /slowmode")
             await confirm.add_reaction("a:ResidentWitcher:871872130021736519")
+
+    # Restart bot
+    @cog_ext.cog_slash(name="restartBot", guild_ids=cogbase.GUILD_IDS,
+                       description="Restart bot",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def restart_bot(self, ctx: SlashContext):
+        await ctx.send("Restarting bot")
+        os.execv(sys.executable, ['python'] + sys.argv)
+        self.create_log_msg("Bot restarted")
 
 
 def setup(bot: commands.Bot) -> None:
