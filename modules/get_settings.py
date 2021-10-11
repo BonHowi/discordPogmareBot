@@ -37,6 +37,6 @@ def get_settings(key: str):
         print("No bot_settings.json found. One has been created, please populate it and restart")
         exit(1)
     except KeyError:
-        print(f"Incomplete bot_settings.json found\n"
-              f"Check your file")
+        print("Incomplete bot_settings.json found\n"
+              "Check your file")
         exit(1)

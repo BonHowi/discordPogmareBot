@@ -14,7 +14,7 @@ class CoordsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Coords are being saved", hidden=True)
+        await ctx.send('Coords are being saved', hidden=True)
         legendary_coords = await self.get_channel_history(self.bot.ch_legendary_spot)
         rare_coords = await self.get_channel_history(self.bot.ch_rare_spot)
         # werewolf_coords = await self.get_channel_history(self.bot.ch_werewolf)

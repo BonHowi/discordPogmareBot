@@ -136,7 +136,7 @@ class SpotCog(cogbase.BaseCog):
 
     @clear_nemeton_channels_loop.before_loop
     async def before_update_leaderboards_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg("Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
 

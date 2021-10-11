@@ -174,7 +174,7 @@ class DatabaseCog(cogbase.BaseCog):
     async def db_update(self) -> None:
         self.conn = self.engine.connect()
         guild = self.bot.get_guild(self.bot.guild[0])
-        self.create_log_msg(f"Refreshing member and spots tables")
+        self.create_log_msg("Refreshing member and spots tables")
         for guild_member in guild.members:
             # Member tables
             self.db_add_update_member(guild_member)
@@ -183,7 +183,7 @@ class DatabaseCog(cogbase.BaseCog):
             self.db_add_update_spots(spots_temp, guild_member)
             self.db_add_update_spots(spots_lege, guild_member)
             self.db_add_update_spots(spots_rare, guild_member)
-        self.create_log_msg(f"Member and spots tables refreshed")
+        self.create_log_msg("Member and spots tables refreshed")
         self.conn.close()
 
     @tasks.loop(hours=12)
@@ -193,7 +193,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg("Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     # Add member to database on member join
@@ -212,7 +212,7 @@ class DatabaseCog(cogbase.BaseCog):
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
               f"-p{get_settings('DB_P')} server_database"
         os.system(cmd)
-        self.create_log_msg(f"Database backed up")
+        self.create_log_msg("Database backed up")
 
     # ----- SPOTTING OPERATIONS -----
 
@@ -371,8 +371,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.execute(stmt)
         df_rare = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
-        df_monsters_merged = pd.merge(df_lege, df_rare, on=["member_id"])
-        return df_monsters_merged
+        return pd.merge(df_lege, df_rare, on=["member_id"])
 
     @classmethod
     async def db_get_member_names(cls) -> pd.DataFrame:
@@ -406,7 +405,8 @@ class DatabaseCog(cogbase.BaseCog):
             reason_with_date = [warns[1], warns[0]]
             date_warn.append(reason_with_date)
             counter += 1
-        warns_list = [': \t'.join([str(elem) for elem in sublist]) for sublist in date_warn]
+        warns_list = [': \t'.join(str(elem) for elem in sublist) for sublist in date_warn]
+
         cls.conn.close()
         return warns_list, counter
 
@@ -444,8 +444,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.execute(stmt)
         df_rare = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
-        df_monsters_merged = pd.merge(df_lege, df_rare, on=["member_id"])
-        return df_monsters_merged
+        return pd.merge(df_lege, df_rare, on=["member_id"])
 
     @cog_ext.cog_slash(name="changeMemberSpots", guild_ids=cogbase.GUILD_IDS,
                        description="Change member spotting stats",

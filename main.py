@@ -6,7 +6,6 @@ import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
 from time import time
-
 from modules.get_settings import get_settings
 
 # Create logger
@@ -25,8 +24,8 @@ class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
 
-        self.create_main_log_msg(f"\n --------------- STARTING BOT ---------------")
-        self.create_main_log_msg(f"Init")
+        self.create_main_log_msg('\n --------------- STARTING BOT ---------------')
+        self.create_main_log_msg('Init')
         self.create_main_log_msg(f"Rate limited: {self.is_ws_ratelimited()}")
         self.start_time = time()
         self.version = "1.2"
@@ -66,9 +65,8 @@ class MyBot(commands.Bot):
         log: str = f"({dt_string}) [{self.__class__.__name__}]:\t\t{message}"
         print(log)
         logs_txt_dir: str = "logs/logs.txt"
-        file_object = open(logs_txt_dir, "a+")
-        file_object.write(f"{log}\n")
-        file_object.close()
+        with open(logs_txt_dir, "a+") as file_object:
+            file_object.write(f"{log}\n")
 
     # On bot ready
     async def on_ready(self) -> None:
@@ -106,7 +104,7 @@ class MyBot(commands.Bot):
             return
 
         # If there is a message with "!" prefix
-        if ctx.content.startswith("!"):
+        if ctx.content.startswith("!") and "help" not in ctx.content:
             await ctx.channel.send(
                 fr"{ctx.author.mention} Please use / instead of ! to use commands on this server!",
                 delete_after=5.0)
@@ -145,8 +143,7 @@ class MyBot(commands.Bot):
     @staticmethod
     def get_current_time() -> str:
         now = datetime.utcnow()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
-        return dt_string
+        return now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
 
 
 def main() -> None:

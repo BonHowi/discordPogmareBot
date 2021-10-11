@@ -33,11 +33,11 @@ class UtilsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            self.create_log_msg(f"Finished data pull")
+            self.create_log_msg('Finished data pull')
         try:
-            await ctx.send(f"Config.json updated", hidden=True)
+            await ctx.send('Config.json updated', hidden=True)
         except discord.errors.NotFound:
-            self.create_log_msg(f"Error with printing data pull confirmation")
+            self.create_log_msg('Error with printing data pull confirmation')
 
     # Create roles if pull_config gets non existent roles
     async def create_roles(self, ctx: SlashContext, common: bool) -> None:
@@ -45,9 +45,8 @@ class UtilsCog(cogbase.BaseCog):
         for mon_type in self.bot.config[milestones][0]:
             if get(ctx.guild.roles, name=mon_type):
                 continue
-            else:
-                await ctx.guild.create_role(name=mon_type)
-                self.create_log_msg(f"{mon_type} role created")
+            await ctx.guild.create_role(name=mon_type)
+            self.create_log_msg(f"{mon_type} role created")
 
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
@@ -56,7 +55,7 @@ class UtilsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def clear_temp_spots_table(self, ctx: SlashContext) -> None:
         await DatabaseCog.db_clear_spots_temp_table()
-        await ctx.send(f"Temp spots table was cleared", hidden=True)
+        await ctx.send('Temp spots table was cleared', hidden=True)
         await self.reload_cog(ctx, "databasecog")
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
@@ -93,7 +92,7 @@ class UtilsCog(cogbase.BaseCog):
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
-        await ctx.send(f'All cogs reloaded', delete_after=2.0)
+        await ctx.send('All cogs reloaded', delete_after=2.0)
 
     @cog_ext.cog_slash(name="saveDatabaseCoordinates", guild_ids=cogbase.GUILD_IDS,
                        description="Save coordinates from database to a file",
@@ -106,7 +105,7 @@ class UtilsCog(cogbase.BaseCog):
         coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
         path_coords = r"server_files/coords.xlsx"
         coords_df.to_excel(path_coords, index=False)
-        await ctx.send(f"Coords saved", hidden=True)
+        await ctx.send("Coords saved", hidden=True)
         self.create_log_msg(f"Coords saved to {path_coords}")
 
     # Get member info
@@ -142,7 +141,7 @@ class UtilsCog(cogbase.BaseCog):
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
               f"-p{get_settings('DB_P')} server_database"
         os.system(cmd)
-        await ctx.send(f"Database backed up", hidden=True)
+        await ctx.send("Database backed up", hidden=True)
 
     # System stats
     @cog_ext.cog_slash(name="systemStatus", guild_ids=cogbase.GUILD_IDS,

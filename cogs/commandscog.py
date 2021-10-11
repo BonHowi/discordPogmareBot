@@ -82,7 +82,7 @@ class CommandsCog(cogbase.BaseCog):
             await poll_message.add_reaction("\N{THUMBS DOWN SIGN}")
         except Exception as e:
             await ctx.send(f"Oops, I couldn't react to the poll. Check that I have permission to add reactions! "
-                           f"```py\n{e}```")
+                           f"```py\n{e}```", hidden=True)
 
     # Translate
     @cog_ext.cog_slash(name="translate", guild_ids=cogbase.GUILD_IDS,

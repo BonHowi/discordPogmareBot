@@ -82,20 +82,15 @@ def create_output(monsters_df: pd.DataFrame) -> dict:
     common_milestones_df = pd.DataFrame(data=common_milestones)
     json_final = {'total_milestones': total_milestones_df, 'common_milestones': common_milestones_df,
                   'types': types_df, 'commands': monsters_df}
-    # convert dataframes into dictionaries
-    data_dict = {
+    return {
         key: json_final[key].to_dict(orient='records')
         for key in json_final
     }
-    return data_dict
 
 
 def create_trigger_structure(triggers_list: list) -> pd.Series:
-    triggers_def = []
-    for i in triggers_list:
-        triggers_def.append(list(i))
-    triggers_def_series = pd.Series(triggers_def)
-    return triggers_def_series
+    triggers_def = [list(i) for i in triggers_list]
+    return pd.Series(triggers_def)
 
 
 def get_config() -> None:

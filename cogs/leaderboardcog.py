@@ -34,6 +34,7 @@ class LeaderboardsCog(cogbase.BaseCog):
 
         self.create_log_msg(f"Leaderboards updated - {ch_type}")
 
+    # TODO: get data from spot_temp table
     async def update_event_leaderboards(self, channel: int, event_monster: str) -> None:
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_monster_spots_df()
@@ -45,7 +46,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         event_df = event_df.sort_values(event_monster, ascending=False).head(15)
         event_df = event_df.reset_index(drop=True)
         await self.print_leaderboard(top_ch, event_df, event_monster)
-        self.create_log_msg(f"Leaderboards updated - event")
+        self.create_log_msg('Leaderboards updated - event')
 
     async def print_leaderboard(self, leaderboard_ch, monster_df, monster_type):
         try:
@@ -63,9 +64,9 @@ class LeaderboardsCog(cogbase.BaseCog):
             else:
                 member_stats = [f"**[{index + 1}]**  {row['display_name']} - {row[monster_type]}"]
             top_print.append(member_stats)
-        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+        top_print = ['\n'.join(sublist) for sublist in top_print]
         top_print = "\n".join(top_print)
-        ch_type = ''.join([i for i in monster_type if not i.isdigit()])
+        ch_type = ''.join(i for i in monster_type if not i.isdigit())
 
         top_user = get(self.bot.get_all_members(), id=top_user_id)
         top_user_color = get_dominant_color(top_user.avatar_url)
@@ -119,10 +120,8 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards(self) -> None:
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
-        await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
-        self.create_log_msg(f"All leaderboards updated")
-        # await self.update_member_roles()
-        # self.create_log_msg(f"Members' roles updated")
+        # await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
+        self.create_log_msg('All leaderboards updated')
 
     @tasks.loop(minutes=30)
     async def update_leaderboards_loop(self) -> None:
@@ -130,7 +129,7 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     @update_leaderboards_loop.before_loop
     async def before_update_leaderboards_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg('Waiting until Bot is ready')
         common_ch = self.bot.get_channel(self.bot.ch_common)
         try:
             async for _ in common_ch.history(limit=None, oldest_first=True):
@@ -144,7 +143,7 @@ class LeaderboardsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def reload_leaderboards(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Leaderboards reloaded", hidden=True)
+        await ctx.send('Leaderboards reloaded', hidden=True)
         await self.update_leaderboards()
 
 

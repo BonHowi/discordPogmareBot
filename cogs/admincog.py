@@ -20,7 +20,7 @@ class AdminCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def check_ping(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
+        await ctx.send(f"Latency: {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
     # Clear messages
     @cog_ext.cog_slash(name="clear", guild_ids=cogbase.GUILD_IDS,
@@ -42,7 +42,7 @@ class AdminCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def exit_bot(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Closing Bot", delete_after=1.0)
+        await ctx.send("Closing Bot", delete_after=1.0)
         self.create_log_msg("Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
@@ -161,10 +161,7 @@ class AdminCog(cogbase.BaseCog):
             a = await ctx.send("Slowmode is off for this channel")
             await a.add_reaction("a:redcard:871861842639716472")
         else:
-            if seconds == 1:
-                numofsecs = "second"
-            else:
-                numofsecs = "seconds"
+            numofsecs = "second" if seconds == 1 else "seconds"
             await ctx.channel.edit(slowmode_delay=seconds)
             confirm = await ctx.send(
                 f"{ctx.author.display_name} set the channel slow mode delay to `{seconds}` {numofsecs}\n"

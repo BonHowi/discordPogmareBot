@@ -30,10 +30,11 @@ class RequestCog(cogbase.BaseCog):
             if mon_type["id"] in [2, 3, 4]:  # Pass if common/...
                 continue
 
-            aval_commands = []
-            for command in self.bot.config["commands"]:
-                if command["type"] == mon_type["id"]:
-                    aval_commands.append(command["name"])
+            aval_commands = [
+                command["name"]
+                for command in self.bot.config["commands"]
+                if command["type"] == mon_type["id"]
+            ]
 
             hex_to_int = "%02x%02x%02x"
             if mon_type["id"] == 1:
@@ -90,7 +91,7 @@ class RequestCog(cogbase.BaseCog):
                     await member.add_roles(role)
                     await ctx.send(f"{role} role added", hidden=True)
             else:
-                await ctx.send(f"Monster role not found", hidden=True)
+                await ctx.send("Monster role not found", hidden=True)
 
 
 def setup(bot: commands.Bot) -> None:

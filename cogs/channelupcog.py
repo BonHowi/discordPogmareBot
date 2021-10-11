@@ -16,7 +16,7 @@ class ChannelUpCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_MODS)
     async def update_member_count_command(self, ctx: SlashContext) -> None:
         await self.bot.update_member_count(ctx)
-        await ctx.send(f"Total Members count updated", hidden=True)
+        await ctx.send("Total Members count updated", hidden=True)
 
     # Commons channel name
     @cog_ext.cog_slash(name="updateCommons", guild_ids=cogbase.GUILD_IDS,

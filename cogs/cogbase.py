@@ -59,14 +59,12 @@ class BaseCog(commands.Cog):
         log = f"{log}\t{message}" if len(log) >= 40 else f"{log}\t\t{message}"
         print(log)
         logs_txt_dir: str = "logs/logs.txt"
-        file_object = open(logs_txt_dir, "a+")
-        file_object.write(f"{log}\n")
-        file_object.close()
+        with open(logs_txt_dir, "a+") as file_object:
+            file_object.write(f"{log}\n")
 
     # Create role if not on server
     async def create_new_role(self, guild, role) -> None:
         if get(guild.roles, name=role):
             return
-        else:
-            await guild.create_role(name=role)
-            self.create_log_msg(f"{role} role created")
+        await guild.create_role(name=role)
+        self.create_log_msg(f"{role} role created")

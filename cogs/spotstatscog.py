@@ -60,7 +60,7 @@ class SpotStatsCog(cogbase.BaseCog):
     async def update_spot_stats(self, channel_id: int, channel_type: int) -> None:
         spot_stats_ch = self.bot.get_channel(self.bot.ch_spotting_stats)
         top_print, total = await self.create_spots_list(self.bot.user.id, channel_type)
-        top_print = ['\n'.join([elem for elem in sublist]) for sublist in top_print]
+        top_print = ['\n'.join(sublist) for sublist in top_print]
         top_print = "\n".join(top_print)
 
         if channel_type == 1:
@@ -99,28 +99,34 @@ class SpotStatsCog(cogbase.BaseCog):
         dt_string = self.bot.get_current_time()
         embed_command.set_footer(text=f"{dt_string}")
         await spot_stats_ch.send(embed=embed_command)
-        self.create_log_msg(f"Spotting stats updated - common")
+        self.create_log_msg("Spotting stats updated - common")
 
-        self.create_log_msg(f"All spotting stats updated")
+        self.create_log_msg("All spotting stats updated")
 
     @update_spot_stats_loop.before_loop
     async def before_update_spot_stats_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg("Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     async def get_stats_type(self, ctx: SlashContext, monster_type: int):
         monsters_list, monsters_total = await self.create_spots_list(ctx.author.id, monster_type)
-        monsters_print = ['\n'.join([elem for elem in sublist]) for sublist in monsters_list]
+        monsters_print = ['\n'.join(sublist) for sublist in monsters_list]
         monsters_print = "\n".join(monsters_print)
 
         if monster_type == 1:
             leges_color = int(self.hex_to_int % (163, 140, 21), 16)
-            embed_command = discord.Embed(title=f"Legendary", description=monsters_print, color=leges_color)
+            embed_command = discord.Embed(
+                title='Legendary', description=monsters_print, color=leges_color
+            )
+
         elif monster_type == 0:
             rares_color = int(self.hex_to_int % (17, 93, 178), 16)
-            embed_command = discord.Embed(title=f"Rare", description=monsters_print, color=rares_color)
+            embed_command = discord.Embed(
+                title='Rare', description=monsters_print, color=rares_color
+            )
+
         else:
-            embed_command = discord.Embed(title=f"Other", description=monsters_print)
+            embed_command = discord.Embed(title='Other', description=monsters_print)
 
         embed_command.add_field(name="Total", value=f"**{monsters_total}**", inline=False)
         if self.lege_total != 0:
@@ -152,7 +158,7 @@ class SpotStatsCog(cogbase.BaseCog):
             self.common_total += 1
             if ctx.author == message.author:
                 common_total += 1
-        embed_command = discord.Embed(title=f"Common")
+        embed_command = discord.Embed(title="Common")
         embed_command.add_field(name="Total", value=f"**{common_total}**", inline=False)
         if self.common_total != 0:
             percentage_common = round(common_total / self.common_total * 100, 2)
