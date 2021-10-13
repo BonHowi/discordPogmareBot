@@ -35,6 +35,7 @@ class LeaderboardsCog(cogbase.BaseCog):
         self.create_log_msg(f"Leaderboards updated - {ch_type}")
 
     # TODO: get data from spot_temp table
+    # TODO: create temp event db
     async def update_event_leaderboards(self, channel: int, event_monster: str) -> None:
         top_ch = self.bot.get_channel(channel)
         spots_df = await DatabaseCog.db_get_monster_spots_df()
@@ -82,7 +83,6 @@ class LeaderboardsCog(cogbase.BaseCog):
     # Update member spotting role(total/common)
     async def update_role(self, guild, guild_member, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"
-        # try:
         spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
         monsters_df = await DatabaseCog.db_get_member_monsters(guild_member.id)
         # Hard coded because there is only one interesting monster

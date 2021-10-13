@@ -84,7 +84,7 @@ spots_lege = Table('spots_lege', metadata_obj,
 
 spots_rare = Table('spots_rare', metadata_obj,
                    Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
-                   Column('Beann\'She', Integer, default=0),
+                   Column('Beann\'Shie', Integer, default=0),
                    Column('BlueForktail', Integer, default=0),
                    Column('Bruxa', Integer, default=0),
                    Column('Burier', Integer, default=0),
