@@ -95,13 +95,9 @@ def create_trigger_structure(triggers_list: list) -> pd.Series:
 
 def get_config() -> None:
     pd.set_option('mode.chained_assignment', None)
-    dt_string = MyBot.get_current_time()
-    print(f"({dt_string})\t[{get_config.__name__}]: Loading data")
     values_input = import_from_sheets()
     df = pd.DataFrame(values_input[1:], columns=values_input[0])
 
-    dt_string = MyBot.get_current_time()
-    print(f"({dt_string})\t[{get_config.__name__}]: Transforming data")
     monsters_df = df[["name", "type"]]
     monsters_df["type"] = pd.to_numeric(df["type"])
 
@@ -110,20 +106,14 @@ def get_config() -> None:
 
     triggers_list = create_trigger_list(triggers)
 
-    dt_string = MyBot.get_current_time()
-    print(f"({dt_string})\t[{get_config.__name__}]: Creating trigger structure")
     triggers_def = create_trigger_structure(triggers_list)
     monsters_df.insert(loc=0, column='triggers', value=triggers_def)
 
-    dt_string = MyBot.get_current_time()
-    print(f"({dt_string})\t[{get_config.__name__}]: Creating output")
     data_dict = create_output(monsters_df)
 
     # write to disk
     with open('server_files/config.json', 'w', encoding='utf8') as f:
         json.dump(data_dict, f, indent=4, ensure_ascii=False, sort_keys=False, cls=NumpyEncoder)
-    dt_string = MyBot.get_current_time()
-    print(f"({dt_string})\t[{get_config.__name__}]: .json saved")
 
 
 def main() -> None:
