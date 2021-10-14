@@ -81,19 +81,22 @@ class LeaderboardsCog(cogbase.BaseCog):
 
     # TODO: something wrong is going on here
     # Update member spotting role(total/common)
-    async def update_role(self, guild, guild_member, spot_roles: dict, common: bool) -> None:
+    async def update_roles(self, guild, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"
-        spots_df = await DatabaseCog.db_get_member_stats(guild_member.id)
-        monsters_df = await DatabaseCog.db_get_member_monsters(guild_member.id)
-        # Hard coded because there is only one interesting monster
-        event_monster_df = monsters_df.filter(["member_id", "Nightmare"], axis=1)
-        spots_df = pd.merge(spots_df, event_monster_df, on=["member_id"])
+        spots_df = await DatabaseCog.db_get_spots_df()
+
         if not common:
+            monsters_df = await DatabaseCog.db_get_monster_spots_df()
+            event_monster_df = monsters_df.filter(["member_id", "Nightmare"], axis=1)
+            spots_df = pd.merge(spots_df, event_monster_df, on=["member_id"])
             spots_df["total"] = spots_df["legendary"] * self.legend_multiplier \
                                 + spots_df["rare"] + (spots_df["Nightmare"])
-        roles_list = [key for (key, value) in spot_roles.items() if spots_df.loc[0, roles_type] >= value]
-        if roles_list:
-            await self.update_role_ext(guild, roles_list, guild_member)
+        for guild_member in guild.members:
+            member_data = spots_df.loc[spots_df["member_id"] == guild_member.id]
+            member_score = member_data[roles_type].iloc[0]
+            roles_list = [key for (key, value) in spot_roles.items() if member_score >= value]
+            if roles_list:
+                await self.update_role_ext(guild, roles_list, guild_member)
         # except KeyError as e:
         #     print(e)
 
@@ -113,15 +116,16 @@ class LeaderboardsCog(cogbase.BaseCog):
         guild = self.bot.get_guild(self.bot.guild[0])
         spot_roles_total = self.bot.config["total_milestones"][0]
         spot_roles_common = self.bot.config["common_milestones"][0]
-        for guild_member in guild.members:
-            await self.update_role(guild, guild_member, spot_roles_total, False)
-            await self.update_role(guild, guild_member, spot_roles_common, True)
+        await self.update_roles(guild, spot_roles_total, False)
+        await self.update_roles(guild, spot_roles_common, True)
 
     async def update_leaderboards(self) -> None:
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
         # await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
         self.create_log_msg('All leaderboards updated')
+        await self.update_member_roles()
+        self.create_log_msg('All member roles updated')
 
     @tasks.loop(minutes=30)
     async def update_leaderboards_loop(self) -> None:
