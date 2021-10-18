@@ -1,16 +1,17 @@
 import os
+from datetime import datetime
 
 import discord
+import pandas as pd
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
-from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.sql import func
+
 import cogs.cogbase as cogbase
-from datetime import datetime
-import pandas as pd
+from modules.get_settings import get_settings
 
 metadata_obj = MetaData()
 
@@ -131,7 +132,8 @@ spots_rare = Table('spots_rare', metadata_obj,
 class DatabaseCog(cogbase.BaseCog):
     user = get_settings("DB_U")
     password = get_settings("DB_P")
-    engine = create_engine(f"mysql+mysqldb://{user}:{password}@localhost/server_database?charset=utf8mb4")
+    conn_string = f"mysql+mysqldb://{user}:{password}@localhost/server_database?charset=utf8mb4"
+    engine = create_engine(conn_string, pool_recycle=3600)
     metadata_obj.create_all(engine)
     conn = None
 

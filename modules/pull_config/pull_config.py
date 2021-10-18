@@ -1,13 +1,15 @@
-import pandas as pd
+import json
 import os.path
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+
+import pandas as pd
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-import json
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from numpyencoder import NumpyEncoder
+
 from main import MyBot
 from modules import get_settings
-from numpyencoder import NumpyEncoder
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SAMPLE_RANGE_NAME = 'A1:AA68'

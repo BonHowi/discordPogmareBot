@@ -3,6 +3,7 @@ import pandas as pd
 from discord.ext import commands, tasks
 from discord.utils import get
 from discord_slash import cog_ext, SlashContext
+
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color
@@ -122,6 +123,7 @@ class LeaderboardsCog(cogbase.BaseCog):
     async def update_leaderboards(self) -> None:
         await self.update_leaderboard(self.bot.ch_leaderboards, "total")
         await self.update_leaderboard(self.bot.ch_leaderboards_common, "common")
+        # Update during the event
         # await self.update_event_leaderboards(self.bot.ch_leaderboards_event, "Nightmare")
         self.create_log_msg('All leaderboards updated')
         await self.update_member_roles()

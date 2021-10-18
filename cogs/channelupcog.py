@@ -1,7 +1,8 @@
 import discord
-import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+
+import cogs.cogbase as cogbase
 
 
 class ChannelUpCog(cogbase.BaseCog):
@@ -38,6 +39,7 @@ class ChannelUpCog(cogbase.BaseCog):
                 f.write("%s\n" % item)
 
     async def update_commons_ch(self, ctx: SlashContext, commons) -> None:
+        await ctx.defer()
         new_name = f"common {commons[0]}"
         common_ch = self.bot.get_channel(self.bot.ch_common)
         await discord.TextChannel.edit(common_ch, name=new_name)

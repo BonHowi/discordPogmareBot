@@ -1,6 +1,6 @@
+import pandas as pd
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-import pandas as pd
 
 from cogs import cogbase
 

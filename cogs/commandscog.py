@@ -3,11 +3,12 @@ Cog with general commands available in the Bot.
 """
 
 import discord
-from discord.utils import get
-from googletrans import Translator
-import cogs.cogbase as cogbase
 from discord.ext import commands
+from discord.utils import get
 from discord_slash import cog_ext, SlashContext
+from googletrans import Translator
+
+import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 from modules.utils import get_dominant_color
 

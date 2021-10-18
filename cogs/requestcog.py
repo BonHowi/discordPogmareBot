@@ -6,11 +6,11 @@ Current commands:
 
 """
 import discord
-import cogs.cogbase as cogbase
-from discord.utils import get
 from discord.ext import commands
+from discord.utils import get
 from discord_slash import cog_ext, SlashContext
 
+import cogs.cogbase as cogbase
 from modules.utils import get_dominant_color
 
 

@@ -2,18 +2,19 @@ import json
 import math
 import os
 import re
-from datetime import datetime
 import time
+from datetime import datetime
+
 import discord
 import psutil
+from discord.ext import commands
 from discord.utils import get
+from discord_slash import cog_ext, SlashContext
 from numpyencoder import NumpyEncoder
 
-from modules.get_settings import get_settings
 import cogs.cogbase as cogbase
-from discord.ext import commands
-from discord_slash import cog_ext, SlashContext
 from cogs.databasecog import DatabaseCog
+from modules.get_settings import get_settings
 from modules.pull_config.pull_config import get_config
 
 
@@ -202,6 +203,7 @@ class UtilsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def update_guides(self, ctx: SlashContext) -> None:
+        await ctx.defer()
         guides_channel = self.bot.get_channel(self.bot.ch_guides)
         await guides_channel.purge(limit=10)
         await self.update_spoofing_guides(guides_channel)

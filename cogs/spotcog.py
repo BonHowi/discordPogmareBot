@@ -6,9 +6,11 @@ Current commands:
 
 """
 from datetime import datetime
+
 import discord
 from discord.ext import commands, tasks
 from discord.utils import get
+
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 
@@ -72,6 +74,7 @@ class SpotCog(cogbase.BaseCog):
         else:
             await ctx.delete()
 
+    # TODO: Reduce code complexity
     async def handle_spotted_monster(self, ctx) -> None:
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))

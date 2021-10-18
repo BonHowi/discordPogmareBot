@@ -3,9 +3,10 @@ import os
 import sys
 
 import discord
-import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+
+import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 
 

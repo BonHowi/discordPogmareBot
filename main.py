@@ -2,10 +2,12 @@ import json
 import logging
 import os
 from datetime import datetime
+from time import time
+
 import discord
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
-from time import time
+
 from modules.get_settings import get_settings
 
 # Create logger
