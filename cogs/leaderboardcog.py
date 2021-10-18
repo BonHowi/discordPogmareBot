@@ -80,7 +80,6 @@ class LeaderboardsCog(cogbase.BaseCog):
         embed_command.set_footer(text=f"{dt_string}")
         await leaderboard_ch.send(embed=embed_command)
 
-    # TODO: something wrong is going on here
     # Update member spotting role(total/common)
     async def update_roles(self, guild, spot_roles: dict, common: bool) -> None:
         roles_type = "common" if common else "total"

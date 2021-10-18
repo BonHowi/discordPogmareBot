@@ -172,19 +172,22 @@ class DatabaseCog(cogbase.BaseCog):
         self.conn.execute(do_update_stmt)
         self.conn.close()
 
+    def add_update_member(self, guild_member):
+        # Member tables
+        self.db_add_update_member(guild_member)
+        # Spots tables
+        self.db_add_update_spots(spots, guild_member)
+        self.db_add_update_spots(spots_temp, guild_member)
+        self.db_add_update_spots(spots_lege, guild_member)
+        self.db_add_update_spots(spots_rare, guild_member)
+
     # Add or refresh all guild members and spots to database
     async def db_update(self) -> None:
         self.conn = self.engine.connect()
         guild = self.bot.get_guild(self.bot.guild[0])
         self.create_log_msg("Refreshing member and spots tables")
         for guild_member in guild.members:
-            # Member tables
-            self.db_add_update_member(guild_member)
-            # Spots tables
-            self.db_add_update_spots(spots, guild_member)
-            self.db_add_update_spots(spots_temp, guild_member)
-            self.db_add_update_spots(spots_lege, guild_member)
-            self.db_add_update_spots(spots_rare, guild_member)
+            self.add_update_member(guild_member)
         self.create_log_msg("Member and spots tables refreshed")
         self.conn.close()
 
@@ -201,11 +204,7 @@ class DatabaseCog(cogbase.BaseCog):
     # Add member to database on member join
     @commands.Cog.listener()
     async def on_member_join(self, guild_member) -> None:
-        self.db_add_update_member(guild_member)
-        self.db_add_update_spots(spots, guild_member)
-        self.db_add_update_spots(spots_temp, guild_member)
-        self.db_add_update_spots(spots_lege, guild_member)
-        self.db_add_update_spots(spots_rare, guild_member)
+        self.add_update_member(guild_member)
 
     # Backup database
     async def db_backup_database(self) -> None:
