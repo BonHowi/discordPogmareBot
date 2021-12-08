@@ -76,6 +76,7 @@ spots_lege = Table('spots_lege', metadata_obj,
                    Column('SilverBasilisk', Integer, default=0),
                    Column('SwampHag', Integer, default=0),
                    Column('TarryChort', Integer, default=0),
+                   Column('Thundster', Integer, default=0),
                    Column('Tormented', Integer, default=0),
                    Column('Ulfhedinn', Integer, default=0),
                    Column('UnseenElder', Integer, default=0),
@@ -105,6 +106,7 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('Grottore', Integer, default=0),
                    Column('Howler', Integer, default=0),
                    Column('IgnisFatuus', Integer, default=0),
+                   Column('Katakan', Integer, default=0),
                    Column('KikimoreWarrior', Integer, default=0),
                    Column('Leshen', Integer, default=0),
                    Column('LeshenHound', Integer, default=0),
@@ -123,6 +125,7 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('Shrieker', Integer, default=0),
                    Column('SpottedAlghoul', Integer, default=0),
                    Column('StoneGolem', Integer, default=0),
+                   Column('Stinger', Integer, default=0),
                    Column('Striga', Integer, default=0),
                    Column('SylvanDearg', Integer, default=0),
                    Column('Wailwraith', Integer, default=0)
@@ -427,7 +430,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn = cls.engine.connect()
         stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common
                       ).select_from(member).join(spots,
-                                                 member.c.id == spots.c.member_id)\
+                                                 member.c.id == spots.c.member_id) \
             .where(spots.c.member_id == guild_member)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
