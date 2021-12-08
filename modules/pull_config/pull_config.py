@@ -8,11 +8,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from numpyencoder import NumpyEncoder
 
-from main import MyBot
+# from main import MyBot
 from modules import get_settings
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-SAMPLE_RANGE_NAME = 'A1:AA68'
+SAMPLE_RANGE_NAME = 'A1:AA200'
 
 SAMPLE_SPREADSHEET_ID_input = get_settings.get_settings("EXCEL_ID")
 
@@ -47,9 +47,9 @@ def import_from_sheets():
     result_input = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID_input, range=SAMPLE_RANGE_NAME).execute()
     values_input = result_input.get('values', [])
 
-    if not values_input:
-        dt_string = MyBot.get_current_time()
-        print(f"({dt_string})\t[{get_config.__name__}]: No data found.")
+    # if not values_input:
+    #     dt_string = MyBot.get_current_time()
+    #     print(f"({dt_string})\t[{get_config.__name__}]: No data found.")
     return values_input
 
 
