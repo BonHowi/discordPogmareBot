@@ -6,7 +6,7 @@ from time import time
 
 import discord
 from discord.ext import commands, tasks
-from discord_slash import SlashCommand
+from discord_slash import SlashCommand, utils
 
 from modules.get_settings import get_settings
 
@@ -152,7 +152,7 @@ def main() -> None:
     pogmare = MyBot()
 
     # Allow slash commands
-    slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
+    slash = SlashCommand(pogmare, sync_commands=False, sync_on_cog_reload=False)
 
     # Load cogs
     for cog in os.listdir("./cogs"):
