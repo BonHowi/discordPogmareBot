@@ -114,7 +114,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None) -> None:
+    async def member_info(self, ctx: SlashContext, user: discord.Member = None) -> None:
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
