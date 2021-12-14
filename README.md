@@ -22,7 +22,7 @@ _Note: The overall files and function structure is not yet polished and will cha
 
 ## General info
 
-Pogmare is a Discord bot made for [W:MS Spotters](https://discord.gg/Kt35Jtc5nT) server. Main functionalites are focused on countibg monster spots and displaying leaderboards, but the bot offers a lot of smaller tools for moderators and the community.
+Pogmare is a Discord bot made for [W:MS Spotters](https://discord.gg/Kt35Jtc5nT) server. Main functionalities are focused on counting monster spots and displaying leaderboards, but the bot offers a lot of smaller tools for moderators and the community.
 
 
 ## Setup
