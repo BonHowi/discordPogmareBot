@@ -226,10 +226,10 @@ class DatabaseCog(cogbase.BaseCog):
         rm_query = f"rm database_backup/{backup_name}.sql"
         os.system(rm_query)
 
-        # Send backup trough e-mail
-        mail_to = "bongjowi@gmail.com"
-        mail_query = f"mail -a database_backup/{backup_name}.zip -s \"Backup {backup_name}\" {mail_to} <<< \" \""
-        os.system(mail_query)
+        # # Send backup trough e-mail
+        # mail_to = ""
+        # mail_query = f"mail -a database_backup/{backup_name}.zip -s \"Backup {backup_name}\" {mail_to} <<< \" \""
+        # os.system(mail_query)
 
         # Send backup to google drive
         try:
