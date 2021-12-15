@@ -212,10 +212,32 @@ class DatabaseCog(cogbase.BaseCog):
     # Backup database
     async def db_backup_database(self) -> None:
         now = datetime.now()
-        cmd = f"mysqldump -u {get_settings('DB_U')} " \
-              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
-              f"-p{get_settings('DB_P')} server_database"
-        os.system(cmd)
+        backup_name = f"backup-{now.strftime('%m-%d-%Y')}"
+        # Save backup to file
+        backup_query = f"mysqldump -u {get_settings('DB_U')} " \
+                       f"--result-file=database_backup/{backup_name}.sql " \
+                       f"-p{get_settings('DB_P')} server_database"
+        os.system(backup_query)
+
+        zip_query = f"zip database_backup/{backup_name}.zip database_backup/{backup_name}.sql"
+        os.system(zip_query)
+
+        # Delete backup file
+        rm_query = f"rm database_backup/{backup_name}.sql"
+        os.system(rm_query)
+
+        # Send backup trough e-mail
+        mail_to = "bongjowi@gmail.com"
+        mail_query = f"mail -a database_backup/{backup_name}.zip -s \"Backup {backup_name}\" {mail_to} <<< \" \""
+        os.system(mail_query)
+
+        # Send backup to google drive
+        try:
+            drive_query = f"gdrive upload -p 1nXYNibvd4u-nWfj1tvIm7sz3Udh1ZD1k database_backup/{backup_name}.zip"
+            os.system(drive_query)
+        except Exception as e:
+            pass
+
         self.create_log_msg("Database backed up")
 
     # ----- SPOTTING OPERATIONS -----
