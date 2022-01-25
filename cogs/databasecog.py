@@ -128,7 +128,8 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('Stinger', Integer, default=0),
                    Column('Striga', Integer, default=0),
                    Column('SylvanDearg', Integer, default=0),
-                   Column('Wailwraith', Integer, default=0)
+                   Column('Wailwraith', Integer, default=0),
+                   Column('VizimianArchespore', Integer, default=0)
                    )
 
 
