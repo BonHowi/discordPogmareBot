@@ -1,4 +1,5 @@
 import discord
+from cogs.databasecog import DatabaseCog
 from discord.ext import commands, tasks
 from discord.utils import get
 from discord_slash import cog_ext, SlashContext

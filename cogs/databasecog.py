@@ -5,11 +5,11 @@ import discord
 import pandas as pd
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
+from modules.get_settings import get_settings
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, \
     BigInteger, update, select, DateTime, delete
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.sql import func
-
 import cogs.cogbase as cogbase
 from modules.get_settings import get_settings
 
@@ -87,6 +87,7 @@ spots_lege = Table('spots_lege', metadata_obj,
 spots_rare = Table('spots_rare', metadata_obj,
                    Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
                    Column('Beann\'Shie', Integer, default=0),
+                   Column('Beann\'She', Integer, default=0),
                    Column('BlueForktail', Integer, default=0),
                    Column('Bruxa', Integer, default=0),
                    Column('Burier', Integer, default=0),
@@ -130,6 +131,9 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('SylvanDearg', Integer, default=0),
                    Column('Wailwraith', Integer, default=0),
                    Column('VizimianArchespore', Integer, default=0)
+                   Column('Striga', Integer, default=0),
+                   Column('SylvanDearg', Integer, default=0),
+                   Column('Wailwraith', Integer, default=0)
                    )
 
 
