@@ -6,11 +6,11 @@ Current commands:
 
 """
 import discord
-import cogs.cogbase as cogbase
-from discord.utils import get
 from discord.ext import commands
+from discord.utils import get
 from discord_slash import cog_ext, SlashContext
 
+import cogs.cogbase as cogbase
 from modules.utils import get_dominant_color
 
 
@@ -30,10 +30,11 @@ class RequestCog(cogbase.BaseCog):
             if mon_type["id"] in [2, 3, 4]:  # Pass if common/...
                 continue
 
-            aval_commands = []
-            for command in self.bot.config["commands"]:
-                if command["type"] == mon_type["id"]:
-                    aval_commands.append(command["name"])
+            aval_commands = [
+                command["name"]
+                for command in self.bot.config["commands"]
+                if command["type"] == mon_type["id"]
+            ]
 
             hex_to_int = "%02x%02x%02x"
             if mon_type["id"] == 1:
@@ -58,14 +59,17 @@ class RequestCog(cogbase.BaseCog):
     # Remove normal messages from monster-request channel
     @commands.Cog.listener()
     async def on_message(self, ctx) -> None:
-        if ctx.author.id == self.bot.user.id:
+        if ctx.author.id == self.bot.user.id or isinstance(ctx.channel, discord.channel.DMChannel):
             return
         if ctx.channel.id == self.bot.ch_role_request:
             if ctx.content.startswith("/"):
                 await ctx.channel.send(
                     f"{ctx.author.mention} For adding or removing role use */role monstername* command",
                     delete_after=10.0)
-            await ctx.delete()
+            try:
+                await ctx.delete()
+            except discord.errors.NotFound:
+                pass
 
     # Add or remove monster role to an user
     @cog_ext.cog_slash(name="role", guild_ids=cogbase.GUILD_IDS,
@@ -82,12 +86,12 @@ class RequestCog(cogbase.BaseCog):
                 role = get(member.guild.roles, name=monster["name"])
                 if role in member.roles:
                     await member.remove_roles(role)
-                    await ctx.send(f"{role} role removed", delete_after=10.0)
+                    await ctx.send(f"{role} role removed", hidden=True)
                 else:
                     await member.add_roles(role)
-                    await ctx.send(f"{role} role added", delete_after=10.0)
+                    await ctx.send(f"{role} role added", hidden=True)
             else:
-                await ctx.send(f"Monster role not found", delete_after=10.0)
+                await ctx.send("Monster role not found", hidden=True)
 
 
 def setup(bot: commands.Bot) -> None:

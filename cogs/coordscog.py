@@ -1,6 +1,8 @@
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 import pandas as pd
+from discord.ext import commands
+from discord_slash import cog_ext, SlashContext
 
 from cogs import cogbase
 
@@ -14,7 +16,7 @@ class CoordsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def save_coordinates(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Coords are being saved", hidden=True)
+        await ctx.send('Coords are being saved', hidden=True)
         legendary_coords = await self.get_channel_history(self.bot.ch_legendary_spot)
         rare_coords = await self.get_channel_history(self.bot.ch_rare_spot)
         # werewolf_coords = await self.get_channel_history(self.bot.ch_werewolf)
@@ -30,10 +32,9 @@ class CoordsCog(cogbase.BaseCog):
 
     async def get_channel_history(self, channel_id: int) -> pd.DataFrame:
         channel = self.bot.get_channel(channel_id)
+        coords_filter_list = ["0.", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."]
         coords_list = []
         async for message in channel.history(limit=None, oldest_first=True):
-            # TODO: there is probably better way to do it
-            coords_filter_list = ["0.", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."]
             is_coord = [ele for ele in coords_filter_list if (ele in message.content)]
             if is_coord:
                 coords_list.append(message.content)

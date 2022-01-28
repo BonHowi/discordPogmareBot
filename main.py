@@ -2,10 +2,11 @@ import json
 import logging
 import os
 from datetime import datetime
+from time import time
+
 import discord
 from discord.ext import commands, tasks
-from discord_slash import SlashCommand
-from time import time
+from discord_slash import SlashCommand, utils
 
 from modules.get_settings import get_settings
 
@@ -25,8 +26,8 @@ class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
 
-        self.create_main_log_msg(f"\n --------------- STARTING BOT ---------------")
-        self.create_main_log_msg(f"Init")
+        self.create_main_log_msg('\n --------------- STARTING BOT ---------------')
+        self.create_main_log_msg('Init')
         self.create_main_log_msg(f"Rate limited: {self.is_ws_ratelimited()}")
         self.start_time = time()
         self.version = "1.2"
@@ -36,9 +37,13 @@ class MyBot(commands.Bot):
         self.ch_role_request = get_settings("CH_ROLE_REQUEST")
         self.ch_total_members = get_settings("CH_TOTAL_MEMBERS")
         self.ch_nightmare_killed = get_settings("CH_NIGHTMARE_KILLED")
+        self.ch_guides = get_settings("CH_GUIDES")
+
         self.ch_leaderboards = get_settings("CH_LEADERBOARDS")
         self.ch_leaderboards_common = get_settings("CH_LEADERBOARDS_COMMON")
         self.ch_leaderboards_event = get_settings("CH_LEADERBOARDS_EVENT")
+
+        self.cat_spotting = get_settings("CAT_SPOTTING")
         self.ch_legendary_spot = get_settings("CH_LEGENDARY_SPOT")
         self.ch_legendary_nemeton = get_settings("CH_LEGENDARY_NEMETON")
         self.ch_rare_spot = get_settings("CH_RARE_SPOT")
@@ -47,10 +52,10 @@ class MyBot(commands.Bot):
         self.ch_werewolf = get_settings("CH_WEREWOLF")
         self.ch_wraiths = get_settings("CH_WRAITHS")
         self.ch_nemeton = get_settings("CH_NEMETON")
+
         self.ch_logs = get_settings("CH_LOGS")
         self.ch_discussion_en = get_settings("CH_DISCUSSION_EN")
         self.ch_spotting_stats = get_settings("CH_SPOTTING_STATS")
-        self.cat_spotting = get_settings("CAT_SPOTTING")
 
         self.update_ch_commons_loop.start()
 
@@ -59,12 +64,11 @@ class MyBot(commands.Bot):
 
     def create_main_log_msg(self, message: str) -> None:
         dt_string = self.get_current_time()
-        log: str = f"({dt_string})\t[{self.__class__.__name__}]: {message}"
+        log: str = f"({dt_string}) [{self.__class__.__name__}]:\t\t{message}"
         print(log)
         logs_txt_dir: str = "logs/logs.txt"
-        file_object = open(logs_txt_dir, "a+")
-        file_object.write(f"{log}\n")
-        file_object.close()
+        with open(logs_txt_dir, "a+") as file_object:
+            file_object.write(f"{log}\n")
 
     # On bot ready
     async def on_ready(self) -> None:
@@ -88,7 +92,7 @@ class MyBot(commands.Bot):
             channel = self.get_channel(self.ch_admin_posting)
             await channel.send(f"{member_count} members <:POGMARE:872496675434942484>")
 
-    async def on_member_remove(self, ctx):
+    async def on_member_remove(self, ctx) -> None:
         await self.update_member_count(ctx)
         self.create_main_log_msg(f"{ctx} left")
 
@@ -97,12 +101,12 @@ class MyBot(commands.Bot):
         # If bot is the message author
         if ctx.author.id == self.user.id:
             return
-        if isinstance(ctx.channel, discord.channel.DMChannel) and ctx.author != self.user:
+        if isinstance(ctx.channel, discord.channel.DMChannel):
             await ctx.channel.send("If you have any questions please ask my creator - BonJowi#0119")
             return
 
         # If there is a message with "!" prefix
-        if ctx.content.startswith("!"):
+        if ctx.content.startswith("!") and "help" not in ctx.content:
             await ctx.channel.send(
                 fr"{ctx.author.mention} Please use / instead of ! to use commands on this server!",
                 delete_after=5.0)
@@ -141,15 +145,14 @@ class MyBot(commands.Bot):
     @staticmethod
     def get_current_time() -> str:
         now = datetime.utcnow()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
-        return dt_string
+        return now.strftime("%d/%m/%Y %H:%M:%S") + " UTC"
 
 
 def main() -> None:
     pogmare = MyBot()
 
     # Allow slash commands
-    slash = SlashCommand(pogmare, sync_commands=True, sync_on_cog_reload=False)
+    slash = SlashCommand(pogmare, sync_commands=False, sync_on_cog_reload=False)
 
     # Load cogs
     for cog in os.listdir("./cogs"):

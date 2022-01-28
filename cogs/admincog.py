@@ -1,8 +1,12 @@
 import asyncio
+import os
+import sys
+
 import discord
-import cogs.cogbase as cogbase
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+
+import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 
 
@@ -16,9 +20,8 @@ class AdminCog(cogbase.BaseCog):
                        description="Check bot's latency",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
-
     async def check_ping(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms", delete_after=4.0)
+        await ctx.send(f"Latency: {round(self.bot.latency * 1000)}ms", delete_after=4.0)
 
     # Clear messages
     @cog_ext.cog_slash(name="clear", guild_ids=cogbase.GUILD_IDS,
@@ -40,7 +43,7 @@ class AdminCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
     async def exit_bot(self, ctx: SlashContext) -> None:
-        await ctx.send(f"Closing Bot", delete_after=1.0)
+        await ctx.send("Closing Bot", delete_after=1.0)
         self.create_log_msg("Exiting Bot")
         await asyncio.sleep(3)
         await self.bot.close()
@@ -159,15 +162,22 @@ class AdminCog(cogbase.BaseCog):
             a = await ctx.send("Slowmode is off for this channel")
             await a.add_reaction("a:redcard:871861842639716472")
         else:
-            if seconds == 1:
-                numofsecs = "second"
-            else:
-                numofsecs = "seconds"
+            numofsecs = "second" if seconds == 1 else "seconds"
             await ctx.channel.edit(slowmode_delay=seconds)
             confirm = await ctx.send(
                 f"{ctx.author.display_name} set the channel slow mode delay to `{seconds}` {numofsecs}\n"
                 f"To turn this off use /slowmode")
             await confirm.add_reaction("a:ResidentWitcher:871872130021736519")
+
+    # Restart bot
+    @cog_ext.cog_slash(name="restartBot", guild_ids=cogbase.GUILD_IDS,
+                       description="Restart bot",
+                       default_permission=False,
+                       permissions=cogbase.PERMISSION_MODS)
+    async def restart_bot(self, ctx: SlashContext):
+        await ctx.send("Restarting bot")
+        os.execv(sys.executable, ['python'] + sys.argv)
+        self.create_log_msg("Bot restarted")
 
 
 def setup(bot: commands.Bot) -> None:

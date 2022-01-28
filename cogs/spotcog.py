@@ -9,6 +9,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands, tasks
 from discord.utils import get
+
 import cogs.cogbase as cogbase
 from cogs.databasecog import DatabaseCog
 
@@ -30,7 +31,7 @@ class SpotCog(cogbase.BaseCog):
     # Ping monster role
     @commands.Cog.listener()
     async def on_message(self, ctx) -> None:
-        if ctx.author.id == self.bot.user.id:
+        if ctx.author.id == self.bot.user.id or isinstance(ctx.channel, discord.channel.DMChannel):
             return
         # If common spotted
         try:
@@ -46,9 +47,9 @@ class SpotCog(cogbase.BaseCog):
             pass
 
         # If monster pinged by member without using bot
-        channels_not_check = [self.bot.ch_role_request, self.bot.ch_leaderboards, self.bot.ch_leaderboards_common,
-                              self.bot.ch_leaderboards_event, self.bot.ch_logs, self.bot.ch_spotting_stats]
-        if ctx.channel.id not in channels_not_check:
+        channels_dont_check = [self.bot.ch_role_request, self.bot.ch_leaderboards, self.bot.ch_leaderboards_common,
+                               self.bot.ch_leaderboards_event, self.bot.ch_logs, self.bot.ch_spotting_stats]
+        if ctx.channel.id not in channels_dont_check:
             await self.handle_wrong_ping(ctx)
 
     async def handle_wrong_ping(self, ctx):
@@ -72,6 +73,7 @@ class SpotCog(cogbase.BaseCog):
         else:
             await ctx.delete()
 
+    # TODO: Reduce code complexity
     async def handle_spotted_monster(self, ctx) -> None:
         if ctx.content.startswith(prefix):
             spotted_monster = self.get_monster(ctx, ctx.content.replace(prefix, ""))
@@ -80,7 +82,10 @@ class SpotCog(cogbase.BaseCog):
                 if await self.wrong_channel(ctx, spotted_monster, monster_type_str):
                     return
                 role = get(ctx.guild.roles, name=spotted_monster["name"])
-                await ctx.delete()
+                try:
+                    await ctx.delete()
+                except discord.errors.NotFound:
+                    pass
                 await ctx.channel.send(f"{role.mention}")
                 await DatabaseCog.db_count_spot(ctx.author.id,
                                                 monster_type_str, spotted_monster["name"])
@@ -94,7 +99,10 @@ class SpotCog(cogbase.BaseCog):
         elif len(ctx.content) > 0 and ctx.content[0] in cords_beginning:
             await DatabaseCog.db_save_coords(ctx.content, ctx.channel.name)
         elif ctx.channel.id in self.spotting_channels:
-            await ctx.add_reaction(f"a{self.peepo_ban_emote}")
+            try:
+                await ctx.add_reaction(f"a{self.peepo_ban_emote}")
+            except discord.errors.NotFound:
+                pass
 
     async def wrong_channel(self, ctx, spotted_monster, monster_type_str: str) -> bool:
         if ctx.channel.id in self.spotting_channels:
@@ -111,8 +119,7 @@ class SpotCog(cogbase.BaseCog):
                 return True
             return False
 
-    @staticmethod
-    async def clear_channel_messages(channel) -> None:
+    async def clear_channel_messages(self, channel) -> None:
         messages = []
         # Can't use datetime.utcnow().date() beacuse discord
         today = datetime.utcnow()
@@ -120,6 +127,7 @@ class SpotCog(cogbase.BaseCog):
         async for message in channel.history(before=today):
             messages.append(message)
         await channel.delete_messages(messages)
+        self.create_log_msg(f"Wiped - {channel.name} history")
 
     @tasks.loop(hours=3)
     async def clear_nemeton_channels_loop(self) -> None:
@@ -127,11 +135,10 @@ class SpotCog(cogbase.BaseCog):
         rare_nemeton = self.bot.get_channel(self.bot.ch_rare_nemeton)
         await self.clear_channel_messages(lege_nemeton)
         await self.clear_channel_messages(rare_nemeton)
-        self.create_log_msg("Wiped Nemeton channels")
 
     @clear_nemeton_channels_loop.before_loop
     async def before_update_leaderboards_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg("Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
 

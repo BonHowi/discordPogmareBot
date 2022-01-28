@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
+
 from modules.get_settings import get_settings
 
 GUILD_IDS = get_settings("guild")
@@ -15,7 +16,7 @@ PERMISSION_MODS = {
 }
 PERMISSION_ADMINS = {
     GUILD_IDS[0]: [
-        create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
+        create_permission(get_settings("ADMIN"), SlashCommandPermissionType.ROLE, True)
     ]
 }
 
@@ -54,22 +55,17 @@ class BaseCog(commands.Cog):
 
     def create_log_msg(self, message: str) -> None:
         dt_string = self.bot.get_current_time()
-        log: str = f"({dt_string})\t[{self.__class__.__name__}]: {message}"
+        # That's just my pedantic way to approach string aligning as .format did not work here as if I wanted to
+        log: str = f"({dt_string}) [{self.__class__.__name__}]:"
+        log = f"{log}\t{message}" if len(log) >= 40 else f"{log}\t\t{message}"
         print(log)
         logs_txt_dir: str = "logs/logs.txt"
-        file_object = open(logs_txt_dir, "a+")
-        file_object.write(f"{log}\n")
-        file_object.close()
+        with open(logs_txt_dir, "a+") as file_object:
+            file_object.write(f"{log}\n")
 
     # Create role if not on server
     async def create_new_role(self, guild, role) -> None:
         if get(guild.roles, name=role):
             return
-        else:
-            await guild.create_role(name=role)
-            self.create_log_msg(f"{role} role created")
-
-    # Print message from cog
-    def create_log_msg(self, message: str):
-        dt_string = self.bot.get_current_time()
-        print(f"({dt_string})\t[{self.__class__.__name__}]: {message}")
+        await guild.create_role(name=role)
+        self.create_log_msg(f"{role} role created")

@@ -2,18 +2,19 @@ import json
 import math
 import os
 import re
-from datetime import datetime
 import time
+from datetime import datetime
+
 import discord
 import psutil
+from discord.ext import commands
 from discord.utils import get
+from discord_slash import cog_ext, SlashContext
 from numpyencoder import NumpyEncoder
 
-from modules.get_settings import get_settings
 import cogs.cogbase as cogbase
-from discord.ext import commands
-from discord_slash import cog_ext, SlashContext
 from cogs.databasecog import DatabaseCog
+from modules.get_settings import get_settings
 from modules.pull_config.pull_config import get_config
 
 
@@ -33,8 +34,11 @@ class UtilsCog(cogbase.BaseCog):
             self.bot.config = json.load(fp)
             await self.create_roles(ctx, True)
             await self.create_roles(ctx, False)
-            self.create_log_msg(f"Finished data pull")
-        await ctx.send(f"Config.json updated", hidden=True)
+            self.create_log_msg('Finished data pull')
+        try:
+            await ctx.send('Config.json updated', hidden=True)
+        except discord.errors.NotFound:
+            self.create_log_msg('Error with printing data pull confirmation')
 
     # Create roles if pull_config gets non existent roles
     async def create_roles(self, ctx: SlashContext, common: bool) -> None:
@@ -42,9 +46,8 @@ class UtilsCog(cogbase.BaseCog):
         for mon_type in self.bot.config[milestones][0]:
             if get(ctx.guild.roles, name=mon_type):
                 continue
-            else:
-                await ctx.guild.create_role(name=mon_type)
-                self.create_log_msg(f"{mon_type} role created")
+            await ctx.guild.create_role(name=mon_type)
+            self.create_log_msg(f"{mon_type} role created")
 
     # Clear temp spots table in database
     @cog_ext.cog_slash(name="clearTempSpots", guild_ids=cogbase.GUILD_IDS,
@@ -53,7 +56,7 @@ class UtilsCog(cogbase.BaseCog):
                        permissions=cogbase.PERMISSION_ADMINS)
     async def clear_temp_spots_table(self, ctx: SlashContext) -> None:
         await DatabaseCog.db_clear_spots_temp_table()
-        await ctx.send(f"Temp spots table was cleared", hidden=True)
+        await ctx.send('Temp spots table was cleared', hidden=True)
         await self.reload_cog(ctx, "databasecog")
 
     # Reloads cog, very useful because there is no need to exit the bot after updating cog
@@ -90,7 +93,7 @@ class UtilsCog(cogbase.BaseCog):
         for cog in list(self.bot.extensions.keys()):
             cog = cog.replace('cogs.', '')
             await self.reload_cog(ctx, cog)
-        await ctx.send(f'All cogs reloaded', delete_after=2.0)
+        await ctx.send('All cogs reloaded', delete_after=2.0)
 
     @cog_ext.cog_slash(name="saveDatabaseCoordinates", guild_ids=cogbase.GUILD_IDS,
                        description="Save coordinates from database to a file",
@@ -103,7 +106,7 @@ class UtilsCog(cogbase.BaseCog):
         coords_df[['latitude', 'longitude']] = coords_df['coords'].str.split(',', 1, expand=True)
         path_coords = r"server_files/coords.xlsx"
         coords_df.to_excel(path_coords, index=False)
-        await ctx.send(f"Coords saved", hidden=True)
+        await ctx.send("Coords saved", hidden=True)
         self.create_log_msg(f"Coords saved to {path_coords}")
 
     # Get member info
@@ -111,7 +114,7 @@ class UtilsCog(cogbase.BaseCog):
                        description="Get member discord info",
                        default_permission=False,
                        permissions=cogbase.PERMISSION_ADMINS)
-    async def member_info(self, ctx: SlashContext, *, user: discord.Member = None) -> None:
+    async def member_info(self, ctx: SlashContext, user: discord.Member = None) -> None:
         if user is None:
             user = ctx.author
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -139,7 +142,7 @@ class UtilsCog(cogbase.BaseCog):
               f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
               f"-p{get_settings('DB_P')} server_database"
         os.system(cmd)
-        await ctx.send(f"Database backed up", hidden=True)
+        await ctx.send("Database backed up", hidden=True)
 
     # System stats
     @cog_ext.cog_slash(name="systemStatus", guild_ids=cogbase.GUILD_IDS,
@@ -200,8 +203,23 @@ class UtilsCog(cogbase.BaseCog):
                        default_permission=False,
                        permissions=cogbase.PERMISSION_MODS)
     async def update_guides(self, ctx: SlashContext) -> None:
-        await ctx.channel.purge(limit=10)
+        await ctx.defer()
+        guides_channel = self.bot.get_channel(self.bot.ch_guides)
+        await guides_channel.purge(limit=10)
+        await self.update_spoofing_guides(guides_channel)
+        await self.update_game_guides(guides_channel)
+        await self.update_useful_guides(guides_channel)
 
+        self.create_log_msg("Guides updated")
+        with open('./server_files/bot_guide.txt') as f:
+            try:
+                bot_guide = f.read()
+            except ValueError:
+                print(ValueError)
+        await guides_channel.send(bot_guide)
+
+    @staticmethod
+    async def update_spoofing_guides(guides_channel):
         embed = discord.Embed(title="SPOOFING GUIDES", color=0x878a00)
         embed.add_field(name="__Recommended Fake GPS App for Android users__",
                         value="https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick",
@@ -214,12 +232,13 @@ class UtilsCog(cogbase.BaseCog):
                         value="https://www.youtube.com/watch?v=wU7qOLEm7qQ", inline=False)
         embed.add_field(name="YT Guide for GPS spoofing with iTools (by @Loonasek)",
                         value="https://www.youtube.com/watch?v=1M8jq3JNAMM", inline=False)
-        embed.add_field(
-            name="Nox guide for creating macro and keyboard mapping; "
-                 "it can help in automatically making potion, fight, blocks signs etc.",
-            value="https://support.bignox.com/en/keyboard/macro1", inline=False)
-        await ctx.send(embed=embed)
+        embed.add_field(name="Nox guide for creating macro and keyboard mapping; "
+                             "it can help in automatically making potion, fight, blocks signs etc.",
+                        value="https://support.bignox.com/en/keyboard/macro1", inline=False)
+        await guides_channel.send(embed=embed)
 
+    @staticmethod
+    async def update_game_guides(guides_channel):
         embed = discord.Embed(title="GAME GUIDES", color=0x8a3c00)
         embed.add_field(name="__Game Wiki__",
                         value="https://witcher.fandom.com/wiki/The_Witcher_Monster_Slayer_bestiary", inline=False)
@@ -232,20 +251,14 @@ class UtilsCog(cogbase.BaseCog):
                               "1vK1HfJlglTluNdypzH3XbQDi0vgJ0SNi2lUHbk3lqcE/edit", inline=False)
         embed.add_field(name="Recommended Skill Tree (by @Sagar)",
                         value="https://pasteboard.co/LYjVo2u1aIDt.jpg", inline=False)
-        await ctx.send(embed=embed)
+        await guides_channel.send(embed=embed)
 
+    @staticmethod
+    async def update_useful_guides(guides_channel):
         embed = discord.Embed(title="USEFUL TOOLS", color=0x019827)
         embed.add_field(name="Website for checking timezones/current time",
                         value="https://www.timeanddate.com/worldclock/?sort=2", inline=False)
-        await ctx.send(embed=embed)
-        self.create_log_msg("Guides updated")
-
-        with open('./server_files/bot_guide.txt') as f:
-            try:
-                bot_guide = f.read()
-            except ValueError:
-                print(ValueError)
-        await ctx.send(bot_guide)
+        await guides_channel.send(embed=embed)
 
 
 def setup(bot: commands.Bot) -> None:

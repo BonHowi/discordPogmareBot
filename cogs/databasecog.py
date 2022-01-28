@@ -1,6 +1,8 @@
 import os
+from datetime import datetime
 
 import discord
+import pandas as pd
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
 from modules.get_settings import get_settings
@@ -9,8 +11,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.sql import func
 import cogs.cogbase as cogbase
-from datetime import datetime
-import pandas as pd
+from modules.get_settings import get_settings
 
 metadata_obj = MetaData()
 
@@ -75,6 +76,7 @@ spots_lege = Table('spots_lege', metadata_obj,
                    Column('SilverBasilisk', Integer, default=0),
                    Column('SwampHag', Integer, default=0),
                    Column('TarryChort', Integer, default=0),
+                   Column('Thundster', Integer, default=0),
                    Column('Tormented', Integer, default=0),
                    Column('Ulfhedinn', Integer, default=0),
                    Column('UnseenElder', Integer, default=0),
@@ -84,6 +86,7 @@ spots_lege = Table('spots_lege', metadata_obj,
 
 spots_rare = Table('spots_rare', metadata_obj,
                    Column('member_id', BigInteger, ForeignKey(fk_member_id), primary_key=True),
+                   Column('Beann\'Shie', Integer, default=0),
                    Column('Beann\'She', Integer, default=0),
                    Column('BlueForktail', Integer, default=0),
                    Column('Bruxa', Integer, default=0),
@@ -104,6 +107,7 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('Grottore', Integer, default=0),
                    Column('Howler', Integer, default=0),
                    Column('IgnisFatuus', Integer, default=0),
+                   Column('Katakan', Integer, default=0),
                    Column('KikimoreWarrior', Integer, default=0),
                    Column('Leshen', Integer, default=0),
                    Column('LeshenHound', Integer, default=0),
@@ -122,6 +126,11 @@ spots_rare = Table('spots_rare', metadata_obj,
                    Column('Shrieker', Integer, default=0),
                    Column('SpottedAlghoul', Integer, default=0),
                    Column('StoneGolem', Integer, default=0),
+                   Column('Stinger', Integer, default=0),
+                   Column('Striga', Integer, default=0),
+                   Column('SylvanDearg', Integer, default=0),
+                   Column('Wailwraith', Integer, default=0),
+                   Column('VizimianArchespore', Integer, default=0)
                    Column('Striga', Integer, default=0),
                    Column('SylvanDearg', Integer, default=0),
                    Column('Wailwraith', Integer, default=0)
@@ -131,7 +140,8 @@ spots_rare = Table('spots_rare', metadata_obj,
 class DatabaseCog(cogbase.BaseCog):
     user = get_settings("DB_U")
     password = get_settings("DB_P")
-    engine = create_engine(f"mysql+mysqldb://{user}:{password}@localhost/server_database?charset=utf8mb4")
+    conn_string = f"mysql+mysqldb://{user}:{password}@localhost/server_database?charset=utf8mb4"
+    engine = create_engine(conn_string, pool_recycle=3600)
     metadata_obj.create_all(engine)
     conn = None
 
@@ -170,20 +180,23 @@ class DatabaseCog(cogbase.BaseCog):
         self.conn.execute(do_update_stmt)
         self.conn.close()
 
+    def add_update_member(self, guild_member):
+        # Member tables
+        self.db_add_update_member(guild_member)
+        # Spots tables
+        self.db_add_update_spots(spots, guild_member)
+        self.db_add_update_spots(spots_temp, guild_member)
+        self.db_add_update_spots(spots_lege, guild_member)
+        self.db_add_update_spots(spots_rare, guild_member)
+
     # Add or refresh all guild members and spots to database
     async def db_update(self) -> None:
         self.conn = self.engine.connect()
         guild = self.bot.get_guild(self.bot.guild[0])
-        self.create_log_msg(f"Refreshing member and spots tables")
+        self.create_log_msg("Refreshing member and spots tables")
         for guild_member in guild.members:
-            # Member tables
-            self.db_add_update_member(guild_member)
-            # Spots tables
-            self.db_add_update_spots(spots, guild_member)
-            self.db_add_update_spots(spots_temp, guild_member)
-            self.db_add_update_spots(spots_lege, guild_member)
-            self.db_add_update_spots(spots_rare, guild_member)
-        self.create_log_msg(f"Member and spots tables refreshed")
+            self.add_update_member(guild_member)
+        self.create_log_msg("Member and spots tables refreshed")
         self.conn.close()
 
     @tasks.loop(hours=12)
@@ -193,26 +206,44 @@ class DatabaseCog(cogbase.BaseCog):
 
     @db_update_loop.before_loop
     async def before_db_update_loop(self) -> None:
-        self.create_log_msg(f"Waiting until Bot is ready")
+        self.create_log_msg("Waiting until Bot is ready")
         await self.bot.wait_until_ready()
 
     # Add member to database on member join
     @commands.Cog.listener()
     async def on_member_join(self, guild_member) -> None:
-        self.db_add_update_member(guild_member)
-        self.db_add_update_spots(spots, guild_member)
-        self.db_add_update_spots(spots_temp, guild_member)
-        self.db_add_update_spots(spots_lege, guild_member)
-        self.db_add_update_spots(spots_rare, guild_member)
+        self.add_update_member(guild_member)
 
     # Backup database
     async def db_backup_database(self) -> None:
         now = datetime.now()
-        cmd = f"mysqldump -u {get_settings('DB_U')} " \
-              f"--result-file=database_backup/backup-{now.strftime('%m-%d-%Y')}.sql " \
-              f"-p{get_settings('DB_P')} server_database"
-        os.system(cmd)
-        self.create_log_msg(f"Database backed up")
+        backup_name = f"backup-{now.strftime('%m-%d-%Y')}"
+        # Save backup to file
+        backup_query = f"mysqldump -u {get_settings('DB_U')} " \
+                       f"--result-file=database_backup/{backup_name}.sql " \
+                       f"-p{get_settings('DB_P')} server_database"
+        os.system(backup_query)
+
+        zip_query = f"zip database_backup/{backup_name}.zip database_backup/{backup_name}.sql"
+        os.system(zip_query)
+
+        # Delete backup file
+        rm_query = f"rm database_backup/{backup_name}.sql"
+        os.system(rm_query)
+
+        # # Send backup trough e-mail
+        # mail_to = ""
+        # mail_query = f"mail -a database_backup/{backup_name}.zip -s \"Backup {backup_name}\" {mail_to} <<< \" \""
+        # os.system(mail_query)
+
+        # Send backup to google drive
+        try:
+            drive_query = f"gdrive upload -p 1nXYNibvd4u-nWfj1tvIm7sz3Udh1ZD1k database_backup/{backup_name}.zip"
+            os.system(drive_query)
+        except Exception as e:
+            pass
+
+        self.create_log_msg("Database backed up")
 
     # ----- SPOTTING OPERATIONS -----
 
@@ -220,14 +251,13 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_count_spot(cls, _id: int, monster_type: str, monster_name: str) -> None:
         cls.conn = cls.engine.connect()
-        cls.db_count_spot_table(spots, _id, monster_type, monster_name)
-        # TODO: count spot in spot_temps
-        # cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name)
+        cls.db_count_spot_table(spots, _id, monster_type, monster_name, False)
+        cls.db_count_spot_table(spots_temp, _id, monster_type, monster_name, True)
         cls.conn.close()
 
-    # TODO: make rares in events possible
     @classmethod
-    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str) -> None:
+    def db_count_spot_table(cls, table, _id: int, monster_type: str, monster_name: str,
+                            temp_table: bool = True) -> None:
         cls.conn = cls.engine.connect()
         stmt = select(table.c.member_id, table.c.legendary, table.c.rare, table.c.common,
                       table.c.event1,
@@ -246,8 +276,8 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn = cls.engine.connect()
         cls.conn.execute(stmt)
         cls.conn.close()
-
-        cls.db_count_monster_spot(_id, monster_type, monster_name)
+        if not temp_table:
+            cls.db_count_monster_spot(_id, monster_type, monster_name)
 
     @classmethod
     def db_count_monster_spot(cls, _id: int, monster_type: str, monster_name: str) -> None:
@@ -361,7 +391,7 @@ class DatabaseCog(cogbase.BaseCog):
 
     @classmethod
     async def db_get_monster_spots_df(cls) -> pd.DataFrame:
-        # TODO: Why does join not work?
+        # TODO: Why does tables join not work?
         cls.conn = cls.engine.connect()
         stmt = select(spots_lege)
         cls.conn.execute(stmt)
@@ -372,8 +402,7 @@ class DatabaseCog(cogbase.BaseCog):
         cls.conn.execute(stmt)
         df_rare = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
-        df_monsters_merged = pd.merge(df_lege, df_rare, on=["member_id"])
-        return df_monsters_merged
+        return pd.merge(df_lege, df_rare, on=["member_id"])
 
     @classmethod
     async def db_get_member_names(cls) -> pd.DataFrame:
@@ -407,7 +436,8 @@ class DatabaseCog(cogbase.BaseCog):
             reason_with_date = [warns[1], warns[0]]
             date_warn.append(reason_with_date)
             counter += 1
-        warns_list = [': \t'.join([str(elem) for elem in sublist]) for sublist in date_warn]
+        warns_list = [': \t'.join(str(elem) for elem in sublist) for sublist in date_warn]
+
         cls.conn.close()
         return warns_list, counter
 
@@ -425,12 +455,27 @@ class DatabaseCog(cogbase.BaseCog):
     @classmethod
     async def db_get_member_stats(cls, guild_member: int) -> pd.DataFrame:
         cls.conn = cls.engine.connect()
-        stmt = select(member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common).select_from(member).join(
-            spots,
-            member.c.id == spots.c.member_id).where(spots.c.member_id == guild_member)
+        stmt = select(spots.c.member_id, member.c.display_name, spots.c.legendary, spots.c.rare, spots.c.common
+                      ).select_from(member).join(spots,
+                                                 member.c.id == spots.c.member_id) \
+            .where(spots.c.member_id == guild_member)
         df = pd.read_sql(stmt, cls.conn)
         cls.conn.close()
         return df
+
+    @classmethod
+    async def db_get_member_monsters(cls, guild_member: int) -> pd.DataFrame:
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_lege).where(spots_lege.c.member_id == guild_member)
+        cls.conn.execute(stmt)
+        df_lege = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        cls.conn = cls.engine.connect()
+        stmt = select(spots_rare).where(spots_rare.c.member_id == guild_member)
+        cls.conn.execute(stmt)
+        df_rare = pd.read_sql(stmt, cls.conn)
+        cls.conn.close()
+        return pd.merge(df_lege, df_rare, on=["member_id"])
 
     @cog_ext.cog_slash(name="changeMemberSpots", guild_ids=cogbase.GUILD_IDS,
                        description="Change member spotting stats",
