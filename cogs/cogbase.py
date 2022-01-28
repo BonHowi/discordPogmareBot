@@ -16,7 +16,7 @@ PERMISSION_MODS = {
 }
 PERMISSION_ADMINS = {
     GUILD_IDS[0]: [
-        create_permission(get_settings("ADMIN"), SlashCommandPermissionType.USER, True)
+        create_permission(get_settings("ADMIN"), SlashCommandPermissionType.ROLE, True)
     ]
 }
 
