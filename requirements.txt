@@ -4,7 +4,7 @@ discord.py==1.7.3
 google_auth_oauthlib==0.4.6
 discord==1.7.3
 google_api_python_client==2.19.1
-protobuf==3.17.3
+protobuf==3.18.3
 
 google~=3.0.0
 setuptools~=47.2.0
